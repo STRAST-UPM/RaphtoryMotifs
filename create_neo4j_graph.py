@@ -14,7 +14,7 @@ import os
 from data_generation import generate
 from dotenv import load_dotenv
 
-from cedar_risk_assessment.cedar_risk.utils import neo4j_store
+from cedar_risk.utils import neo4j_store
 
 
 def seed(seed_value, endpoint, api_key):

@@ -1,0 +1,62 @@
+name: cedar
+
+networks:
+  cedar-network:
+
+services:
+  # ---- Neo4j (graph database) ----------------------------------------------
+  neo4j:
+    image: neo4j:latest
+    container_name: neo4j
+    networks: [cedar-network]
+    ports:
+      - "7474:7474"     # Browser: http://localhost:7474  (neo4j / password)
+      - "7687:7687"     # Bolt
+    environment:
+      NEO4J_AUTH: neo4j/password
+    healthcheck:
+      test: ["CMD-SHELL", "cypher-shell -u neo4j -p password 'RETURN 1' || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 30s
+
+  # ---- HTTP endpoint exposing the graph (starts once Neo4j is ready) --------
+  cedar-http-api:
+    build: ./neo4j-api
+    image: cedar-http-api
+    container_name: cedar-http-api
+    networks: [cedar-network]
+    ports:
+      - "8000:8000"     # POST http://localhost:8000/neo4j/query
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    restart: on-failure
+
+  # ---- Kafka broker (KRaft + SASL_PLAINTEXT/PLAIN) --------------------------
+  kafka:
+    image: apache/kafka:3.9.0
+    container_name: kafka-local
+    hostname: kafka
+    ports:
+      - "9092:9092"
+    volumes:
+      - ./kafka/secrets:/etc/kafka/secrets   # needs kafka_server_jaas.conf (cip/carletto)
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_LISTENERS: SASL://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: SASL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,SASL:SASL_PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: SASL
+      KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/kafka_server_jaas.conf"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+
