@@ -1,9 +1,5 @@
-"""Publish Raphtory anomaly scores to Kafka using the VICOM message template.
+## Publish Raphtory anomaly scores to Kafka using the VICOM message template.
 
-No configuration is read in this module. The caller (main.py) loads the broker
-settings and topic from the environment and passes them in, so pointing at a
-different broker never touches this file.
-"""
 import json
 import time
 import uuid
@@ -26,7 +22,7 @@ def make_producer(bootstrap, username, password,
 
 
 def build_message(findings, kg_version="v1.0", request_id=None):
-    """Wrap findings into the VICOM analysis-result template.
+    """build the result message.
 
     findings: list of dicts with keys
         typeEntity, entityID, risk_level  (+ optional name, description, additional_info)
