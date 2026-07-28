@@ -1,4 +1,4 @@
-from .config import  THRESHOLDS
+from .utils.config import  THRESHOLDS
 
 SUSPICIOUS = THRESHOLDS["SUSPICIOUS"]
 

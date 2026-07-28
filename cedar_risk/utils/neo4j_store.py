@@ -9,7 +9,7 @@ The HTTP gateway is responsible for connecting to Neo4j over Bolt.
 import requests
 import pandas as pd
 
-from . import cypher_queries as Q
+from .cypher_queries import CLEAR , LOAD , READ
 
 
 def run_cypher(query, endpoint, api_key, parameters=None):
@@ -87,13 +87,13 @@ def load_to_neo4j(rows, endpoint, api_key):
     
 
     run_cypher(
-        Q.CLEAR,
+        CLEAR,
         endpoint,
         api_key,
     )
     
     run_cypher(
-        Q.LOAD,
+        LOAD,
         endpoint,
         api_key,
         {
@@ -112,7 +112,7 @@ def load_to_neo4j(rows, endpoint, api_key):
 def read_from_neo4j(endpoint, api_key):
 
     rows = run_cypher(
-        Q.READ,
+        READ,
         endpoint,
         api_key,
     )

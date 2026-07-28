@@ -1,9 +1,8 @@
-from .score_utils import sim  , combine , success_measurement , recurrence 
 import numpy as np
 import pandas as pd
 
-
-from .config import THRESHOLDS
+from  .utils.score_utils import sim, combine, success_measurement, recurrence 
+from .utils.config import THRESHOLDS
 
 
 REPEAT = THRESHOLDS["REPEAT"]

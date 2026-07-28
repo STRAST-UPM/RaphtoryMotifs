@@ -10,13 +10,14 @@ Run:  python main.py
 
 import os
 import time
-
 from dotenv import load_dotenv
 
-from cedar_risk import temporal_graph, motifs, neo4j_store
+
+from cedar_risk.utils import neo4j_store
+from cedar_risk import temporal_graph , motifs
 from cedar_risk.scoring import organization_scores, entity_scores, tender_scores
-from cedar_risk.kafka_client import make_producer, publish_scores
-from cedar_risk.config import DELAY
+from cedar_risk.utils.kafka_client import make_producer, publish_scores
+from cedar_risk.utils.config import DELAY
 
 def run(endpoint, api_key):
     """Read the graph from Neo4j, extract motifs, and return the anomaly output

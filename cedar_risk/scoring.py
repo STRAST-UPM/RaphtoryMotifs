@@ -3,9 +3,8 @@ from operator import itemgetter
 
 import pandas as pd
 
-from .config import THRESHOLDS
-from .motifs import suspicious_groups
-from .score_utils import involvement
+from .utils.config import THRESHOLDS
+from .utils.score_utils import involvement
 from .indicators import group_checks , entity_checks 
 
 from .descriptions import org_description , tender_description , entity_description

@@ -3,7 +3,7 @@ the entity<->group quadruplet motifs of the favoritism pipeline."""
 from collections import defaultdict
 from itertools import combinations
 
-from .config import THRESHOLDS
+from .utils.config import THRESHOLDS
 
 
 
