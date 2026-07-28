@@ -1,0 +1,7 @@
+pandas
+numpy 
+kafka-python
+neo4j
+dotenv
+requests
+raphtory
