@@ -14,6 +14,17 @@ a **Kafka** topic following the VICOM message template.
 
 ## Pipeline
 
+<p align="center">
+  <a href="images/cedar_white_bg.png" target="_blank">
+    <img
+      src="images/cedar_white_bg.png"
+      alt="CEDAR risk-scoring pipeline"
+      width="80%"
+      style="border: 2px solid rgb(201, 196, 196);"
+    >
+  </a>
+</p>
+
 1. **Retrieve** the procurement data from the Neo4j graph and rebuild it as a
    Raphtory temporal graph.
 
@@ -53,16 +64,7 @@ assessment always reflects the current state of the graph.
 > it is pointed at real pilot data.
 
 
-<p align="center">
-  <a href="images/cedar_white_bg.png" target="_blank">
-    <img
-      src="images/cedar_white_bg.png"
-      alt="CEDAR risk-scoring pipeline"
-      width="70%"
-      style="border: 2px solid rgb(201, 196, 196);"
-    >
-  </a>
-</p>
+
 
 
 ### What drives each score
