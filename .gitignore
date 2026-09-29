@@ -18,6 +18,8 @@ create_neo4j_graph.py
 data_generation.py
 score_pilots.py
 trim_graphs.py
+load_pilots.py
+load_pilots_.py
 
 # Distribution / packaging
 .Python
