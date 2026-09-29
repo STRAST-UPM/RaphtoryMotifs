@@ -7,6 +7,12 @@ __pycache__/
 *.so
 
 notebooks/
+Graph_Structures/
+Neo4j_cedar/
+graphs/
+pilots/
+scores*/
+cypher
 
 
 

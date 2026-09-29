@@ -1,13 +1,18 @@
 import numpy as np
 import pandas as pd
 
-from  .utils.score_utils import sim, combine, success_measurement, recurrence 
+from  .utils.score_utils import (sim, combine, success_measurement, recurrence,
+                                 group_need, reference_price, dominant_share,
+                                 is_positive)
 from .utils.config import THRESHOLDS
 
 
 REPEAT = THRESHOLDS["REPEAT"]
 BID_GAP = THRESHOLDS["BID_GAP"]
 
+# Every indicator below tolerates incomplete data (missing amounts, prices,
+# responsible persons, officials): a missing value is skipped, and an indicator
+# with nothing to measure scores 0 instead of failing.
 
 
 def group_success_rate(group, tenders):
@@ -39,18 +44,25 @@ def fake_competition_score(group, tenders):
     
     Measure whether losing bids from the same group stay consistently
     above the winning bid with a noticable gap (fake competitions).
+
+    Bids without a usable amount, and tenders without a usable reference
+    price (awarded price, else the winning bid's own amount), are skipped.
     
     """
-    bid_gaps = [
-        (bid["amount"] - tender["winner_bid"]) / tender["winner_bid"]
-        for tender in tenders
-        for bid in tender["bids"]
-        if bid["org"] in group
-        and bid["org"] != tender["winner"]
-        and tender["winner_bid"]
-    ]
+    bid_gaps = []
 
-    average_gap = np.mean(bid_gaps) if bid_gaps else 0.0
+    for tender in tenders:
+        reference = reference_price(tender)
+        if reference is None:
+            continue
+
+        for bid in tender["bids"]:
+            if (bid["org"] in group
+                    and bid["org"] != tender["winner"]
+                    and is_positive(bid.get("amount"))):
+                bid_gaps.append((bid["amount"] - reference) / reference)
+
+    average_gap = float(np.mean(bid_gaps)) if bid_gaps else 0.0
 
     return sim(average_gap, BID_GAP)
 
@@ -77,29 +89,20 @@ def winner_rotation_score(group, winners):
 def person_consistency_score(group, tenders):
     """
     Measure whether the same responsible person repeatedly submits bids
-    for the organizations in the group.
+    for the organizations in the group (missing persons are ignored).
     """
     consistency = 0.0
 
     for org in group:
 
         people = [
-            bid["person"]
+            bid.get("person")
             for tender in tenders
             for bid in tender["bids"]
             if bid["org"] == org
         ]
 
-        if not people:
-            continue
-
-        dominant_person = (
-            pd.Series(people)
-            .value_counts(normalize=True)
-            .iloc[0]
-        )
-
-        consistency = max(consistency, float(dominant_person))
+        consistency = max(consistency, dominant_share(people))
 
     return consistency
 
@@ -115,13 +118,18 @@ def group_checks(group, T):
       - Fake competition
       - Winner rotation
       - Responsible-person consistency
+
+    A group is present in a tender when min(GROUP_SIZE, len(group)) of its
+    members bid on it, so the same check also scores a pair or a single
+    organization (used by the fallback scoring).
     """
     group = set(group)
+    need = group_need(group)
 
     tenders = [
         tender
         for tender in T.values()
-        if len(group & set(tender["participants"])) >= min(3, len(group))
+        if len(group & set(tender["participants"])) >= need
     ]
 
     appearances = len(tenders)
@@ -129,7 +137,7 @@ def group_checks(group, T):
     checks = {
         "appearances": appearances,
         "repetition": sim(appearances, REPEAT),
-        "success_rate": 0.0,
+        "group_success_rate": 0.0,
         "fake_competition": 0.0,
         "winner_rotation": 0.0,
         "person_consistency": 0.0,
@@ -168,7 +176,7 @@ def group_checks(group, T):
     )
 
     checks.update({
-        "success_rate": success_rate,
+        "group_success_rate": success_rate,
         "fake_competition": fake_competition,
         "winner_rotation": winner_rotation,
         "person_consistency": person_consistency,
@@ -183,13 +191,19 @@ def group_checks(group, T):
 #  Public Enities check for potential favorism to certain group of organizations  
 def entity_checks(entity, G, T):
     G = set(G)
-    ent_t = [t for t in T.values() if t["entity"] == entity
-             and len(G & set(t["participants"])) >= 3]
-    
-    n = len(ent_t)
-    out = {"appearances": n, "repetition": sim(n, REPEAT), "success_rate": 0.0,
+    need = group_need(G)
+
+    out = {"appearances": 0, "repetition": 0.0, "success_rate": 0.0,
            "targeting_rate": 0.0, "official_consistency": 0.0,
            "restricted_competition": 0.0, "overall": 0.0}
+    if entity is None or not G:
+        return out
+
+    ent_t = [t for t in T.values() if t["entity"] == entity
+             and len(G & set(t["participants"])) >= need]
+    
+    n = len(ent_t)
+    out.update({"appearances": n, "repetition": sim(n, REPEAT)})
     if n == 0:
         return out
 
@@ -199,16 +213,12 @@ def entity_checks(entity, G, T):
 
 
     ## calculate targeting rate 
-    group_total = sum(1 for t in T.values() if len(G & set(t["participants"])) >= 3)
+    group_total = sum(1 for t in T.values() if len(G & set(t["participants"])) >= need)
     targeting_rate = (n / group_total)  if group_total else 0.0
     
 
-    ## Check Public entity Repsonsible person consistency
-    if won:
-        offs = pd.Series([t["official"] for t in won])
-        official_consistency = float(offs.value_counts(normalize=True).iloc[0])
-    else:
-        official_consistency = 0.0
+    ## Check Public entity Repsonsible person consistency (missing officials are ignored)
+    official_consistency = dominant_share([t["official"] for t in won])
 
 
     

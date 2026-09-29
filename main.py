@@ -1,14 +1,16 @@
 """CEDAR risk-scoring pipeline.
 
-    Neo4j (CEDAR data model) -> Raphtory temporal graph -> motif extraction
+    Neo4j pilot graph (it / ua / sl) -> Raphtory temporal graph -> motif extraction
     -> per-node anomaly scores (organization, public entity, tender)
     -> publish to Kafka (VICOM topic) following the VICOM template
 
 
-Run:  python main.py
+Run:  python main.py it          (or PILOT=it python main.py)
+      DRY_RUN=1 python main.py sl   -> compute and print, do not publish
 """
 
 import os
+import sys
 import time
 from dotenv import load_dotenv
 
@@ -22,20 +24,24 @@ from cedar_risk.utils.config import DELAY
 def run(endpoint, api_key):
     """Read the graph from Neo4j, extract motifs, and return the anomaly output
     for organizations, public entities and tenders (three {id: dict} maps)."""
-    rows = neo4j_store.read_from_neo4j(endpoint=endpoint, api_key=api_key)
-    print(f"[storage] {len(rows)} bid rows from Neo4j")
+    nodes, rels = neo4j_store.read_from_neo4j(endpoint=endpoint, api_key=api_key)
+    print(f"[storage] {len(nodes)} nodes, {len(rels)} relationships from Neo4j")
 
-    g = temporal_graph.build_temporal_graph(rows)
+    g = temporal_graph.build_temporal_graph(nodes, rels)
     T = temporal_graph.tender_index(g)
     print(f"[graph]   {g.count_nodes()} nodes, {g.count_edges()} edges, "
           f"tenders indexed={len(T)}")
+    if not T:
+        print("[graph]   no tenders in this graph -> nothing to score")
+        return {}, {}, {}
 
     trip = motifs.org_motifs(T)
     cliques = motifs.max_cliques(motifs.suspicious_groups(trip))
     quad = motifs.entity_group_motifs(T)
 
-    org_anom = organization_scores(T, trip, cliques)
-    entity_anom = entity_scores(T, quad)
+    ids = temporal_graph.node_ids(g)      # every node gets a score, even with no connection
+    org_anom = organization_scores(T, trip, cliques, all_orgs=ids["organization"])
+    entity_anom = entity_scores(T, quad, all_entities=ids["public_entity"])
     tender_anom = tender_scores(T, org_anom, entity_anom)   # inherits from the two above
     print(f"[scores]  {len(org_anom)} organizations, {len(entity_anom)} entities, "
           f"{len(tender_anom)} tenders")
@@ -57,28 +63,46 @@ def publish_current(producer, topic, org_anom, entity_anom, tender_anom):
                 "description": score.get("description") or f"risk score {overall}",
                 "additional_info": score.get("components") or None,
             })
+    if not findings:
+        print("[kafka]   nothing to publish")
+        return None
+    if producer is None:
+        print(f"[dry-run] {len(findings)} indicators computed, not published")
+        return None
     msg = publish_scores(producer, topic, findings)
     print(f"[kafka]   sent {len(findings)} indicators -> {topic} "
           f"(requestID={msg['requestID']})")
     return msg
 
 
+def pilot_setting(name, pilot):
+    """GRAPH_ENDPOINT_IT / GRAPH_API_KEY_IT ..., falling back to the plain names."""
+    return (os.getenv(f"{name}_{pilot.upper()}") if pilot else None) or os.getenv(name)
+
+
 if __name__ == "__main__":
     load_dotenv()
 
-    GRAPH_ENDPOINT = os.getenv("GRAPH_ENDPOINT")
-    GRAPH_API_KEY = os.getenv("GRAPH_API_KEY")
+    pilot = sys.argv[1] if len(sys.argv) > 1 else os.getenv("PILOT", "")
+    GRAPH_ENDPOINT = pilot_setting("GRAPH_ENDPOINT", pilot)
+    GRAPH_API_KEY = pilot_setting("GRAPH_API_KEY", pilot)
     assert GRAPH_ENDPOINT and GRAPH_API_KEY, (
-        "Set GRAPH_ENDPOINT and GRAPH_API_KEY in your .env.")
+        "Set GRAPH_ENDPOINT_<PILOT> and GRAPH_API_KEY_<PILOT> "
+        "(or GRAPH_ENDPOINT / GRAPH_API_KEY) in your .env.")
+    print(f"[pilot]   {pilot or 'default'} -> {GRAPH_ENDPOINT}")
 
-    producer = make_producer(
-        bootstrap=os.environ["KAFKA_BOOTSTRAP"],
-        username=os.environ["KAFKA_USERNAME"],
-        password=os.environ["KAFKA_PASSWORD"],
-        security_protocol=os.getenv("KAFKA_SECURITY_PROTOCOL", "SASL_PLAINTEXT"),
-        sasl_mechanism=os.getenv("KAFKA_SASL_MECHANISM", "PLAIN"),
-    )
-    topic = os.environ["KAFKA_TOPIC"]
+    dry_run = os.getenv("DRY_RUN", "").lower() in {"1", "true", "yes"}
+    if dry_run:
+        producer, topic = None, None
+    else:
+        producer = make_producer(
+            bootstrap=os.environ["KAFKA_BOOTSTRAP"],
+            username=os.environ["KAFKA_USERNAME"],
+            password=os.environ["KAFKA_PASSWORD"],
+            security_protocol=os.getenv("KAFKA_SECURITY_PROTOCOL", "SASL_PLAINTEXT"),
+            sasl_mechanism=os.getenv("KAFKA_SASL_MECHANISM", "PLAIN"),
+        )
+        topic = os.environ["KAFKA_TOPIC"]
 
     listener = neo4j_store.Neo4jListener(endpoint=GRAPH_ENDPOINT, api_key=GRAPH_API_KEY)
 
@@ -94,4 +118,5 @@ if __name__ == "__main__":
             time.sleep(DELAY)
     finally:
         listener.close()
-        producer.close()
+        if producer is not None:
+            producer.close()

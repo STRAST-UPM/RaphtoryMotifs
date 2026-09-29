@@ -26,18 +26,20 @@ def org_description(overall, ch, names):
     group = ", ".join(names) if names else "an organization group"
 
     reasons = [
-        f"high joint success rate ({ch['success_rate']:.0%})",
+        f"high joint success rate ({ch.get('group_success_rate', 0.0):.0%})",
         *suspicious_behaviors([
-            (ch["fake_competition"], "inflated cover bids"),
-            (ch["winner_rotation"], "winner rotation"),
-            (ch["person_consistency"], "Consistent responsible person"),
+            (ch.get("fake_competition", 0.0), "inflated cover bids"),
+            (ch.get("winner_rotation", 0.0), "winner rotation"),
+            (ch.get("person_consistency", 0.0), "Consistent responsible person"),
         ]),
     ]
 
-    return (
-        f"potential collusion between {group} "
-        f"({'; '.join(reasons)})"
-    )
+    if names and len(names) == 1:
+        subject = f"suspicious bidding pattern of {group}"
+    else:
+        subject = f"potential collusion between {group}"
+
+    return f"{subject} ({'; '.join(reasons)})"
 
 
 # --------------------------------------------------------------------------- #
@@ -53,11 +55,11 @@ def entity_description(overall, ch, names):
     group = ", ".join(names) if names else "an organization group"
 
     reasons = [
-        f"high group success in this entity's tenders ({ch['success_rate']:.0%})",
+        f"high group success in this entity's tenders ({ch.get('success_rate', 0.0):.0%})",
         *suspicious_behaviors([
-            (ch["targeting_rate"], "group repeatedly targets this entity"),
-            (ch["official_consistency"], "same Entity responsible person awards the tenders"),
-            (ch["restricted_competition"], "restricted competition"),
+            (ch.get("targeting_rate", 0.0), "group repeatedly targets this entity"),
+            (ch.get("official_consistency", 0.0), "same Entity responsible person awards the tenders"),
+            (ch.get("restricted_competition", 0.0), "restricted competition"),
         ]),
     ]
 
