@@ -6,6 +6,7 @@ connects to Neo4j over Bolt. This module is read-only.
 """
 
 import requests
+import os
 
 from .cypher_queries import READ_NODES, READ_RELS, STATE
 
@@ -62,3 +63,28 @@ class Neo4jListener:
     def close(self):
         """Kept for compatibility with the previous implementation."""
         pass
+
+
+def pilot_setting(name, pilot, default=None):
+    return os.getenv(f"{name}_{pilot.upper()}") or os.getenv(name) or default
+
+
+def pilot_endpoint(pilot):
+    """GRAPH_ENDPOINT_<PILOT> if set (used as-is, or with "{pilot}" replaced),
+    else the plain GRAPH_ENDPOINT template with "{pilot}" replaced, else the
+    same default endpoint load_pilots.py / trim_graphs.py fall back to."""
+    return pilot_setting("GRAPH_ENDPOINT",pilot,f"https://kg-{pilot}.cedar-heu-project.eu/neo4j/query").format(pilot=pilot)
+
+
+def resolve_pilots(cli_pilots):
+    """--pilots, else PILOTS in .env (space or comma separated), else every pilot."""
+    if cli_pilots:
+        return list(cli_pilots)
+    env_pilots = os.getenv("PILOTS")
+    if env_pilots:
+        return env_pilots.replace(",", " ").split()
+    
+    # backward compatible with the old single-pilot PILOT=<pilot> setting
+    if os.getenv("PILOT"):
+        return [os.getenv("PILOT")]
+    assert True , "Pilot is not configured"

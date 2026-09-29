@@ -6,6 +6,7 @@ networks:
 services:
   # ---- Neo4j (graph database) ----------------------------------------------
   neo4j:
+    profiles: ["local-neo4j"]
     image: neo4j:latest
     container_name: neo4j
     networks: [cedar-network]
@@ -23,6 +24,7 @@ services:
 
   # ---- HTTP endpoint exposing the graph (starts once Neo4j is ready) --------
   cedar-http-api:
+    profiles: ["local-neo4j"]
     build: ./neo4j-api
     image: cedar-http-api
     container_name: cedar-http-api
@@ -36,6 +38,7 @@ services:
 
   # ---- Kafka broker (KRaft + SASL_PLAINTEXT/PLAIN) --------------------------
   kafka:
+    profiles: ["local-kafka"]
     image: apache/kafka:3.9.0
     container_name: kafka-local
     hostname: kafka

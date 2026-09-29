@@ -13,8 +13,11 @@ graphs/
 pilots/
 scores*/
 cypher
-
-
+neo4j-api/
+create_neo4j_graph.py
+data_generation.py
+score_pilots.py
+trim_graphs.py
 
 # Distribution / packaging
 .Python

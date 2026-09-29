@@ -1,14 +1,28 @@
 """CEDAR risk-scoring pipeline.
 
-    Neo4j pilot graph (it / ua / sl) -> Raphtory temporal graph -> motif extraction
+    Neo4j pilot graph(s) (it / ua / sl) -> Raphtory temporal graph -> motif extraction
     -> per-node anomaly scores (organization, public entity, tender)
     -> publish to Kafka (VICOM topic) following the VICOM template
 
+Which pilots to run, in order of precedence:
+    1. --pilots on the command line        python main.py --pilots it sl
+    2. PILOTS in .env (space/comma separated)   PILOTS=it,sl
+    3. every pilot (it, ua, sl)
 
-Run:  python main.py it          (or PILOT=it python main.py)
-      DRY_RUN=1 python main.py sl   -> compute and print, do not publish
+Run:  python main.py                    -> all pilots, run once then watch each for changes
+      python main.py --pilots it sl     -> only those two
+      DRY_RUN=1 python main.py --pilots sl   -> compute and print, do not publish
+
+.env:
+    GRAPH_API_KEY_IT / GRAPH_API_KEY_UA / GRAPH_API_KEY_SL   (or plain GRAPH_API_KEY)
+    GRAPH_ENDPOINT=https://kg-{pilot}.cedar-heu-project.eu/neo4j/query
+        "{pilot}" is replaced with the pilot code (it / ua / sl). A per-pilot
+        override such as GRAPH_ENDPOINT_IT (with or without "{pilot}") still wins
+        over the plain GRAPH_ENDPOINT for that one pilot.
 """
 
+
+import argparse
 import os
 import sys
 import time
@@ -20,6 +34,8 @@ from cedar_risk import temporal_graph , motifs
 from cedar_risk.scoring import organization_scores, entity_scores, tender_scores
 from cedar_risk.utils.kafka_client import make_producer, publish_scores
 from cedar_risk.utils.config import DELAY
+from cedar_risk.utils.neo4j_store import pilot_endpoint , pilot_setting , resolve_pilots
+
 
 def run(endpoint, api_key):
     """Read the graph from Neo4j, extract motifs, and return the anomaly output
@@ -75,21 +91,50 @@ def publish_current(producer, topic, org_anom, entity_anom, tender_anom):
     return msg
 
 
-def pilot_setting(name, pilot):
-    """GRAPH_ENDPOINT_IT / GRAPH_API_KEY_IT ..., falling back to the plain names."""
-    return (os.getenv(f"{name}_{pilot.upper()}") if pilot else None) or os.getenv(name)
+
+class PilotContext:
+    """Endpoint, API key and change-listener for one pilot."""
+
+    def __init__(self, pilot):
+        self.pilot = pilot
+        self.endpoint = pilot_endpoint(pilot)
+        self.api_key =  pilot_setting("GRAPH_API_KEY", pilot)
+        assert self.endpoint and self.api_key, (
+                "Set GRAPH_ENDPOINT_<PILOT> and GRAPH_API_KEY_<PILOT> "
+                "(or GRAPH_ENDPOINT / GRAPH_API_KEY) in your .env.")
+        self.listener = neo4j_store.Neo4jListener(endpoint=self.endpoint, api_key=self.api_key)
+
+    def run_and_publish(self, producer, topic):
+        print(f"\n[pilot]   {self.pilot} -> {self.endpoint}")
+        scores = run(self.endpoint, self.api_key)
+        publish_current(producer, topic, *scores)
+
+    def close(self):
+        self.listener.close()
 
 
 if __name__ == "__main__":
     load_dotenv()
 
-    pilot = sys.argv[1] if len(sys.argv) > 1 else os.getenv("PILOT", "")
-    GRAPH_ENDPOINT = pilot_setting("GRAPH_ENDPOINT", pilot)
-    GRAPH_API_KEY = pilot_setting("GRAPH_API_KEY", pilot)
-    assert GRAPH_ENDPOINT and GRAPH_API_KEY, (
-        "Set GRAPH_ENDPOINT_<PILOT> and GRAPH_API_KEY_<PILOT> "
-        "(or GRAPH_ENDPOINT / GRAPH_API_KEY) in your .env.")
-    print(f"[pilot]   {pilot or 'default'} -> {GRAPH_ENDPOINT}")
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--pilots", nargs="+", metavar="PILOT",
+                     help="pilots to run, e.g. --pilots it sl (default: PILOTS in "
+                          ".env, else every pilot)")
+    args = ap.parse_args()
+
+    requested = resolve_pilots(args.pilots)
+    contexts = []
+    for pilot in requested:
+        api_key = pilot_setting("GRAPH_API_KEY", pilot)
+        if not api_key:
+            print(f"[pilot]   {pilot}: skipped, no GRAPH_API_KEY_{pilot.upper()} "
+                  f"(or GRAPH_API_KEY) in .env", file=sys.stderr)
+            continue
+        contexts.append(PilotContext(pilot))
+    assert contexts, (
+        f"No pilot had an API key set. Requested: {requested}. "
+        f"Set GRAPH_API_KEY_<PILOT> (or GRAPH_API_KEY) in your .env.")
+    print(f"[pilots]  running: {', '.join(c.pilot for c in contexts)}")
 
     dry_run = os.getenv("DRY_RUN", "").lower() in {"1", "true", "yes"}
     if dry_run:
@@ -104,19 +149,18 @@ if __name__ == "__main__":
         )
         topic = os.environ["KAFKA_TOPIC"]
 
-    listener = neo4j_store.Neo4jListener(endpoint=GRAPH_ENDPOINT, api_key=GRAPH_API_KEY)
-
-    scores = run(GRAPH_ENDPOINT, GRAPH_API_KEY)
-    publish_current(producer, topic, *scores)
+    for ctx in contexts:
+        ctx.run_and_publish(producer, topic)
 
     try:
         while True:
-            if listener.has_changed():
-                print("Graph change detected " + "#" * 60)
-                scores = run(GRAPH_ENDPOINT, GRAPH_API_KEY)
-                publish_current(producer, topic, *scores)
+            for ctx in contexts:
+                if ctx.listener.has_changed():
+                    print(f"Graph change detected ({ctx.pilot}) " + "#" * 50)
+                    ctx.run_and_publish(producer, topic)
             time.sleep(DELAY)
     finally:
-        listener.close()
+        for ctx in contexts:
+            ctx.close()
         if producer is not None:
             producer.close()
