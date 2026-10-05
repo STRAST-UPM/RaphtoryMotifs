@@ -20,6 +20,18 @@ score_pilots.py
 trim_graphs.py
 load_pilots.py
 load_pilots_.py
+VICOM_Kafka/
+secrets/
+secure-kafka/
+cedar_export/
+cedar_scores/
+cedar-neo4j/
+older_files/
+outputs/
+output.json
+kafka/init
+kafka/docker-compose.yml
+kafka/scripts.sh
 
 # Distribution / packaging
 .Python

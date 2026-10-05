@@ -138,6 +138,7 @@ def group_checks(group, T):
         "appearances": appearances,
         "repetition": sim(appearances, REPEAT),
         "group_success_rate": 0.0,
+        "success_risk": 0.0,
         "fake_competition": 0.0,
         "winner_rotation": 0.0,
         "person_consistency": 0.0,
@@ -169,14 +170,18 @@ def group_checks(group, T):
         recurrence_score,
     ])
 
+    ## Risk score of the success rate (threshold SUCCESS, discounted when few wins)
+    success_risk = success_measurement(success_rate, len(winners))
+
     overall = (
         checks["repetition"]
-        * success_measurement(success_rate, len(winners))
+        * success_risk
         * combined
     )
 
     checks.update({
         "group_success_rate": success_rate,
+        "success_risk": success_risk,
         "fake_competition": fake_competition,
         "winner_rotation": winner_rotation,
         "person_consistency": person_consistency,
@@ -194,7 +199,7 @@ def entity_checks(entity, G, T):
     need = group_need(G)
 
     out = {"appearances": 0, "repetition": 0.0, "success_rate": 0.0,
-           "targeting_rate": 0.0, "official_consistency": 0.0,
+           "success_risk": 0.0, "targeting_rate": 0.0, "official_consistency": 0.0,
            "restricted_competition": 0.0, "overall": 0.0}
     if entity is None or not G:
         return out
@@ -228,9 +233,13 @@ def entity_checks(entity, G, T):
     combined = combine([sr, targeting_rate, official_consistency,
                           restricted_competition, recurrence(n, REPEAT, 2*REPEAT)])
 
-    overall = out["repetition"] * success_measurement(sr, len(won)) * combined
+    ## Risk score of the success rate (threshold SUCCESS, discounted when few wins)
+    success_risk = success_measurement(sr, len(won))
 
-    out.update({"success_rate": sr, "targeting_rate": targeting_rate,
+    overall = out["repetition"] * success_risk * combined
+
+    out.update({"success_rate": sr, "success_risk": success_risk,
+                "targeting_rate": targeting_rate,
                 "official_consistency": official_consistency,
                 "restricted_competition": restricted_competition, "overall": overall})
     return out

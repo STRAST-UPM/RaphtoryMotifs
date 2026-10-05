@@ -11,8 +11,8 @@ services:
     container_name: neo4j
     networks: [cedar-network]
     ports:
-      - "7474:7474"     # Browser: http://localhost:7474  (neo4j / password)
-      - "7687:7687"     # Bolt
+      - "7474:7474"
+      - "7687:7687"
     environment:
       NEO4J_AUTH: neo4j/password
     healthcheck:
@@ -22,7 +22,7 @@ services:
       retries: 30
       start_period: 30s
 
-  # ---- HTTP endpoint exposing the graph (starts once Neo4j is ready) --------
+  # ---- HTTP endpoint exposing the graph ------------------------------------
   cedar-http-api:
     profiles: ["local-neo4j"]
     build: ./neo4j-api
@@ -30,7 +30,7 @@ services:
     container_name: cedar-http-api
     networks: [cedar-network]
     ports:
-      - "8000:8000"     # POST http://localhost:8000/neo4j/query
+      - "8000:8000"
     depends_on:
       neo4j:
         condition: service_healthy
@@ -42,24 +42,114 @@ services:
     image: apache/kafka:3.9.0
     container_name: kafka-local
     hostname: kafka
+    networks: [cedar-network]
+
     ports:
+      # External access from the host machine
       - "9092:9092"
+
     volumes:
-      - ./kafka/secrets:/etc/kafka/secrets   # needs kafka_server_jaas.conf (cip/carletto)
+      - ./kafka/secrets:/etc/kafka/secrets
+
     environment:
+      # ---- KRaft -----------------------------------------------------------
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
-      KAFKA_LISTENERS: SASL://:9092,CONTROLLER://:9093
-      KAFKA_ADVERTISED_LISTENERS: SASL://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,SASL:SASL_PLAINTEXT
+
+      # ---- Listeners -------------------------------------------------------
+      #
+      # EXTERNAL:
+      #   Host applications connect to localhost:9092
+      #
+      # INTERNAL:
+      #   Other Docker containers connect to kafka:9094
+      #
+      # CONTROLLER:
+      #   KRaft controller communication on 9093
+      #
+      KAFKA_LISTENERS: EXTERNAL://:9092,INTERNAL://:9094,CONTROLLER://:9093
+
+      KAFKA_ADVERTISED_LISTENERS: EXTERNAL://localhost:9092,INTERNAL://kafka:9094
+
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: EXTERNAL:SASL_PLAINTEXT,INTERNAL:SASL_PLAINTEXT,CONTROLLER:PLAINTEXT
+
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_INTER_BROKER_LISTENER_NAME: SASL
+
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+
+      # ---- SASL ------------------------------------------------------------
       KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
       KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
+
       KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/kafka_server_jaas.conf"
+
+      # ---- Single broker ---------------------------------------------------
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
 
+  # ---- Kafka topic initialization ------------------------------------------
+  kafka-init:
+    profiles: ["local-kafka"]
+    image: apache/kafka:3.9.0
+    container_name: kafka-init
+    hostname: kafka-init
+    networks: [cedar-network]
+
+    depends_on:
+      - kafka
+
+    volumes:
+      - ./kafka/secrets:/etc/kafka/secrets
+
+    environment:
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/kafka_server_jaas.conf"
+
+    entrypoint: ["/bin/bash", "-c"]
+
+    command:
+      - |
+        echo "Waiting for Kafka..."
+
+        until /opt/kafka/bin/kafka-topics.sh \
+          --bootstrap-server kafka:9094 \
+          --list \
+          --command-config /etc/kafka/secrets/client-sasl.properties >/dev/null 2>&1
+        do
+          echo "Kafka not ready yet..."
+          sleep 2
+        done
+
+        echo "Kafka is ready."
+
+        echo "Creating Kafka topics..."
+
+        for topic in \
+          it_analyse \
+          it_results_available \
+          sl_analyse \
+          sl_results_available
+        do
+          echo "Creating topic: $$topic"
+
+          /opt/kafka/bin/kafka-topics.sh \
+            --bootstrap-server kafka:9094 \
+            --create \
+            --if-not-exists \
+            --topic "$$topic" \
+            --partitions 1 \
+            --replication-factor 1 \
+            --command-config /etc/kafka/secrets/client-sasl.properties
+        done
+
+        echo ""
+        echo "Kafka topics created successfully."
+        echo ""
+        echo "Available topics:"
+
+        /opt/kafka/bin/kafka-topics.sh \
+          --bootstrap-server kafka:9094 \
+          --list \
+          --command-config /etc/kafka/secrets/client-sasl.properties

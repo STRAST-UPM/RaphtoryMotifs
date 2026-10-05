@@ -8,7 +8,7 @@ THRESHOLDS = {
     "REPEAT": 2,        # motif recurring >= 3 => suspicious group (extraction)
     "SUCCESS": 0.75,    # success rate >= 75% => potential cartel (gate opens)
     "BID_GAP": 0.25,    # avg gap winner vs others > 25% => fake competition
-    "WINS_MIN": 3,      # rates/patterns over fewer than 3 wins are not evidence
+    "WINS_MIN": 2,      # rates/patterns over fewer than 3 wins are not evidence
     "SUSPICIOUS": 0.6,
 }
 

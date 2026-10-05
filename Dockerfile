@@ -8,7 +8,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY cedar_risk/ ./cedar_risk/
-COPY main.py  data_generation.py create_neo4j_graph.py ./
+COPY main.py   ./
 
 # always generate + load Neo4j, then analyse + submit to Kafka + watch
-CMD ["sh", "-c", "python create_neo4j_graph.py && python main.py"]
+CMD ["sh", "-c", "python main.py"]

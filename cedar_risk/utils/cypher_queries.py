@@ -2,7 +2,7 @@
 
 
 
-READ_NODES = """
+READ_NODES_BACKUP = """
 MATCH (n)
 RETURN labels(n)[0] AS label,
        n.id AS id,
@@ -11,7 +11,7 @@ RETURN labels(n)[0] AS label,
 
 
 # Every relationship with its endpoints' ids and all its properties.
-READ_RELS = """
+READ_RELS_BACKUP = """
 MATCH (a)-[r]->(b)
 RETURN type(r) AS rel,
        a.id AS src,
@@ -19,7 +19,54 @@ RETURN type(r) AS rel,
        properties(r) AS props
 """
 
+
+
+READ_NODES = """
+MATCH (n)
+RETURN labels(n)[0] AS label,
+       CASE
+           WHEN n:organization THEN toString(n.ID_Organization)
+           WHEN n:tender THEN toString(n.ID_Tender)
+           WHEN n:bid THEN toString(n.ID_Bid)
+           WHEN n:public_entity THEN toString(n.ID_Public_Entity)
+           ELSE toString(n.id)
+       END AS id,
+       properties(n) AS props
+"""
+
+
+
+READ_RELS = """
+MATCH (a)-[r]->(b)
+RETURN type(r) AS rel,
+
+       CASE
+           WHEN a:organization THEN toString(a.ID_Organization)
+           WHEN a:tender THEN toString(a.ID_Tender)
+           WHEN a:bid THEN toString(a.ID_Bid)
+           WHEN a:public_entity THEN toString(a.ID_Public_Entity)
+           ELSE toString(a.id)
+       END AS src,
+
+       CASE
+           WHEN b:organization THEN toString(b.ID_Organization)
+           WHEN b:tender THEN toString(b.ID_Tender)
+           WHEN b:bid THEN toString(b.ID_Bid)
+           WHEN b:public_entity THEN toString(b.ID_Public_Entity)
+           ELSE toString(b.id)
+       END AS dst,
+
+       properties(r) AS props
+"""
+
+
+
+
+
+
  
+
+
 # Change detector used by the listener.
 STATE = """
 MATCH (n)

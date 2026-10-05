@@ -146,7 +146,8 @@ def organization_scores(T, trip, cliques, all_orgs=()):
         ## No triplet evidence: fall back to smaller groups, discounted
         if not cands:
             for k, by_k in fallback.items():
-                closeness = sim(k, GROUP_SIZE)
+                #closeness = sim(k, GROUP_SIZE) 
+                closeness = min(k/GROUP_SIZE ,1)
                 for grp in by_k.get(o, ()):
                     ch = _checks(grp, T, cache)
                     cands.append((ch["overall"] * closeness, ch, grp, 1.0, closeness))
@@ -167,7 +168,10 @@ def organization_scores(T, trip, cliques, all_orgs=()):
         names = list(group) if group else None
         comps = {check: round(float(ch.get(check, 0.0)), 3) for check in ORG_CHECKS}
         comps["involvement"] = round(float(inv), 3)
-        comps["closeness"] = round(float(closeness), 3)
+        ## raw recurrence (tenders bid on together) + risk score of the success rate
+        comps["appearances"] = int(ch.get("appearances", 0))
+        comps["success_risk"] = round(float(ch.get("success_risk", 0.0)), 3)
+        #comps["closeness"] = round(float(closeness), 3)
         success_rate = round(wins_by_org[o] / bids_in[o], 3) if bids_in[o] else 0.0
         result[o] = {"node_type": "Organization", "node_id": o, "overall": overall,
                      "description": org_description(overall, ch, names),
@@ -260,7 +264,10 @@ def entity_scores(T, quad, all_entities=()):
             check: round(float(best_score.get(check, 0.0)), 3)
             for check in ENTITY_CHECKS
         }
-        components["closeness"] = round(float(closeness), 3)
+        #components["closeness"] = round(float(closeness), 3)
+        ## raw recurrence (entity tenders the group bid on) + risk score of the success rate
+        components["appearances"] = int(best_score.get("appearances", 0))
+        components["success_risk"] = round(float(best_score.get("success_risk", 0.0)), 3)
 
         result[entity] = {
             "node_type": "PublicEntity",
