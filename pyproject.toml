@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cedar-risk"
+version = "0.1.0"
+description = "CEDAR risk scoring: collusion and favoritism anomaly scores on a Raphtory temporal graph."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Wassim Sliti", email = "wassim.sliti@upm.es" }]
+dependencies = [
+    "pandas",
+    "numpy",
+    "kafka-python",
+    "python-dotenv",
+    "requests",
+    "raphtory",
+]
+
+[project.scripts]
+# `cedar-risk --pilots it sl` == `python main.py --pilots it sl`
+cedar-risk = "main:main"
+
+[tool.setuptools]
+py-modules = ["main"]
+
+[tool.setuptools.packages.find]
+include = ["cedar_risk*"]

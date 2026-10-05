@@ -48,6 +48,7 @@ import time
 import uuid
 
 import kafka
+from kafka.serializer import Serializer
 
 
 TOOL_NAME = "UPM_RAPHTORY"
@@ -185,15 +186,22 @@ def _connection(bootstrap="localhost:9092", username=None, password=None,
     return conn
 
 
+class JsonSerializer(Serializer):
+    """dict -> UTF-8 JSON bytes. default=str keeps stray numpy/pandas types
+    serialisable. Called as serialize(topic, headers, data) by kafka-python 3.x
+    and serialize(topic, data) by 2.x -- the data is always the last argument."""
+
+    def serialize(self, topic, *args):
+        return json.dumps(args[-1], ensure_ascii=False, default=str).encode("utf-8")
+
+
 def make_producer(max_request_size=MAX_MESSAGE_BYTES, **settings):
     """Producer for requests and responses (gzip-compressed JSON)."""
     return kafka.KafkaProducer(
         **_connection(**settings),
         compression_type="gzip",
         max_request_size=max_request_size,
-        # default=str keeps stray numpy/pandas types serialisable
-        value_serializer=lambda m: json.dumps(
-            m, ensure_ascii=False, default=str).encode("utf-8"),
+        value_serializer=JsonSerializer(),
     )
 
 

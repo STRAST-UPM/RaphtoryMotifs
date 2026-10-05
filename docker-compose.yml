@@ -3,7 +3,35 @@ name: cedar
 networks:
   cedar-network:
 
+x-cedar-risk: &cedar-risk
+  networks: [cedar-network]
+  env_file: .env              # same settings as a local run (PILOTS, GRAPH_*, KAFKA_*, LOG_*)
+  # inside Docker, the local broker of the "local-kafka" profile is kafka:9094,
+  # not localhost:9092 -> set KAFKA_BOOTSTRAP=kafka:9094 in .env when using it
+  volumes:
+    - ./outputs:/app/outputs  # saved responses
+    - ./logs:/app/logs        # log files
+  restart: unless-stopped
+
 services:
+  # ---- CEDAR risk tool: `python main.py` from the source -------------------
+  #   docker compose --profile source up --build
+  cedar-risk:
+    <<: *cedar-risk
+    profiles: ["source"]
+    build: { context: ., target: source }
+    image: cedar-risk:source
+    container_name: cedar-risk
+
+  # ---- CEDAR risk tool: the built (pip-installed) wheel --------------------
+  #   docker compose --profile package up --build
+  cedar-risk-package:
+    <<: *cedar-risk
+    profiles: ["package"]
+    build: { context: ., target: package }
+    image: cedar-risk:package
+    container_name: cedar-risk-package
+
   # ---- Neo4j (graph database) ----------------------------------------------
   neo4j:
     profiles: ["local-neo4j"]

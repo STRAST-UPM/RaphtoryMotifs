@@ -3,7 +3,8 @@
     request on <pilot>_analyse  (from the UI, or from send_request.py)
       -> scores of that pilot's graph: Neo4j -> Raphtory -> motifs ->
          organization / public entity / tender anomaly scores
-         (computed once, then recomputed only when the Neo4j graph changes)
+         (computed on the first request, then recomputed on a later request
+          only if the Neo4j graph has changed -- nothing runs without a request)
       -> the requested entities and indicators are picked out
       -> ONE response, saved as JSON, then published on <pilot>_results_available
 
@@ -41,7 +42,6 @@ import json
 import os
 import re
 import sys
-import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 from dotenv import load_dotenv
@@ -55,33 +55,59 @@ from cedar_risk.utils.kafka_client import (
     build_message, make_producer, make_consumer, publish, kafka_settings,
     pilot_topic, now_ms)
 from cedar_risk.utils.config import DELAY
+from cedar_risk.utils.logger import get_logger, setup_logging, describe_error
 from cedar_risk.utils.neo4j_store import pilot_endpoint, pilot_setting, resolve_pilots
+
+log = get_logger(__name__)
 
 
 def run(endpoint, api_key):
     """Read the graph from Neo4j, extract motifs, and return the anomaly output
     for organizations, public entities and tenders (three {id: dict} maps)."""
-    nodes, rels = neo4j_store.read_from_neo4j(endpoint=endpoint, api_key=api_key)
-    print(f"[storage] {len(nodes)} nodes, {len(rels)} relationships from Neo4j")
+    log.info("[analysis] reading the graph from Neo4j (%s)", endpoint)
+    try:
+        nodes, rels = neo4j_store.read_from_neo4j(endpoint=endpoint, api_key=api_key)
+    except Exception as e:
+        log.exception("[analysis] reading the graph from Neo4j failed (%s): %s",
+                      endpoint, describe_error(e))
+        raise
+    log.info("[storage] %d nodes, %d relationships from Neo4j", len(nodes), len(rels))
 
-    g = temporal_graph.build_temporal_graph(nodes, rels)
-    T = temporal_graph.tender_index(g)
-    print(f"[graph]   {g.count_nodes()} nodes, {g.count_edges()} edges, "
-          f"tenders indexed={len(T)}")
+    log.info("[analysis] building the temporal graph")
+    try:
+        g = temporal_graph.build_temporal_graph(nodes, rels)
+        T = temporal_graph.tender_index(g)
+    except Exception as e:
+        log.exception("[analysis] building the temporal graph failed: %s", describe_error(e))
+        raise
+    log.info("[graph]   %d nodes, %d edges, tenders indexed=%d",
+             g.count_nodes(), g.count_edges(), len(T))
     if not T:
-        print("[graph]   no tenders in this graph -> nothing to score")
+        log.warning("[graph]   no tenders in this graph -> nothing to score")
         return {}, {}, {}
 
-    trip = motifs.org_motifs(T)
-    cliques = motifs.max_cliques(motifs.suspicious_groups(trip))
-    quad = motifs.entity_group_motifs(T)
+    log.info("[analysis] extracting motifs")
+    try:
+        trip = motifs.org_motifs(T)
+        cliques = motifs.max_cliques(motifs.suspicious_groups(trip))
+        quad = motifs.entity_group_motifs(T)
+    except Exception as e:
+        log.exception("[analysis] motif extraction failed: %s", describe_error(e))
+        raise
+    log.info("[motifs]  %d organization motifs, %d suspicious cliques, %d entity motifs",
+             len(trip), len(cliques), len(quad))
 
-    ids = temporal_graph.node_ids(g)      # every node gets a score, even with no connection
-    org_anom = organization_scores(T, trip, cliques, all_orgs=ids["organization"])
-    entity_anom = entity_scores(T, quad, all_entities=ids["public_entity"])
-    tender_anom = tender_scores(T, org_anom, entity_anom)   # inherits from the two above
-    print(f"[scores]  {len(org_anom)} organizations, {len(entity_anom)} entities, "
-          f"{len(tender_anom)} tenders")
+    log.info("[analysis] scoring organizations, public entities and tenders")
+    try:
+        ids = temporal_graph.node_ids(g)      # every node gets a score, even with no connection
+        org_anom = organization_scores(T, trip, cliques, all_orgs=ids["organization"])
+        entity_anom = entity_scores(T, quad, all_entities=ids["public_entity"])
+        tender_anom = tender_scores(T, org_anom, entity_anom)   # inherits from the two above
+    except Exception as e:
+        log.exception("[analysis] scoring failed: %s", describe_error(e))
+        raise
+    log.info("[scores]  %d organizations, %d entities, %d tenders",
+             len(org_anom), len(entity_anom), len(tender_anom))
     return org_anom, entity_anom, tender_anom
 
 
@@ -101,7 +127,8 @@ def save_message(pilot, message, out_dir):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8")
 
-    print(f"[save]    {len(message['analysis']['indicators'])} indicators -> {history}")
+    log.info("[save]    %d indicators -> %s",
+             len(message["analysis"]["indicators"]), history)
     return history
 
 
@@ -124,29 +151,28 @@ class PilotContext:
         self.dirty = True       # no scores yet, graph changed, or last run failed
 
     def refresh(self):
-        """Scores of the current graph: computed the first time, then again
-        only when the Neo4j graph has changed (or the last run failed)."""
+        """Scores of the current graph, called only when a request arrives:
+        computed on the first request, then again only when the Neo4j graph
+        has changed since the last analysis (or the last run failed)."""
         if not self.dirty and self.listener.has_changed():
-            print(f"Graph change detected ({self.pilot}) " + "#" * 50)
+            log.info("[pilot]   %s: graph change detected -> re-running the analysis",
+                     self.pilot)
             self.dirty = True
         if self.dirty:
-            print(f"\n[pilot]   {self.pilot} -> {self.endpoint}")
+            log.info("[analysis] %s: starting analysis -> %s", self.pilot, self.endpoint)
+            self.listener.has_changed()     # snapshot the graph state this run is based on
             org, ent, ten = run(self.endpoint, self.api_key)
             self.scores = {"Organization": org, "PublicEntity": ent, "Tender": ten}
             self.dirty = False
+            log.info("[analysis] %s: analysis finished", self.pilot)
         return self.scores
 
-    def safe_refresh(self):
-        """refresh() between requests; a failure is logged and retried later."""
-        try:
-            self.refresh()
-        except Exception:
-            traceback.print_exc()
-            print(f"[pilot]   {self.pilot}: analysis failed, retrying in {DELAY}s",
-                  file=sys.stderr)
-
     def close(self):
-        self.listener.close()
+        try:
+            self.listener.close()
+        except Exception as e:
+            log.exception("[pilot]   %s: closing the Neo4j listener failed: %s",
+                          self.pilot, describe_error(e))
 
 
 def handle_request(ctx, record, producer):
@@ -154,16 +180,17 @@ def handle_request(ctx, record, producer):
     try:
         request = parse_request(record.value)
     except InvalidRequest as e:
-        print(f"[request] {record.topic}@{record.offset}: invalid request skipped ({e})",
-              file=sys.stderr)
+        log.warning("[request] %s@%s: invalid request skipped (%s)",
+                    record.topic, record.offset, e)
         return None
 
     rid = request["requestID"]
     plan = request_plan(request)
     if plan is None:
-        print(f"[request] {rid}: none of this tool's indicators requested -> skipped")
+        log.info("[request] %s: none of this tool's indicators requested -> skipped", rid)
         return None
-    print(f"\n[request] {ctx.pilot} {rid} from {request['issuer']!r}: {describe_plan(plan)}")
+    log.info("[request] %s %s from %r: %s",
+             ctx.pilot, rid, request["issuer"], describe_plan(plan))
 
     # contract: startTime = when the request was published (Kafka record timestamp)
     start_ms = record.timestamp if (record.timestamp or 0) > 0 else now_ms()
@@ -172,38 +199,46 @@ def handle_request(ctx, record, producer):
     try:
         scores = ctx.refresh()
     except Exception as e:
-        traceback.print_exc()
         scores = ctx.scores
         if scores is not None:
-            print(f"[request] {rid}: analysis failed, answering from the last scores",
-                  file=sys.stderr)
+            log.exception("[request] %s: analysis failed (%s), answering from the "
+                          "last scores", rid, describe_error(e))
         else:
+            log.exception("[request] %s: analysis failed (%s) and no previous scores "
+                          "exist", rid, describe_error(e))
             failure = f"The analysis could not run: {type(e).__name__}: {e}"
 
     indicators, entities = answer(plan, scores, failure)
     if not indicators:
         # contract: no response when nothing was produced
-        print(f"[request] {rid}: nothing produced -> no response")
+        log.info("[request] %s: nothing produced -> no response", rid)
         return None
 
     msg = build_message(indicators, entities, kg_version=request["kg"]["versionId"],
                         start_ms=start_ms, request_id=rid)
     for i in indicators:
-        print(f"  {i['indicator_id']:<32} {i['entityID']:<14} risk={i['risk_level']}")
+        log.debug("  %-32s %-14s risk=%s", i["indicator_id"], i["entityID"], i["risk_level"])
     save_message(ctx.pilot, msg, ctx.out_dir)
 
     if producer is None:
-        print(f"[dry-run] response {msg['responseID']} saved, not published "
-              f"to {ctx.results_topic}")
+        log.info("[dry-run] response %s saved, not published to %s",
+                 msg["responseID"], ctx.results_topic)
         return msg
-    publish(producer, ctx.results_topic, msg)
-    print(f"[kafka]   response {msg['responseID']} ({len(indicators)} indicators) "
-          f"-> {ctx.results_topic}")
+    try:
+        publish(producer, ctx.results_topic, msg)
+    except Exception as e:
+        log.exception("[kafka]   %s: publishing response %s to %s failed: %s",
+                      rid, msg["responseID"], ctx.results_topic, describe_error(e))
+        raise
+    log.info("[kafka]   response %s (%d indicators) -> %s",
+             msg["responseID"], len(indicators), ctx.results_topic)
     return msg
 
 
-if __name__ == "__main__":
+def main():
+    """Serve the CEDAR Kafka requests of the configured pilots (see the module docstring)."""
     load_dotenv()
+    setup_logging()
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--pilots", nargs="+", metavar="PILOT",
@@ -218,8 +253,8 @@ if __name__ == "__main__":
     contexts = []
     for pilot in requested:
         if not pilot_setting("GRAPH_API_KEY", pilot):
-            print(f"[pilot]   {pilot}: skipped, no GRAPH_API_KEY_{pilot.upper()} "
-                  f"(or GRAPH_API_KEY) in .env", file=sys.stderr)
+            log.warning("[pilot]   %s: skipped, no GRAPH_API_KEY_%s (or GRAPH_API_KEY) in .env",
+                        pilot, pilot.upper())
             continue
         contexts.append(PilotContext(pilot, out_dir=args.out))
     assert contexts, (
@@ -228,19 +263,24 @@ if __name__ == "__main__":
 
     by_topic = {c.request_topic: c for c in contexts}
     for c in contexts:
-        print(f"[pilots]  {c.pilot}: {c.request_topic} -> {c.results_topic}")
-    print(f"[pilots]  saving to: {args.out}/")
+        log.info("[pilots]  %s: %s -> %s", c.pilot, c.request_topic, c.results_topic)
+    log.info("[pilots]  saving to: %s/", args.out)
 
     settings = kafka_settings()
     dry_run = os.getenv("DRY_RUN", "").lower() in {"1", "true", "yes"}
-    producer = None if dry_run else make_producer(**settings)
-    consumer = make_consumer(
-        list(by_topic),
-        group_id=os.getenv("KAFKA_GROUP_ID", "upm-raphtory"),
-        auto_offset_reset=os.getenv("KAFKA_AUTO_OFFSET_RESET", "latest"),
-        **settings,
-    )
-    print(f"[kafka]   waiting for requests on {', '.join(by_topic)}")
+    try:
+        producer = None if dry_run else make_producer(**settings)
+        consumer = make_consumer(
+            list(by_topic),
+            group_id=os.getenv("KAFKA_GROUP_ID", "upm-raphtory"),
+            auto_offset_reset=os.getenv("KAFKA_AUTO_OFFSET_RESET", "latest"),
+            **settings,
+        )
+    except Exception as e:
+        log.exception("[kafka]   could not connect to Kafka (KAFKA_BOOTSTRAP=%s): %s",
+                      settings["bootstrap"], describe_error(e))
+        sys.exit(1)                 # already logged with its traceback
+    log.info("[kafka]   waiting for requests on %s", ", ".join(by_topic))
 
     try:
         while True:
@@ -250,21 +290,24 @@ if __name__ == "__main__":
                 for record in records:
                     try:
                         handle_request(ctx, record, producer)
-                    except Exception:
-                        traceback.print_exc()
-                        print(f"[request] {tp.topic}@{record.offset}: failed, "
-                              f"the saved copy (if any) is in {args.out}/", file=sys.stderr)
+                    except Exception as e:
+                        log.exception("[request] %s@%s: failed (%s), the saved copy "
+                                      "(if any) is in %s/", tp.topic, record.offset,
+                                      describe_error(e), args.out)
                     consumer.commit()       # answered (or skipped): don't redo it on restart
-
-            # between requests: keep each pilot's scores in step with its graph,
-            # so a request is answered from up-to-date scores without waiting
-            for ctx in contexts:
-                ctx.safe_refresh()
+            # no request -> nothing to do: the graph is only read when a request arrives
     except KeyboardInterrupt:
-        print("\n[kafka]   stopping")
+        log.info("[kafka]   stopping")
+    except Exception as e:
+        log.exception("[kafka]   main loop crashed: %s", describe_error(e))
+        sys.exit(1)                 # already logged with its traceback
     finally:
         consumer.close()
         for ctx in contexts:
             ctx.close()
         if producer is not None:
             producer.close()
+
+
+if __name__ == "__main__":
+    main()

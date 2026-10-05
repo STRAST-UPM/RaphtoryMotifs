@@ -27,6 +27,12 @@ from collections import Counter
 
 from dotenv import load_dotenv
 
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT))
+
+
 from cedar_risk.utils.kafka_client import (
     ALL, TOOL_NAME, build_request, kafka_settings, make_producer, pilot_topic,
     publish, tail_consumer)
