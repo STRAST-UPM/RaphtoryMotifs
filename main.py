@@ -18,11 +18,13 @@ Which pilots to serve, in order of precedence:
 
 .env:
     PILOTS=it,sl
-    KAFKA_BOOTSTRAP=localhost:9092
+    KAFKA_BOOTSTRAP_SERVERS=localhost:8004   local replica (production: kafka.cedar-heu-project.eu:8004)
     KAFKA_REQUEST_TOPICS=it_analyse,sl_analyse
     KAFKA_RESULTS_TOPICS=it_results_available,sl_results_available
     KAFKA_GROUP_ID=upm-raphtory          this tool's own consumer group (topics are shared)
-    KAFKA_USERNAME / KAFKA_PASSWORD      only for a SASL broker, leave unset locally
+    KAFKA_CREDENTIALS_DIR, KAFKA_KEY_PASSWORD, KAFKA_SASL_USERNAME, KAFKA_SASL_PASSWORD
+                                         SASL_SSL credentials, as in the production
+                                         template (see .env.example, kafka_client.py)
     GRAPH_API_KEY_IT / GRAPH_API_KEY_SL  (or plain GRAPH_API_KEY)
     GRAPH_ENDPOINT=https://kg-{pilot}.cedar-heu-project.eu/neo4j/query
 
@@ -41,6 +43,7 @@ import argparse
 import json
 import os
 import re
+import signal
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -235,10 +238,17 @@ def handle_request(ctx, record, producer):
     return msg
 
 
+def _stop(signum, frame):
+    raise KeyboardInterrupt
+
+
 def main():
     """Serve the CEDAR Kafka requests of the configured pilots (see the module docstring)."""
     load_dotenv()
     setup_logging()
+    # `docker stop` sends SIGTERM: stop like Ctrl-C, so the consumer leaves its
+    # group and the producer flushes (else the next start waits for the group)
+    signal.signal(signal.SIGTERM, _stop)
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--pilots", nargs="+", metavar="PILOT",
@@ -277,7 +287,7 @@ def main():
             **settings,
         )
     except Exception as e:
-        log.exception("[kafka]   could not connect to Kafka (KAFKA_BOOTSTRAP=%s): %s",
+        log.exception("[kafka]   could not connect to Kafka (KAFKA_BOOTSTRAP_SERVERS=%s): %s",
                       settings["bootstrap"], describe_error(e))
         sys.exit(1)                 # already logged with its traceback
     log.info("[kafka]   waiting for requests on %s", ", ".join(by_topic))

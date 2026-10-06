@@ -48,6 +48,7 @@ import time
 import uuid
 
 import kafka
+from dotenv import find_dotenv
 from kafka.serializer import Serializer
 
 
@@ -155,15 +156,65 @@ def pilot_topic(pilot, kind):
     return f"{pilot}_{_TOPIC_SUFFIX[kind]}"
 
 
+def _path(path):
+    """A relative credential path is relative to the .env file (found from the
+    working directory upwards, as load_dotenv does), so the tool and the
+    scripts in kafka/ resolve it the same way."""
+    if not path or os.path.isabs(path):
+        return path
+    env_file = find_dotenv(usecwd=True)
+    base = os.path.dirname(env_file) if env_file else os.getcwd()
+    return os.path.normpath(os.path.join(base, path))
+
+
+def _env(*names, default=None):
+    """First non-empty variable among `names` (production name first, then
+    the older names this tool used before)."""
+    for name in names:
+        value = os.getenv(name)
+        if value:
+            return value
+    return default
+
+
 def kafka_settings():
     """Broker connection settings from the environment (call load_dotenv first).
-    No KAFKA_USERNAME -> plain connection (local broker)."""
+
+    Same variables as the CEDAR production template
+    (secure-kafka/example-code/.env.example):
+        KAFKA_BOOTSTRAP_SERVERS                 host:port[,host:port]
+        KAFKA_SASL_USERNAME / KAFKA_SASL_PASSWORD   lines 2 and 3 of cred.txt
+        KAFKA_KEY_PASSWORD                      line 1 of cred.txt (key passphrase)
+        KAFKA_CA_FILE / KAFKA_CERT_FILE / KAFKA_KEY_FILE
+    plus:
+        KAFKA_CREDENTIALS_DIR   the extracted <user>/ folder; the three files are
+                                then found there under their production names
+                                (kafka-cedar-ca-1.crt, <user>.certificate.pem,
+                                <user>.key) unless KAFKA_*_FILE is set
+        KAFKA_SECURITY_PROTOCOL default: SASL_SSL with a CA file,
+                                SASL_PLAINTEXT with only a username, else PLAINTEXT
+        KAFKA_SASL_MECHANISM    default PLAIN
+    Relative paths are relative to the .env file.
+    The older KAFKA_BOOTSTRAP / KAFKA_USERNAME / KAFKA_PASSWORD still work.
+    """
+    username = _env("KAFKA_SASL_USERNAME", "KAFKA_USERNAME")
+    folder = _path(_env("KAFKA_CREDENTIALS_DIR"))
+    in_folder = lambda name: os.path.join(folder, name) if folder and name else None
     return {
-        "bootstrap": os.getenv("KAFKA_BOOTSTRAP", "localhost:9092"),
-        "username": os.getenv("KAFKA_USERNAME") or None,
-        "password": os.getenv("KAFKA_PASSWORD") or None,
-        "security_protocol": os.getenv("KAFKA_SECURITY_PROTOCOL") or None,
-        "sasl_mechanism": os.getenv("KAFKA_SASL_MECHANISM", "PLAIN"),
+        "bootstrap": _env("KAFKA_BOOTSTRAP_SERVERS", "KAFKA_BOOTSTRAP",
+                          default="localhost:9092"),
+        "username": username,
+        "password": _env("KAFKA_SASL_PASSWORD", "KAFKA_PASSWORD"),
+        "security_protocol": _env("KAFKA_SECURITY_PROTOCOL"),
+        "sasl_mechanism": _env("KAFKA_SASL_MECHANISM", default="PLAIN"),
+        "ca_file": _path(_env("KAFKA_CA_FILE")) or in_folder("kafka-cedar-ca-1.crt"),
+        "cert_file": _path(_env("KAFKA_CERT_FILE"))
+                     or in_folder(username and f"{username}.certificate.pem"),
+        "key_file": _path(_env("KAFKA_KEY_FILE"))
+                    or in_folder(username and f"{username}.key"),
+        "key_password": _env("KAFKA_KEY_PASSWORD"),
+        "check_hostname": _env("KAFKA_SSL_CHECK_HOSTNAME", default="true").lower()
+                          not in {"0", "false", "no"},
     }
 
 
@@ -174,15 +225,41 @@ def kafka_settings():
 MAX_MESSAGE_BYTES = 10 * 1024 * 1024    # a response for "all" holds the whole graph
 
 
+class KafkaConfigError(ValueError):
+    """A setting or credential file needed for the chosen protocol is missing."""
+
+
 def _connection(bootstrap="localhost:9092", username=None, password=None,
-                security_protocol=None, sasl_mechanism="PLAIN"):
+                security_protocol=None, sasl_mechanism="PLAIN", ca_file=None,
+                cert_file=None, key_file=None, key_password=None, check_hostname=True):
     if security_protocol is None:
-        security_protocol = "SASL_PLAINTEXT" if username else "PLAINTEXT"
-    conn = {"bootstrap_servers": bootstrap, "security_protocol": security_protocol}
-    if security_protocol.upper().startswith("SASL"):
+        security_protocol = ("SASL_SSL" if ca_file else
+                             "SASL_PLAINTEXT" if username else "PLAINTEXT")
+    security_protocol = security_protocol.upper()
+    conn = {"bootstrap_servers": [s.strip() for s in bootstrap.split(",") if s.strip()],
+            "security_protocol": security_protocol}
+
+    if security_protocol.startswith("SASL"):
+        if not (username and password):
+            raise KafkaConfigError(f"{security_protocol} needs KAFKA_SASL_USERNAME and "
+                                   f"KAFKA_SASL_PASSWORD (lines 2 and 3 of cred.txt)")
         conn.update(sasl_mechanism=sasl_mechanism,
                     sasl_plain_username=username,
                     sasl_plain_password=password)
+
+    if security_protocol.endswith("SSL"):
+        # TLS as on the CEDAR cluster: verify the broker against the CA, and
+        # present our own certificate (the broker requires one)
+        files = {"KAFKA_CA_FILE": ca_file, "KAFKA_CERT_FILE": cert_file,
+                 "KAFKA_KEY_FILE": key_file}
+        for name, path in files.items():
+            if not path:
+                raise KafkaConfigError(f"{security_protocol} needs {name} "
+                                       f"(or KAFKA_CREDENTIALS_DIR)")
+            if not os.path.isfile(path):
+                raise KafkaConfigError(f"{name}: file not found: {path}")
+        conn.update(ssl_cafile=ca_file, ssl_certfile=cert_file, ssl_keyfile=key_file,
+                    ssl_password=key_password, ssl_check_hostname=check_hostname)
     return conn
 
 

@@ -15,7 +15,8 @@ main.py must be running (in another terminal) to answer.
 
 "all" as an ID means every entity of that type (our extension to the contract).
 Topics and broker come from the same .env as main.py:
-    KAFKA_BOOTSTRAP, KAFKA_REQUEST_TOPICS, KAFKA_RESULTS_TOPICS, PILOTS
+    KAFKA_BOOTSTRAP_SERVERS + the SASL_SSL credentials, KAFKA_REQUEST_TOPICS,
+    KAFKA_RESULTS_TOPICS, PILOTS
     KG_VERSION_IT / KG_VERSION_SL (or KG_VERSION) -> kg.versionId, unless --kg-version
 """
 

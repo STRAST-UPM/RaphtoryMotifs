@@ -1,0 +1,406 @@
+{
+ "pilot": "sl",
+ "total_nodes": 210,
+ "total_relationships": 257,
+ "nodes_with_an_inconsistency": 10,
+ "total_issues_logged": 31,
+ "labels": {
+  "bid": {
+   "label": "bid",
+   "known_in_data_model": true,
+   "count": 63,
+   "fields": {
+    "ID_Bid": {
+     "kind": "id",
+     "required": true,
+     "present": 63,
+     "missing": 0,
+     "value_formats": {
+      "text": 63
+     },
+     "spellings_seen": null
+    },
+    "Successful_Bid": {
+     "kind": "bool",
+     "required": true,
+     "present": 58,
+     "missing": 5,
+     "value_formats": {
+      "text_yes_no": 56,
+      "missing": 5,
+      "unrecognized": 2
+     },
+     "spellings_seen": null
+    },
+    "Contract_Price": {
+     "kind": "number",
+     "required": false,
+     "present": 59,
+     "missing": 4,
+     "value_formats": {
+      "numeric": 59,
+      "missing": 4
+     },
+     "spellings_seen": null
+    },
+    "Amount": {
+     "kind": "number",
+     "required": false,
+     "present": 34,
+     "missing": 29,
+     "value_formats": {
+      "numeric": 34,
+      "missing": 29
+     },
+     "spellings_seen": null
+    },
+    "Responsible_Signee_Name": {
+     "kind": "text",
+     "required": false,
+     "present": 55,
+     "missing": 8,
+     "value_formats": {
+      "text": 55,
+      "missing": 8
+     },
+     "spellings_seen": null
+    },
+    "Time_Submission": {
+     "kind": "date",
+     "required": false,
+     "present": 47,
+     "missing": 16,
+     "value_formats": {
+      "iso_datetime": 47,
+      "missing": 16
+     },
+     "spellings_seen": null
+    }
+   },
+   "unexpected_properties": {
+    "id": 63,
+    "title": 63,
+    "color": 63,
+    "Source_File": 63,
+    "name": 63,
+    "type": 63
+   },
+   "nodes_with_an_inconsistency": 7
+  },
+  "item": {
+   "label": "item",
+   "known_in_data_model": true,
+   "count": 40,
+   "fields": {
+    "ID_Good_Service": {
+     "kind": "id",
+     "required": false,
+     "present": 40,
+     "missing": 0,
+     "value_formats": {
+      "text": 40
+     },
+     "spellings_seen": null
+    }
+   },
+   "unexpected_properties": {
+    "id": 40,
+    "Name": 40,
+    "title": 40,
+    "color": 40,
+    "Type": 40,
+    "Measurement_Unit": 40,
+    "name": 40,
+    "type": 40,
+    "Price_Wo_Taxes": 25,
+    "Price_W_Taxes": 25
+   },
+   "nodes_with_an_inconsistency": 0
+  },
+  "organization": {
+   "label": "organization",
+   "known_in_data_model": true,
+   "count": 57,
+   "fields": {
+    "ID_Organization": {
+     "kind": "id",
+     "required": true,
+     "present": 57,
+     "missing": 0,
+     "value_formats": {
+      "text": 57
+     },
+     "spellings_seen": null
+    },
+    "Name": {
+     "kind": "text",
+     "required": false,
+     "present": 57,
+     "missing": 0,
+     "value_formats": {
+      "text": 57
+     },
+     "spellings_seen": [
+      "Name",
+      "name"
+     ]
+    }
+   },
+   "unexpected_properties": {
+    "id": 57,
+    "title": 57,
+    "color": 57,
+    "type": 57,
+    "Location": 52,
+    "Responsible_Person_Name": 46,
+    "Type": 27
+   },
+   "nodes_with_an_inconsistency": 0
+  },
+  "public_entity": {
+   "label": "public_entity",
+   "known_in_data_model": true,
+   "count": 1,
+   "fields": {
+    "ID_Public_Entity": {
+     "kind": "id",
+     "required": true,
+     "present": 1,
+     "missing": 0,
+     "value_formats": {
+      "text": 1
+     },
+     "spellings_seen": null
+    },
+    "Name": {
+     "kind": "text",
+     "required": false,
+     "present": 1,
+     "missing": 0,
+     "value_formats": {
+      "text": 1
+     },
+     "spellings_seen": null
+    }
+   },
+   "unexpected_properties": {
+    "id": 1,
+    "title": 1,
+    "color": 1,
+    "Location": 1,
+    "Department": 1,
+    "type": 1
+   },
+   "nodes_with_an_inconsistency": 0
+  },
+  "responsible_person": {
+   "label": "responsible_person",
+   "known_in_data_model": true,
+   "count": 9,
+   "fields": {
+    "First_Name": {
+     "kind": "text",
+     "required": false,
+     "present": 9,
+     "missing": 0,
+     "value_formats": {
+      "text": 9
+     },
+     "spellings_seen": null
+    },
+    "Last_Name": {
+     "kind": "text",
+     "required": false,
+     "present": 9,
+     "missing": 0,
+     "value_formats": {
+      "text": 9
+     },
+     "spellings_seen": null
+    }
+   },
+   "unexpected_properties": {
+    "id": 9,
+    "title": 9,
+    "color": 9,
+    "name": 9,
+    "type": 9
+   },
+   "nodes_with_an_inconsistency": 0
+  },
+  "tender": {
+   "label": "tender",
+   "known_in_data_model": true,
+   "count": 40,
+   "fields": {
+    "ID_Tender": {
+     "kind": "id",
+     "required": true,
+     "present": 40,
+     "missing": 0,
+     "value_formats": {
+      "text": 40
+     },
+     "spellings_seen": null
+    },
+    "Time_Publication": {
+     "kind": "date",
+     "required": false,
+     "present": 0,
+     "missing": 40,
+     "value_formats": {
+      "missing": 40
+     },
+     "spellings_seen": null
+    },
+    "Time_Creation": {
+     "kind": "date",
+     "required": false,
+     "present": 5,
+     "missing": 35,
+     "value_formats": {
+      "missing": 35,
+      "iso_date": 5
+     },
+     "spellings_seen": null
+    },
+    "Time_Open": {
+     "kind": "date",
+     "required": false,
+     "present": 0,
+     "missing": 40,
+     "value_formats": {
+      "missing": 40
+     },
+     "spellings_seen": null
+    },
+    "Time_Deadline": {
+     "kind": "date",
+     "required": false,
+     "present": 35,
+     "missing": 5,
+     "value_formats": {
+      "iso_datetime": 35,
+      "missing": 5
+     },
+     "spellings_seen": null
+    },
+    "Winning_Bid": {
+     "kind": "text",
+     "required": false,
+     "present": 39,
+     "missing": 1,
+     "value_formats": {
+      "text": 39,
+      "missing": 1
+     },
+     "spellings_seen": null
+    },
+    "Awarded_Price": {
+     "kind": "number",
+     "required": false,
+     "present": 40,
+     "missing": 0,
+     "value_formats": {
+      "comma_decimal_string": 40
+     },
+     "spellings_seen": null
+    },
+    "Responsible_Signee_Name": {
+     "kind": "text",
+     "required": false,
+     "present": 40,
+     "missing": 0,
+     "value_formats": {
+      "text": 40
+     },
+     "spellings_seen": null
+    }
+   },
+   "unexpected_properties": {
+    "Description": 40,
+    "Source_File": 40,
+    "Type": 40,
+    "type": 40,
+    "id": 40,
+    "title": 40,
+    "color": 40,
+    "name": 40,
+    "Required_Amount": 31
+   },
+   "nodes_with_an_inconsistency": 0
+  }
+ },
+ "relationships": {
+  "ISSUED_BY": {
+   "count": 40,
+   "known_in_data_model": true,
+   "expected_src_label": "tender",
+   "expected_dst_label": "public_entity",
+   "src_label_mismatches": 4,
+   "dst_label_mismatches": 0,
+   "dangling_src": 0,
+   "dangling_dst": 0
+  },
+  "ISSUES": {
+   "count": 40,
+   "known_in_data_model": true,
+   "expected_src_label": "public_entity",
+   "expected_dst_label": "tender",
+   "src_label_mismatches": 0,
+   "dst_label_mismatches": 4,
+   "dangling_src": 0,
+   "dangling_dst": 0
+  },
+  "REQUIRES": {
+   "count": 40,
+   "known_in_data_model": true,
+   "expected_src_label": "tender",
+   "expected_dst_label": "item",
+   "src_label_mismatches": 4,
+   "dst_label_mismatches": 0,
+   "dangling_src": 0,
+   "dangling_dst": 0
+  },
+  "RESPONSIBLE_OF": {
+   "count": 9,
+   "known_in_data_model": true,
+   "expected_src_label": "responsible_person",
+   "expected_dst_label": "public_entity",
+   "src_label_mismatches": 0,
+   "dst_label_mismatches": 0,
+   "dangling_src": 0,
+   "dangling_dst": 0
+  },
+  "SUBMITS": {
+   "count": 64,
+   "known_in_data_model": true,
+   "expected_src_label": "organization",
+   "expected_dst_label": "bid",
+   "src_label_mismatches": 0,
+   "dst_label_mismatches": 0,
+   "dangling_src": 1,
+   "dangling_dst": 1
+  },
+  "SUBMITTED_FOR": {
+   "count": 64,
+   "known_in_data_model": true,
+   "expected_src_label": "bid",
+   "expected_dst_label": "tender",
+   "src_label_mismatches": 0,
+   "dst_label_mismatches": 4,
+   "dangling_src": 1,
+   "dangling_dst": 0
+  }
+ },
+ "ids": {
+  "nodes_missing_graph_id": 2,
+  "duplicate_graph_ids": 4,
+  "duplicate_examples": {
+   "EN_N_112_2025": 2,
+   "EN_N_37_2025": 2,
+   "EN_N_41_2025": 2,
+   "EN_N_44_2025": 2
+  }
+ }
+}

@@ -106,14 +106,29 @@ and credentials — the module then runs against real procurement data unchanged
 GRAPH_ENDPOINT=http://localhost:8000/neo4j/query
 GRAPH_API_KEY=cedar_local_0bc4c44d8c89412fbc4f6271eb28c3f4952f0e89f06c487bb6fb61d6e4fd95af
 
-# Kafka
-KAFKA_BOOTSTRAP=localhost:9092
-KAFKA_USERNAME=cip
-KAFKA_PASSWORD=carletto
-KAFKA_SECURITY_PROTOCOL=SASL_PLAINTEXT
-KAFKA_SASL_MECHANISM=PLAIN
-KAFKA_TOPIC=VICOM_CORRELAX
+# Kafka -- same variables as the CEDAR production template (secure-kafka/README.md)
+KAFKA_BOOTSTRAP_SERVERS=localhost:8004
+KAFKA_DOCKER_BOOTSTRAP_SERVERS=kafka:9094
+KAFKA_CREDENTIALS_DIR=./kafka/secrets/local/upm
+KAFKA_KEY_PASSWORD=<line 1 of cred.txt>
+KAFKA_SASL_USERNAME=<line 2 of cred.txt>
+KAFKA_SASL_PASSWORD=<line 3 of cred.txt>
 ```
+
+The local Kafka broker replicates the production cluster: `SASL_SSL`, i.e. TLS
+with a required client certificate signed by the cluster CA, plus SASL `PLAIN`.
+Create its local credentials once (a local CA, never valid in production), then
+start it:
+
+```bash
+./kafka/make-local-credentials.sh            # -> kafka/secrets/local/{ca,broker,upm}/
+docker compose --profile local-kafka up -d   # broker on localhost:8004 + topic creation
+```
+
+`kafka/secrets/local/upm/` has the same files as the production archive
+`secure-kafka/users/upm.7z`. To move to production, copy `.env.example` to `.env`:
+point `KAFKA_CREDENTIALS_DIR` to the extracted `upm/` folder, copy the three
+lines of its `cred.txt`, and drop `KAFKA_DOCKER_BOOTSTRAP_SERVERS`.
 
 ## 3. Build and run the risk-assessment module
 
@@ -142,16 +157,11 @@ module published:
 
 ```bash
 docker exec -it kafka-local /opt/kafka/bin/kafka-console-consumer.sh \
-  --bootstrap-server localhost:9092 \
-  --consumer.config /etc/kafka/secrets/client-sasl.properties \
-  --topic VICOM_CORRELAX --from-beginning
+  --bootstrap-server kafka:9094 \
+  --consumer.config /etc/kafka/secrets/admin-client.properties \
+  --topic sl_results_available --from-beginning
 ```
 
-The `client-sasl.properties` referenced above provides the consumer's SASL
-credentials:
-
-```properties
-security.protocol=SASL_PLAINTEXT
-sasl.mechanism=PLAIN
-sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username="cip" password="carletto";
-```
+`admin-client.properties` (written by `make-local-credentials.sh`) holds the
+broker admin's `SASL_SSL` settings: its SASL credentials, the CA and its client
+certificate.

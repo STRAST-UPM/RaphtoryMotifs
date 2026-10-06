@@ -1,0 +1,3813 @@
+{
+ "pilot": "sl",
+ "nodes": 212,
+ "relationships": 257,
+ "issues_by_severity": {
+  "error": 22,
+  "warning": 99,
+  "info": 22
+ },
+ "issues_by_check": {
+  "warning: bool_text_yes_no": 56,
+  "warning: number_text_decimal_comma": 40,
+  "info: attribute_missing": 21,
+  "error: id_shared_across_entities": 8,
+  "error: missing_required_attribute": 8,
+  "error: bool_unrecognized": 2,
+  "error: tender_without_winning_bid": 2,
+  "warning: property_not_in_data_model": 2,
+  "error: id_placeholder": 1,
+  "error: winning_bid_not_among_tender_bids": 1,
+  "warning: id_built_from_missing_value": 1,
+  "info: relationship_absent": 1
+ },
+ "structure": {
+  "bids_with_one_organization": 64,
+  "bids_with_one_tender": 64,
+  "tenders_with_one_public_entity": 40,
+  "tenders_with_exactly_one_winner": 38
+ },
+ "labels_not_in_data_model": {},
+ "entities": {
+  "Tender": {
+   "count": 40,
+   "labels_seen": {
+    "tender": 40
+   },
+   "attributes": {
+    "id_tender": {
+     "kind": "id",
+     "required": true,
+     "present": 40,
+     "missing": 0,
+     "formats": {
+      "text": 40
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "EN_N_101_2025",
+       "EN_N_103_2025",
+       "EN_N_106_2025"
+      ]
+     },
+     "distinct_values": 40,
+     "values": [
+      {
+       "value": "EN_N_101_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_103_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_106_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_108_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_112_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_113_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_116_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_118_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_119_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_123_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_124_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_129_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_12_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_132_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_133_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_134_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_13_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_15_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_16_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_18_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "ID_Tender": 40
+     }
+    },
+    "starting_price": {
+     "kind": "number",
+     "required": false,
+     "present": 0,
+     "missing": 40,
+     "formats": {},
+     "format_status": {},
+     "examples": {},
+     "distinct_values": 0,
+     "values": [],
+     "spellings": {}
+    },
+    "awarded_price": {
+     "kind": "number",
+     "required": false,
+     "present": 40,
+     "missing": 0,
+     "formats": {
+      "text_decimal_comma": 40
+     },
+     "format_status": {
+      "text_decimal_comma": "warning"
+     },
+     "examples": {
+      "text_decimal_comma": [
+       "0,0",
+       "3316,88",
+       "24000,0"
+      ]
+     },
+     "distinct_values": 7,
+     "values": [
+      {
+       "value": "0,0",
+       "type": "str",
+       "count": 34,
+       "format": "text_decimal_comma",
+       "status": "warning"
+      },
+      {
+       "value": "3316,88",
+       "type": "str",
+       "count": 1,
+       "format": "text_decimal_comma",
+       "status": "warning"
+      },
+      {
+       "value": "24000,0",
+       "type": "str",
+       "count": 1,
+       "format": "text_decimal_comma",
+       "status": "warning"
+      },
+      {
+       "value": "28627,2",
+       "type": "str",
+       "count": 1,
+       "format": "text_decimal_comma",
+       "status": "warning"
+      },
+      {
+       "value": "26348,4",
+       "type": "str",
+       "count": 1,
+       "format": "text_decimal_comma",
+       "status": "warning"
+      },
+      {
+       "value": "571,13",
+       "type": "str",
+       "count": 1,
+       "format": "text_decimal_comma",
+       "status": "warning"
+      },
+      {
+       "value": "28892,0",
+       "type": "str",
+       "count": 1,
+       "format": "text_decimal_comma",
+       "status": "warning"
+      }
+     ],
+     "spellings": {
+      "Awarded_Price": 40
+     }
+    },
+    "winning_bid": {
+     "kind": "ref",
+     "required": false,
+     "present": 39,
+     "missing": 1,
+     "formats": {
+      "text": 39
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "P25-10256 ZA EN_N_101_2025",
+       "5d0806d0-08a8-4096-ad85-3e37c607e42b",
+       "bcf91f9d-268d-4045-b8bf-93b1471d6523"
+      ]
+     },
+     "distinct_values": 39,
+     "values": [
+      {
+       "value": "P25-10256 ZA EN_N_101_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "5d0806d0-08a8-4096-ad85-3e37c607e42b",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bcf91f9d-268d-4045-b8bf-93b1471d6523",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Ponudba : EN_N_108_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "MANTA_GROUP_BID",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "PP25-0940-2",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "290-317657",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "288e61bd-8369-4015-abb6-4a669cbb52fa",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "df69e4cc-f4a5-4935-b800-f7619b76c84f",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "707f2ab1-cf0a-422b-80c3-8cb7cb68f2cc",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Ponudba 25-019-000702",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "016bba53-325f-4230-b596-09ca7531eb8e",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "9a3e6f85-0be8-47c9-970f-edc78790d1b4",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_133_2025 S",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "61a58a05-2877-44e4-a205-6b142dea87df",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "81616366-1258-4da0-9892-34bf2cd54d5e",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "P2505-25-003-SB-CE-SPP simulacija",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "S0/2025/01222",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "S0/2025/01294",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "290-300180",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Winning_Bid": 39
+     }
+    },
+    "type": {
+     "kind": "text",
+     "required": false,
+     "present": 40,
+     "missing": 0,
+     "formats": {
+      "text": 40
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "SERVICE",
+       "GOOD"
+      ]
+     },
+     "distinct_values": 2,
+     "values": [
+      {
+       "value": "SERVICE",
+       "type": "str",
+       "count": 24,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "GOOD",
+       "type": "str",
+       "count": 16,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Type": 40
+     }
+    },
+    "responsible_signee_name": {
+     "kind": "text",
+     "required": false,
+     "present": 40,
+     "missing": 0,
+     "formats": {
+      "text": 40
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "8a77d190f5",
+       "422f55246d",
+       "4b68ad3c65"
+      ]
+     },
+     "distinct_values": 9,
+     "values": [
+      {
+       "value": "8a77d190f5",
+       "type": "str",
+       "count": 13,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "422f55246d",
+       "type": "str",
+       "count": 12,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "4f5753c6e3",
+       "type": "str",
+       "count": 5,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "4b68ad3c65",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "a64c9d6d96",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "69f48c9b0d",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "2752a51833",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "6338a93ff9",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "6fdc284ebc",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Responsible_Signee_Name": 40
+     }
+    },
+    "description": {
+     "kind": "text",
+     "required": false,
+     "present": 40,
+     "missing": 0,
+     "formats": {
+      "text": 40
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "B21 modul za lecece zdravnike",
+       "KONFLIKTI IN NESOGLASJA KOT PRILOZNOST ZA RAST",
+       "RFID znacke za tekstil\nNamenjene so oznacevanju bolnisnicnega perila in delovnih oblacil."
+      ]
+     },
+     "distinct_values": 38,
+     "values": [
+      {
+       "value": "RFID znacke za tekstil\nNamenjene so oznacevanju bolnisnicnega perila in delovnih oblacil.",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B21 modul za lecece zdravnike",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "KONFLIKTI IN NESOGLASJA KOT PRILOZNOST ZA RAST",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Zamenjava filca na likalnem stroju Kannegiesser HLM 9-33-3 z vkljucenim potrosnim materialom",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Odprava pomanjkljivosti na UPS napravah",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Merilnik temperature in vlage za v EX prostor s pripadajoco bariero in kalibracijo (Referencni model: T3110Ex) 3 kpl.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Komplet material za izdelavo predelnih sten: profili, mavcne plosce in ostali drobni potrosni material. (popis v obr. predracuna)",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Narocnik vabi ponudnike k oddaji ponudbe za izvedbo storitve kontrole pristopa za 6 lokacij v bolnisnici navedenih v prilogi.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Izvedbo 2-dnevne delavnice, na katerem bodo udelezenci pridobili potrebne vecine za vodenje in sicer: Razlikovanje elementov skupine in tima Glavni elementi tima (mi, skupen cilj in sinergija) Timske vloge in oblikovanje tima Vodenje tima/skupine Faze razvoja tima.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Dobava in montaza vodomerov za sanitarno vodo, daljinsko odcitavanje",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "PALICNI MESALNIK ROBOT COUPE MP 550 ULTRA",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Podopolagalska vzdrzevalna dela 2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Nakup dodatnih licenc html5 RDP za potrebe oddaljenega dostopa do lokalnega omrezja SB Celje. Predmet povprasevanja je licenca PS-HTML5-RDP-CU-S- Advanced HTML5 RDP Subscription Gold Direct.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Staticna presoja trakta C3 v Splosni bolnisnici Celje za nadzidavo dveh etaz nad obstojecim traktom C3 centralnega bolniskega objekta",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Izobrazevanje mehkih vescin",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Servis klimatskih naprav 2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "PREDMET EN: Podaljsanje licenc za SPP simulacije",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "TELEVIZOR 2 kom. (referencni model: PHILIPS 55PUS8319/12)",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "INDUKCIJSKA KUHALNA PLOSCA 2 kom.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "TELEVIZOR IN NOSILEC",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Description": 40
+     }
+    },
+    "required_amount": {
+     "kind": "number",
+     "required": false,
+     "present": 31,
+     "missing": 9,
+     "formats": {
+      "number": 31
+     },
+     "format_status": {
+      "number": "ok"
+     },
+     "examples": {
+      "number": [
+       1.0,
+       2000.0,
+       0.0
+      ]
+     },
+     "distinct_values": 8,
+     "values": [
+      {
+       "value": 0.0,
+       "type": "float",
+       "count": 12,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 1.0,
+       "type": "float",
+       "count": 10,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 2.0,
+       "type": "float",
+       "count": 3,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 2000.0,
+       "type": "float",
+       "count": 2,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 12000.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 3.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 10.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 38.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Required_Amount": 31
+     }
+    },
+    "time_creation": {
+     "kind": "datetime",
+     "required": false,
+     "present": 5,
+     "missing": 35,
+     "formats": {
+      "iso_date": 5
+     },
+     "format_status": {
+      "iso_date": "ok"
+     },
+     "examples": {
+      "iso_date": [
+       "2025-06-11",
+       "2025-01-17",
+       "2025-01-06"
+      ]
+     },
+     "distinct_values": 5,
+     "values": [
+      {
+       "value": "2025-06-11",
+       "type": "str",
+       "count": 1,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2025-01-17",
+       "type": "str",
+       "count": 1,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2025-01-06",
+       "type": "str",
+       "count": 1,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2025-03-14",
+       "type": "str",
+       "count": 1,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2025-02-21",
+       "type": "str",
+       "count": 1,
+       "format": "iso_date",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Time_Creation": 5
+     }
+    },
+    "time_publication": {
+     "kind": "datetime",
+     "required": false,
+     "present": 0,
+     "missing": 40,
+     "formats": {},
+     "format_status": {},
+     "examples": {},
+     "distinct_values": 0,
+     "values": [],
+     "spellings": {}
+    },
+    "time_open": {
+     "kind": "datetime",
+     "required": false,
+     "present": 0,
+     "missing": 40,
+     "formats": {},
+     "format_status": {},
+     "examples": {},
+     "distinct_values": 0,
+     "values": [],
+     "spellings": {}
+    },
+    "time_deadline": {
+     "kind": "datetime",
+     "required": false,
+     "present": 35,
+     "missing": 5,
+     "formats": {
+      "iso_datetime": 35
+     },
+     "format_status": {
+      "iso_datetime": "ok"
+     },
+     "examples": {
+      "iso_datetime": [
+       "2025-05-06T12:00:00",
+       "2025-05-09T12:00:00",
+       "2025-05-07T12:00:00"
+      ]
+     },
+     "distinct_values": 27,
+     "values": [
+      {
+       "value": "2025-01-22T12:00:00",
+       "type": "str",
+       "count": 3,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-05-07T12:00:00",
+       "type": "str",
+       "count": 2,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-06-06T12:00:00",
+       "type": "str",
+       "count": 2,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-01-21T12:00:00",
+       "type": "str",
+       "count": 2,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-02-18T12:00:00",
+       "type": "str",
+       "count": 2,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-02-27T12:00:00",
+       "type": "str",
+       "count": 2,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-02-28T12:00:00",
+       "type": "str",
+       "count": 2,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-05-06T12:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-05-09T12:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-05-20T12:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-05-15T12:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-05-21T12:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-03-21T12:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-05-26T12:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-06-12T12:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-06-18T12:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-06-16T12:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-01-08T12:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-01-31T12:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-02-12T12:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Time_Deadline": 35
+     }
+    },
+    "time_awarded": {
+     "kind": "datetime",
+     "required": false,
+     "present": 0,
+     "missing": 40,
+     "formats": {},
+     "format_status": {},
+     "examples": {},
+     "distinct_values": 0,
+     "values": [],
+     "spellings": {}
+    },
+    "time_executed": {
+     "kind": "datetime",
+     "required": false,
+     "present": 0,
+     "missing": 40,
+     "formats": {},
+     "format_status": {},
+     "examples": {},
+     "distinct_values": 0,
+     "values": [],
+     "spellings": {}
+    },
+    "time_closed": {
+     "kind": "datetime",
+     "required": false,
+     "present": 0,
+     "missing": 40,
+     "formats": {},
+     "format_status": {},
+     "examples": {},
+     "distinct_values": 0,
+     "values": [],
+     "spellings": {}
+    }
+   },
+   "properties_not_in_data_model": {
+    "Source_File": 40
+   },
+   "loader_properties": {
+    "type": 40,
+    "id": 40,
+    "title": 40,
+    "color": 40,
+    "name": 40
+   }
+  },
+  "PublicEntity": {
+   "count": 1,
+   "labels_seen": {
+    "public_entity": 1
+   },
+   "attributes": {
+    "id_public_entity": {
+     "kind": "id",
+     "required": true,
+     "present": 1,
+     "missing": 0,
+     "formats": {
+      "text": 1
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "190b8e9d-c647-4412-a0b2-78f20d817a3d"
+      ]
+     },
+     "distinct_values": 1,
+     "values": [
+      {
+       "value": "190b8e9d-c647-4412-a0b2-78f20d817a3d",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "ID_Public_Entity": 1
+     }
+    },
+    "name": {
+     "kind": "text",
+     "required": false,
+     "present": 1,
+     "missing": 0,
+     "formats": {
+      "text": 1
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "Javni zavod Splosna bolnisnica Celje"
+      ]
+     },
+     "distinct_values": 1,
+     "values": [
+      {
+       "value": "Javni zavod Splosna bolnisnica Celje",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Name": 1
+     }
+    },
+    "location": {
+     "kind": "text",
+     "required": false,
+     "present": 1,
+     "missing": 0,
+     "formats": {
+      "text": 1
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "Oblakova ulica 5, 3000 Celje"
+      ]
+     },
+     "distinct_values": 1,
+     "values": [
+      {
+       "value": "Oblakova ulica 5, 3000 Celje",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Location": 1
+     }
+    },
+    "department": {
+     "kind": "text",
+     "required": false,
+     "present": 1,
+     "missing": 0,
+     "formats": {
+      "text": 1
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "Vodja sluzbe za informatiko"
+      ]
+     },
+     "distinct_values": 1,
+     "values": [
+      {
+       "value": "Vodja sluzbe za informatiko",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Department": 1
+     }
+    }
+   },
+   "properties_not_in_data_model": {},
+   "loader_properties": {
+    "id": 1,
+    "title": 1,
+    "color": 1,
+    "name": 1,
+    "type": 1
+   }
+  },
+  "Item": {
+   "count": 40,
+   "labels_seen": {
+    "item": 40
+   },
+   "attributes": {
+    "id_good_service": {
+     "kind": "id",
+     "required": true,
+     "present": 40,
+     "missing": 0,
+     "formats": {
+      "text": 39,
+      "built_from_missing_value": 1
+     },
+     "format_status": {
+      "text": "ok",
+      "built_from_missing_value": "warning"
+     },
+     "examples": {
+      "text": [
+       "B21 modul za lecece zdravnike_P25-10256 ZA EN_N_101_2025",
+       "1_5d0806d0-08a8-4096-ad85-3e37c607e42b",
+       "7cb2af73-87d5-4db6-ace8-b0344644965f_bcf91f9d-268d-4045-b8bf-93b1471d6523"
+      ],
+      "built_from_missing_value": [
+       "79f61c33-c539-4ce2-893a-0a91f076b6d8_nan"
+      ]
+     },
+     "distinct_values": 40,
+     "values": [
+      {
+       "value": "B21 modul za lecece zdravnike_P25-10256 ZA EN_N_101_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "1_5d0806d0-08a8-4096-ad85-3e37c607e42b",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "7cb2af73-87d5-4db6-ace8-b0344644965f_bcf91f9d-268d-4045-b8bf-93b1471d6523",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "01e07987-f654-434a-b91b-83a03bf94551_Ponudba : EN_N_108_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "79f61c33-c539-4ce2-893a-0a91f076b6d8_nan",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "15e47d69-3497-43b7-b348-264211a4ebb1_MANTA_GROUP_BID",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "5b63ae5d-f2fb-4b6c-b78a-a8d31c4f5519_PP25-0940-2",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "aa684d26-a7ef-454c-8316-e0f855a85d2a_290-317657",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "aa88a004-4360-40b2-99a1-e3558ce55fc1_288e61bd-8369-4015-abb6-4a669cbb52fa",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "0b770663-4735-440d-a310-68deb8510357_df69e4cc-f4a5-4935-b800-f7619b76c84f",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "9c932bbf-afac-4c1b-97a6-e7cac840dfb9_707f2ab1-cf0a-422b-80c3-8cb7cb68f2cc",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "a00c42f0-157a-47a0-8197-4a4350a37c91_Ponudba 25-019-000702",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "33eeea3a-63c9-4900-b1c6-9196d406257b_016bba53-325f-4230-b596-09ca7531eb8e",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "ebfaf4e3-273a-4e38-80d0-0427feed825f_9a3e6f85-0be8-47c9-970f-edc78790d1b4",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "fbbd16b0-0995-4d69-aad3-93126d6090f5_EN_N_133_2025 S",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "af07cea4-2f30-4692-b722-f95d18b3fcc9_61a58a05-2877-44e4-a205-6b142dea87df",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "4cdb0893-d791-4682-9c67-499c3e319b09_81616366-1258-4da0-9892-34bf2cd54d5e",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "49d34627-fee1-4280-a7c2-880e541691f9_P2505-25-003-SB-CE-SPP simulacija",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "578da84b-7689-4870-ae0b-fbb2b260fdfd_S0/2025/01222",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "272a177d-1580-41be-9386-75779c55d845_S0/2025/01294",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "ID_Good_Service": 40
+     }
+    },
+    "name": {
+     "kind": "text",
+     "required": false,
+     "present": 40,
+     "missing": 0,
+     "formats": {
+      "text": 40
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "Birpis21 modul za lecece zdravnike",
+       "Storitev Â»KONFLIKTI IN NESOGLASJA KOT PRILOZNOST ZA RASTÂ«",
+       "RFID znacke za tekstil"
+      ]
+     },
+     "distinct_values": 36,
+     "values": [
+      {
+       "value": "RFID znacke za tekstil",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Storitev Â»Izobrazevanje mehkih vescinÂ«",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "TELEVIZOR",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Birpis21 modul za lecece zdravnike",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Storitev Â»KONFLIKTI IN NESOGLASJA KOT PRILOZNOST ZA RASTÂ«",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Filc 50% Polyester/50% Aramid",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Operacijske OP1,OP2,OP3. Zamenjava akumulatorjev na UPS napravi. Zamenjava ventilatorjev + AC in DC kondenzatorjev.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Merilnik temperature in vlage za v EX prostor s pripadajoco bariero in kalibracijo",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Profil UW za predelne stene 75/4000",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Krmilna enota VT-500.2",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Dobava in montaza stevca za sanitarno vodo + material GINEKOLOSKI ODDELEK DN 50 2 coli",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "PALICNI MESALNIK ROBOT COUPE MP 550 ULTRA",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Struganje in 3x lakiranje obstojecega parketa s poliuretanskim polsijajnim lakom visoke kvalitete, vkljucno z odstranitvijo obstojecih letev in dobavo ter namestitvijo novih - klasicnih trikotnih letev",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Licenca PS-HTML5-RDP-CU-S- Advanced HTML5 RDP Subscription Gold Direct",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Dokumentacija iz tocke 3. Obseg narocila",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Redno letno servisiranje split klimatskih naprav (ciscenje filtrov in ventilatorja notranje in zunanje enote + kemicno ciscenje zunanje enote)",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "1-letna narocnina za 3 licence SPP simulacije",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "INDUKCIJSKA KUHALNA PLOSCA",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "VGRADNI POMIVALNI STROJ",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Najem e-mail zascite za 2.130 uporabnikov",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Name": 40
+     }
+    },
+    "measurement_unit": {
+     "kind": "text",
+     "required": false,
+     "present": 40,
+     "missing": 0,
+     "formats": {
+      "text": 40
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "sto",
+       "kos",
+       "kom"
+      ]
+     },
+     "distinct_values": 12,
+     "values": [
+      {
+       "value": "kom",
+       "type": "str",
+       "count": 20,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "kpl",
+       "type": "str",
+       "count": 5,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "kos",
+       "type": "str",
+       "count": 4,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "sto",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Kom",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "KOS",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "m2",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "kol",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "kom.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "mes",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "ur",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "pavsal",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Measurement_Unit": 40
+     }
+    },
+    "price_w_taxes": {
+     "kind": "number",
+     "required": false,
+     "present": 25,
+     "missing": 15,
+     "formats": {
+      "number": 25
+     },
+     "format_status": {
+      "number": "ok"
+     },
+     "examples": {
+      "number": [
+       0.0,
+       4046.59,
+       30450.0
+      ]
+     },
+     "distinct_values": 5,
+     "values": [
+      {
+       "value": 0.0,
+       "type": "float",
+       "count": 21,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 4046.59,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 30450.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 571.13,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 28892.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Price_W_Taxes": 25
+     }
+    },
+    "price_wo_taxes": {
+     "kind": "number",
+     "required": false,
+     "present": 25,
+     "missing": 15,
+     "formats": {
+      "number": 25
+     },
+     "format_status": {
+      "number": "ok"
+     },
+     "examples": {
+      "number": [
+       0.0,
+       6000.0,
+       3316.88
+      ]
+     },
+     "distinct_values": 6,
+     "values": [
+      {
+       "value": 0.0,
+       "type": "float",
+       "count": 20,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 6000.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 3316.88,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 20000.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 35017.5,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 28892.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Price_Wo_Taxes": 25
+     }
+    },
+    "type": {
+     "kind": "text",
+     "required": false,
+     "present": 40,
+     "missing": 0,
+     "formats": {
+      "text": 40
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "Service",
+       "Good",
+       "SERVICE"
+      ]
+     },
+     "distinct_values": 3,
+     "values": [
+      {
+       "value": "Good",
+       "type": "str",
+       "count": 20,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Service",
+       "type": "str",
+       "count": 19,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "SERVICE",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Type": 40
+     }
+    }
+   },
+   "properties_not_in_data_model": {},
+   "loader_properties": {
+    "id": 40,
+    "title": 40,
+    "color": 40,
+    "name": 40,
+    "type": 40
+   }
+  },
+  "Bid": {
+   "count": 64,
+   "labels_seen": {
+    "bid": 64
+   },
+   "attributes": {
+    "id_bid": {
+     "kind": "id",
+     "required": true,
+     "present": 63,
+     "missing": 1,
+     "formats": {
+      "text": 62,
+      "placeholder": 1
+     },
+     "format_status": {
+      "placeholder": "error",
+      "text": "ok"
+     },
+     "examples": {
+      "placeholder": [
+       "[HANDWRITTEN]"
+      ],
+      "text": [
+       "P25-10256 ZA EN_N_101_2025",
+       "5d0806d0-08a8-4096-ad85-3e37c607e42b",
+       "bcf91f9d-268d-4045-b8bf-93b1471d6523"
+      ]
+     },
+     "distinct_values": 63,
+     "values": [
+      {
+       "value": "[HANDWRITTEN]",
+       "type": "str",
+       "count": 1,
+       "format": "placeholder",
+       "status": "error"
+      },
+      {
+       "value": "P25-10256 ZA EN_N_101_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "5d0806d0-08a8-4096-ad85-3e37c607e42b",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bcf91f9d-268d-4045-b8bf-93b1471d6523",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "2025-10",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Ponudba : EN_N_108_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "EN_N_112_2025",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "2025-21",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "PP25-0940-2",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "1",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "290-317657",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "086b5856-7c35-4709-af9a-27b4d739bd61",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "288e61bd-8369-4015-abb6-4a669cbb52fa",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "df69e4cc-f4a5-4935-b800-f7619b76c84f",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "8f4628a0-bda0-413a-9d12-ef4a0fe7593f",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "2",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "61a58a05-2877-44e4-a205-6b142dea87df",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "707f2ab1-cf0a-422b-80c3-8cb7cb68f2cc",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Ponudba 25-019-000702",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "dcd145a8-54b3-4522-864a-8e3e7a496418",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "ID_Bid": 63
+     }
+    },
+    "time_submission": {
+     "kind": "datetime",
+     "required": false,
+     "present": 48,
+     "missing": 16,
+     "formats": {
+      "iso_datetime": 48
+     },
+     "format_status": {
+      "iso_datetime": "ok"
+     },
+     "examples": {
+      "iso_datetime": [
+       "2025-05-09T06:04:01",
+       "2025-05-06T16:22:00",
+       "2025-02-14T08:00:00"
+      ]
+     },
+     "distinct_values": 38,
+     "values": [
+      {
+       "value": "2025-02-27T00:00:00",
+       "type": "str",
+       "count": 4,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-05-26T00:00:00",
+       "type": "str",
+       "count": 3,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-02-18T00:00:00",
+       "type": "str",
+       "count": 3,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-06-06T12:00:00",
+       "type": "str",
+       "count": 2,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-01-21T00:00:00",
+       "type": "str",
+       "count": 2,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-02-14T00:00:00",
+       "type": "str",
+       "count": 2,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-05-09T06:04:01",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-05-06T16:22:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-02-14T08:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-05-07T09:43:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-05-14T00:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-05-15T08:10:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-05-22T07:22:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-06-16T09:06:31",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-05-28T00:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-06-06T07:57:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-06-17T00:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-12-22T12:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-01-22T00:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      },
+      {
+       "value": "2025-01-11T00:00:00",
+       "type": "str",
+       "count": 1,
+       "format": "iso_datetime",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Time_Submission": 48
+     }
+    },
+    "amount": {
+     "kind": "number",
+     "required": false,
+     "present": 34,
+     "missing": 30,
+     "formats": {
+      "number": 34
+     },
+     "format_status": {
+      "number": "ok"
+     },
+     "examples": {
+      "number": [
+       1.0,
+       2000.0,
+       0.0
+      ]
+     },
+     "distinct_values": 10,
+     "values": [
+      {
+       "value": 1.0,
+       "type": "float",
+       "count": 16,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 2.0,
+       "type": "float",
+       "count": 5,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 3.0,
+       "type": "float",
+       "count": 4,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 2000.0,
+       "type": "float",
+       "count": 2,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 12.0,
+       "type": "float",
+       "count": 2,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 0.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 12000.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 10.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 1150.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 6.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Amount": 34
+     }
+    },
+    "responsible_signee_name": {
+     "kind": "text",
+     "required": false,
+     "present": 55,
+     "missing": 9,
+     "formats": {
+      "text": 55
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "d1b9d0b30d",
+       "e4e396c949",
+       "a743fc1da8"
+      ]
+     },
+     "distinct_values": 44,
+     "values": [
+      {
+       "value": "bf7723f776",
+       "type": "str",
+       "count": 6,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "5b5b3acbbb",
+       "type": "str",
+       "count": 4,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "422f55246d",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "a871cc73c5",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "c466028b9e",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "d1b9d0b30d",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "e4e396c949",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "a743fc1da8",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "b7a194278c",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "a2b4f21ca4",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "6fa75b2154",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "c0994411d2",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "2df05ad8e7",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "5f3bbe259f",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "446fa0e490",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "1e8cc4e587",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "058b48872f",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "4173909623",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "5b2885c9d2",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "98dad5706f",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Responsible_Signee_Name": 55
+     }
+    },
+    "successful_bid": {
+     "kind": "bool",
+     "required": true,
+     "present": 58,
+     "missing": 6,
+     "formats": {
+      "text_yes_no": 56,
+      "unrecognized": 2
+     },
+     "format_status": {
+      "unrecognized": "error",
+      "text_yes_no": "warning"
+     },
+     "examples": {
+      "unrecognized": [
+       "[HANDWRITTEN]",
+       "1 ponudba v skupni vrednosti 3.371,10 EUR z DDV"
+      ],
+      "text_yes_no": [
+       "Yes",
+       "No",
+       "YES"
+      ]
+     },
+     "distinct_values": 6,
+     "values": [
+      {
+       "value": "Yes",
+       "type": "str",
+       "count": 33,
+       "format": "text_yes_no",
+       "status": "warning"
+      },
+      {
+       "value": "No",
+       "type": "str",
+       "count": 16,
+       "format": "text_yes_no",
+       "status": "warning"
+      },
+      {
+       "value": "YES",
+       "type": "str",
+       "count": 5,
+       "format": "text_yes_no",
+       "status": "warning"
+      },
+      {
+       "value": "NO",
+       "type": "str",
+       "count": 2,
+       "format": "text_yes_no",
+       "status": "warning"
+      },
+      {
+       "value": "[HANDWRITTEN]",
+       "type": "str",
+       "count": 1,
+       "format": "unrecognized",
+       "status": "error"
+      },
+      {
+       "value": "1 ponudba v skupni vrednosti 3.371,10 EUR z DDV",
+       "type": "str",
+       "count": 1,
+       "format": "unrecognized",
+       "status": "error"
+      }
+     ],
+     "spellings": {
+      "Successful_Bid": 58
+     }
+    },
+    "contract_price": {
+     "kind": "number",
+     "required": false,
+     "present": 59,
+     "missing": 5,
+     "formats": {
+      "number": 59
+     },
+     "format_status": {
+      "number": "ok"
+     },
+     "examples": {
+      "number": [
+       0.0,
+       1244.4,
+       5768.79
+      ]
+     },
+     "distinct_values": 57,
+     "values": [
+      {
+       "value": 1244.4,
+       "type": "float",
+       "count": 2,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 7076.0,
+       "type": "float",
+       "count": 2,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 0.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 5768.79,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 21947.8,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 7173.6,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 3327.31,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 3371.1,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 1312.28,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 11680.84,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 11451.42,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 3847.88,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 10431.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 6878.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 854.54,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 41624.45,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 32990.26,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 4046.59,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 29280.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      },
+      {
+       "value": 47214.0,
+       "type": "float",
+       "count": 1,
+       "format": "number",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Contract_Price": 59
+     }
+    }
+   },
+   "properties_not_in_data_model": {
+    "Source_File": 64
+   },
+   "loader_properties": {
+    "id": 64,
+    "title": 64,
+    "color": 64,
+    "name": 64,
+    "type": 64
+   }
+  },
+  "Organization": {
+   "count": 58,
+   "labels_seen": {
+    "organization": 58
+   },
+   "attributes": {
+    "id_organization": {
+     "kind": "id",
+     "required": true,
+     "present": 57,
+     "missing": 1,
+     "formats": {
+      "text": 57
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "8efbb3da-73eb-4a1e-bcc2-ba199cdd0b25",
+       "SI82345104",
+       "SI92035230"
+      ]
+     },
+     "distinct_values": 57,
+     "values": [
+      {
+       "value": "8efbb3da-73eb-4a1e-bcc2-ba199cdd0b25",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "SI82345104",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "SI92035230",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "SI94196125",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "SI42119022",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "SI62818686",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "S194196125",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "SI41479220",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "5bb214cb-fe22-4006-aaf3-3550a119df65",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "SI76138437",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "cf964c59-6884-450a-9335-182e5bfdc2bf",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "d7f36950-831e-4807-804f-553e7cdd4631",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "SI72146940",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "SI72374098",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "5318823",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "5314976000",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "8463263000",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "SI82796998",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "5733367000",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "179549000",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "ID_Organization": 57
+     }
+    },
+    "name": {
+     "kind": "text",
+     "required": false,
+     "present": 51,
+     "missing": 7,
+     "formats": {
+      "text": 51
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "Ekipa SRC Infonet d.o.o.",
+       "Konflikti in nesoglasja kot priloznost za rast",
+       "Manta GROUP d.o.o."
+      ]
+     },
+     "distinct_values": 49,
+     "values": [
+      {
+       "value": "Manta GROUP d.o.o.",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "ALIANSA d.o.o.",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Ekipa SRC Infonet d.o.o.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Konflikti in nesoglasja kot priloznost za rast",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "KANPRO d.o.o.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "MIDES INTERNATIONAL INZENIRING SISTEMOV ZA NEPREKINJENO NAPAJANJE D.O.O.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "ELPRO Lepenik & Co. d.o.o.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "ELPRO d.o.o.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "MERKUR TRGOVINA, D.O.O.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "CETRTA POT d.o.o",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "SOFRAN D.O.O.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "SIQ LJUBLJANA",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "ZDRAVI INDIVIDUUM, USPOSABLJANJA SOCIALNIH VESCIN IN SVETOVANJE, SIMON TURK S.P.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Efad Skejic s.p",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "ALPEKS d.o.o.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "KEMOPLAST",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "S Talne obloge Saso Potocnik s.p.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "SMART COM d.o.o. informacijski in komunikacijski",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "A Consulting d.o.o.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "GRADBENI INSTITUT ZRMK d. o. o.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Name": 51
+     }
+    },
+    "location": {
+     "kind": "text",
+     "required": false,
+     "present": 53,
+     "missing": 5,
+     "formats": {
+      "text": 53
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "Cesta na Okroglo 7, 4202 Kranj",
+       "Sinja Gorica 84b, 1360 Vrhnika",
+       "Ljubljanska cesta 14, 3000 Celje, Slovenija"
+      ]
+     },
+     "distinct_values": 50,
+     "values": [
+      {
+       "value": "4202 NAKLO, CESTA NA OKROGLO 7, SLOVENIJA",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Gotovlje 31, 3310 Zalec, Slovenija",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Cesta na Okroglo 7, 4202 Naklo, Slovenija",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Cesta na Okroglo 7, 4202 Kranj",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Sinja Gorica 84b, 1360 Vrhnika",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Ljubljanska cesta 14, 3000 Celje, Slovenija",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Trzaska cesta 43, 2000 Maribor, SLOVENIJA",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Kapiteljska ulica 9, 1000 Ljubljana",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Ljubljanska cesta 14, SI-3000 Celje, Slovenia",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Ob gozdu 7c, Rogoza, 2204 Miklavz na Dravskem polju",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Oblakova ulica 5, 3000 Celje",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "CESTA NA OKROGLO 7, SLOVENIJA",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Planina 3, 4000 Kranj",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "KOCENOVA 2, 3000 CELJE",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Masera - Spasiceva ulica 10, 1000 Ljubljana",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Godic 68 E, 1242 Stahovica",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Valvasorjeva ulica 12, 3000 Celje",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Kidriceva ulica 5, Celje",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Drofenikova 7, 3230 Sentjur",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Ulica talcev 1, 3310 zalec",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Location": 53
+     }
+    },
+    "responsible_person_name": {
+     "kind": "text",
+     "required": false,
+     "present": 47,
+     "missing": 11,
+     "formats": {
+      "text": 47
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "e4e396c949",
+       "a743fc1da8",
+       "a2b4f21ca4"
+      ]
+     },
+     "distinct_values": 42,
+     "values": [
+      {
+       "value": "bf7723f776",
+       "type": "str",
+       "count": 5,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "1a97b19cc4",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "e4e396c949",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "a743fc1da8",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "a2b4f21ca4",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "6fa75b2154",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "422f55246d",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "c0994411d2",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "d6c1a259ed",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "2df05ad8e7",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "5f3bbe259f",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "1e8cc4e587",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "a871cc73c5",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "058b48872f",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "4173909623",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "5b2885c9d2",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "98dad5706f",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "8aa2ca9219",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "f52a568f87",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "3a5050a48b",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Responsible_Person_Name": 47
+     }
+    },
+    "type": {
+     "kind": "text",
+     "required": false,
+     "present": 27,
+     "missing": 31,
+     "formats": {
+      "text": 27
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "d.o.o.",
+       "D.O.O.",
+       "s.p"
+      ]
+     },
+     "distinct_values": 12,
+     "values": [
+      {
+       "value": "d.o.o.",
+       "type": "str",
+       "count": 15,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "D.O.O.",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "s.p",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "trgovsko podjetje, d. o. o.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "TRGOVSKO IN PROIZVODNO",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "d. o. o.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "O.O.O.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Aliansa d.o.o.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "MERKUR trgovina, d.o.o.",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "trgovina, d.o.o",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "gospodarski subjekt",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Ponudnik",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Type": 27
+     }
+    }
+   },
+   "properties_not_in_data_model": {},
+   "loader_properties": {
+    "id": 58,
+    "title": 58,
+    "color": 58,
+    "name": 58,
+    "type": 58
+   }
+  },
+  "ResponsiblePerson": {
+   "count": 9,
+   "labels_seen": {
+    "responsible_person": 9
+   },
+   "attributes": {
+    "first_name": {
+     "kind": "text",
+     "required": false,
+     "present": 9,
+     "missing": 0,
+     "formats": {
+      "text": 9
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "338a85b4e5",
+       "c3ef02333f",
+       "e368600305"
+      ]
+     },
+     "distinct_values": 9,
+     "values": [
+      {
+       "value": "338a85b4e5",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "c3ef02333f",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "e368600305",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "15084e9e3b",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "2238dd61a1",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "e40304eae5",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "84306c186f",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "807bc05d92",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "3339063981",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "First_Name": 9
+     }
+    },
+    "last_name": {
+     "kind": "text",
+     "required": false,
+     "present": 9,
+     "missing": 0,
+     "formats": {
+      "text": 9
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "ca5413123f",
+       "3ce348485a",
+       "e74d699ade"
+      ]
+     },
+     "distinct_values": 9,
+     "values": [
+      {
+       "value": "ca5413123f",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "3ce348485a",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "e74d699ade",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "3339063981",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bc309eb704",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "9829262ddd",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "e02f55fa0a",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "a1225b8c7b",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "15084e9e3b",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Last_Name": 9
+     }
+    },
+    "time_joined": {
+     "kind": "datetime",
+     "required": false,
+     "present": 0,
+     "missing": 9,
+     "formats": {},
+     "format_status": {},
+     "examples": {},
+     "distinct_values": 0,
+     "values": [],
+     "spellings": {}
+    }
+   },
+   "properties_not_in_data_model": {},
+   "loader_properties": {
+    "id": 9,
+    "title": 9,
+    "color": 9,
+    "name": 9,
+    "type": 9
+   }
+  }
+ },
+ "relationship_types": {
+  "INVITES": {
+   "count": 0,
+   "in_data_model": true,
+   "data_model": "Tender -> Organization",
+   "seen": []
+  },
+  "ISSUED_BY": {
+   "count": 40,
+   "in_data_model": true,
+   "data_model": "Tender -> PublicEntity",
+   "seen": [
+    {
+     "direction": "Tender -> PublicEntity",
+     "status": "as_in_data_model",
+     "count": 40
+    }
+   ]
+  },
+  "ISSUES": {
+   "count": 40,
+   "in_data_model": true,
+   "data_model": "PublicEntity -> Tender",
+   "seen": [
+    {
+     "direction": "PublicEntity -> Tender",
+     "status": "as_in_data_model",
+     "count": 40
+    }
+   ]
+  },
+  "REQUIRES": {
+   "count": 40,
+   "in_data_model": true,
+   "data_model": "Tender -> Item",
+   "seen": [
+    {
+     "direction": "Tender -> Item",
+     "status": "as_in_data_model",
+     "count": 40
+    }
+   ]
+  },
+  "RESPONSIBLE_OF": {
+   "count": 9,
+   "in_data_model": true,
+   "data_model": "ResponsiblePerson -> PublicEntity",
+   "seen": [
+    {
+     "direction": "ResponsiblePerson -> PublicEntity",
+     "status": "as_in_data_model",
+     "count": 9
+    }
+   ]
+  },
+  "SUBMITS": {
+   "count": 64,
+   "in_data_model": true,
+   "data_model": "Organization -> Bid",
+   "seen": [
+    {
+     "direction": "Organization -> Bid",
+     "status": "as_in_data_model",
+     "count": 64
+    }
+   ]
+  },
+  "SUBMITTED_FOR": {
+   "count": 64,
+   "in_data_model": true,
+   "data_model": "Bid -> Tender",
+   "seen": [
+    {
+     "direction": "Bid -> Tender",
+     "status": "as_in_data_model",
+     "count": 64
+    }
+   ]
+  }
+ }
+}

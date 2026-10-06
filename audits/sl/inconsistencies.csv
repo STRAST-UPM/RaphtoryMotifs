@@ -1,0 +1,144 @@
+severity,check,entity,id,field,value,detail,neo4j_id
+error,bool_unrecognized,Bid,1,successful_bid,"1 ponudba v skupni vrednosti 3.371,10 EUR z DDV",data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:843
+error,bool_unrecognized,Bid,[HANDWRITTEN],successful_bid,[HANDWRITTEN],data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:826
+error,id_placeholder,Bid,[HANDWRITTEN],id_bid,[HANDWRITTEN],data model: id,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:826
+error,id_shared_across_entities,Bid,EN_N_112_2025,id_bid,EN_N_112_2025,"also used by ['Tender']: the risk pipeline keys nodes by id, so these nodes are merged",4:252efca0-e5cf-413b-8c2b-a2da51def5eb:837
+error,id_shared_across_entities,Bid,EN_N_37_2025,id_bid,EN_N_37_2025,"also used by ['Tender']: the risk pipeline keys nodes by id, so these nodes are merged",4:252efca0-e5cf-413b-8c2b-a2da51def5eb:914
+error,id_shared_across_entities,Bid,EN_N_41_2025,id_bid,EN_N_41_2025,"also used by ['Tender']: the risk pipeline keys nodes by id, so these nodes are merged",4:252efca0-e5cf-413b-8c2b-a2da51def5eb:922
+error,id_shared_across_entities,Bid,EN_N_44_2025,id_bid,EN_N_44_2025,"also used by ['Tender']: the risk pipeline keys nodes by id, so these nodes are merged",4:252efca0-e5cf-413b-8c2b-a2da51def5eb:926
+error,id_shared_across_entities,Tender,EN_N_112_2025,id_tender,EN_N_112_2025,"also used by ['Bid']: the risk pipeline keys nodes by id, so these nodes are merged",4:252efca0-e5cf-413b-8c2b-a2da51def5eb:754
+error,id_shared_across_entities,Tender,EN_N_37_2025,id_tender,EN_N_37_2025,"also used by ['Bid']: the risk pipeline keys nodes by id, so these nodes are merged",4:252efca0-e5cf-413b-8c2b-a2da51def5eb:796
+error,id_shared_across_entities,Tender,EN_N_41_2025,id_tender,EN_N_41_2025,"also used by ['Bid']: the risk pipeline keys nodes by id, so these nodes are merged",4:252efca0-e5cf-413b-8c2b-a2da51def5eb:804
+error,id_shared_across_entities,Tender,EN_N_44_2025,id_tender,EN_N_44_2025,"also used by ['Bid']: the risk pipeline keys nodes by id, so these nodes are merged",4:252efca0-e5cf-413b-8c2b-a2da51def5eb:808
+error,missing_required_attribute,Bid,2025-21,successful_bid,,,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:839
+error,missing_required_attribute,Bid,5a9a8ea2-5e62-4ec1-8d27-edc0f81a0b38,successful_bid,,,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:883
+error,missing_required_attribute,Bid,6bbcc45c-a64a-490f-a503-c06eac2dbe48,successful_bid,,,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:912
+error,missing_required_attribute,Bid,9cab2b9a-d664-4f65-8d49-cd34cf724956,successful_bid,,,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:879
+error,missing_required_attribute,Bid,EN_N_112_2025,successful_bid,,,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:837
+error,missing_required_attribute,Bid,bid_nan,id_bid,,,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:906
+error,missing_required_attribute,Bid,bid_nan,successful_bid,,,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:906
+error,missing_required_attribute,Organization,org_nan,id_organization,,,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:848
+error,tender_without_winning_bid,Tender,EN_N_112_2025,,"{""EN_N_112_2025"": null}",none of its 1 bids has successful_bid = true,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:754
+error,tender_without_winning_bid,Tender,EN_N_113_2025,,"{""2025-21"": null}",none of its 1 bids has successful_bid = true,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:756
+error,winning_bid_not_among_tender_bids,Tender,EN_N_113_2025,winning_bid,MANTA_GROUP_BID,names no bid in the graph,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:756
+warning,bool_text_yes_no,Bid,002/2025,successful_bid,YES,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:942
+warning,bool_text_yes_no,Bid,016bba53-325f-4230-b596-09ca7531eb8e,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:863
+warning,bool_text_yes_no,Bid,086b5856-7c35-4709-af9a-27b4d739bd61,successful_bid,No,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:847
+warning,bool_text_yes_no,Bid,2,successful_bid,No,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:854
+warning,bool_text_yes_no,Bid,2025-10,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:834
+warning,bool_text_yes_no,Bid,25000075/044,successful_bid,YES,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:910
+warning,bool_text_yes_no,Bid,2501016,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:920
+warning,bool_text_yes_no,Bid,288e61bd-8369-4015-abb6-4a669cbb52fa,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:849
+warning,bool_text_yes_no,Bid,290-300180,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:889
+warning,bool_text_yes_no,Bid,290-302047,successful_bid,No,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:892
+warning,bool_text_yes_no,Bid,290-302050,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:902
+warning,bool_text_yes_no,Bid,290-306999,successful_bid,NO,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:946
+warning,bool_text_yes_no,Bid,290-317657,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:845
+warning,bool_text_yes_no,Bid,3,successful_bid,No,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:871
+warning,bool_text_yes_no,Bid,37f32dac-d2d3-448b-ac65-efe9f08ef877,successful_bid,No,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:900
+warning,bool_text_yes_no,Bid,4,successful_bid,No,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:877
+warning,bool_text_yes_no,Bid,438723,successful_bid,No,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:887
+warning,bool_text_yes_no,Bid,4dd1630e-009c-4326-838c-05e69efc86ae,successful_bid,No,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:875
+warning,bool_text_yes_no,Bid,5d0806d0-08a8-4096-ad85-3e37c607e42b,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:830
+warning,bool_text_yes_no,Bid,61a58a05-2877-44e4-a205-6b142dea87df,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:856
+warning,bool_text_yes_no,Bid,62f874e7-a21a-4757-9c63-727f1400758a,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:934
+warning,bool_text_yes_no,Bid,707f2ab1-cf0a-422b-80c3-8cb7cb68f2cc,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:857
+warning,bool_text_yes_no,Bid,81616366-1258-4da0-9892-34bf2cd54d5e,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:873
+warning,bool_text_yes_no,Bid,8f4628a0-bda0-413a-9d12-ef4a0fe7593f,successful_bid,No,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:853
+warning,bool_text_yes_no,Bid,90556136-3ac3-4a26-9b06-8f7b82f31644,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:908
+warning,bool_text_yes_no,Bid,9a3e6f85-0be8-47c9-970f-edc78790d1b4,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:865
+warning,bool_text_yes_no,Bid,EN_N_133_2025 S,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:867
+warning,bool_text_yes_no,Bid,EN_N_37_2025,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:914
+warning,bool_text_yes_no,Bid,EN_N_38 2025 Zamenjava izrabljenih delov na UPS napravah proizvajalca Socomec,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:916
+warning,bool_text_yes_no,Bid,EN_N_41_2025,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:922
+warning,bool_text_yes_no,Bid,EN_N_44_2025,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:926
+warning,bool_text_yes_no,Bid,P25-0012-0,successful_bid,No,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:898
+warning,bool_text_yes_no,Bid,P25-10256 ZA EN_N_101_2025,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:828
+warning,bool_text_yes_no,Bid,P2505-25-003-SB-CE-SPP simulacija,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:881
+warning,bool_text_yes_no,Bid,PONUDBA 000186/2025,successful_bid,No,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:936
+warning,bool_text_yes_no,Bid,PONUDBENI PREDRACUN st. 267/2025,successful_bid,No,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:869
+warning,bool_text_yes_no,Bid,PP25-0940-2,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:841
+warning,bool_text_yes_no,Bid,Ponudba 25-019-000702,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:859
+warning,bool_text_yes_no,Bid,Ponudba : EN_N_108_2025,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:835
+warning,bool_text_yes_no,Bid,Ponudba DF 15,successful_bid,YES,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:944
+warning,bool_text_yes_no,Bid,Ponudba EN_N_ 49_2025.pdf,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:940
+warning,bool_text_yes_no,Bid,Ponudba st. 008-25,successful_bid,No,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:930
+warning,bool_text_yes_no,Bid,Ponudbeni predracun,successful_bid,YES,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:904
+warning,bool_text_yes_no,Bid,Predracun st. 107/25,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:924
+warning,bool_text_yes_no,Bid,S0/2025/00249,successful_bid,No,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:894
+warning,bool_text_yes_no,Bid,S0/2025/01222,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:885
+warning,bool_text_yes_no,Bid,S0/2025/01294,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:890
+warning,bool_text_yes_no,Bid,S0/2025/01295,successful_bid,No,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:896
+warning,bool_text_yes_no,Bid,S0/2025/04439,successful_bid,YES,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:897
+warning,bool_text_yes_no,Bid,a69258d0-1726-4dc9-b0cf-71acda1273d8,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:928
+warning,bool_text_yes_no,Bid,bb98d3c9-6258-4d01-bc1b-66a03e307b9a,successful_bid,NO,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:918
+warning,bool_text_yes_no,Bid,bcf91f9d-268d-4045-b8bf-93b1471d6523,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:832
+warning,bool_text_yes_no,Bid,cd3617a9-2869-41da-aca6-9f8db6090f2b,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:932
+warning,bool_text_yes_no,Bid,db5e1c98-7648-465e-b358-0257d9d3f725,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:938
+warning,bool_text_yes_no,Bid,dcd145a8-54b3-4522-864a-8e3e7a496418,successful_bid,No,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:861
+warning,bool_text_yes_no,Bid,df69e4cc-f4a5-4935-b800-f7619b76c84f,successful_bid,Yes,data model: bool,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:851
+warning,id_built_from_missing_value,Item,79f61c33-c539-4ce2-893a-0a91f076b6d8_nan,id_good_service,79f61c33-c539-4ce2-893a-0a91f076b6d8_nan,data model: id,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:755
+warning,number_text_decimal_comma,Tender,EN_N_101_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:736
+warning,number_text_decimal_comma,Tender,EN_N_103_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:748
+warning,number_text_decimal_comma,Tender,EN_N_106_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:750
+warning,number_text_decimal_comma,Tender,EN_N_108_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:752
+warning,number_text_decimal_comma,Tender,EN_N_112_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:754
+warning,number_text_decimal_comma,Tender,EN_N_113_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:756
+warning,number_text_decimal_comma,Tender,EN_N_116_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:758
+warning,number_text_decimal_comma,Tender,EN_N_118_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:760
+warning,number_text_decimal_comma,Tender,EN_N_119_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:762
+warning,number_text_decimal_comma,Tender,EN_N_123_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:764
+warning,number_text_decimal_comma,Tender,EN_N_124_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:766
+warning,number_text_decimal_comma,Tender,EN_N_129_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:768
+warning,number_text_decimal_comma,Tender,EN_N_12_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:770
+warning,number_text_decimal_comma,Tender,EN_N_132_2025,awarded_price,"3316,88",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:772
+warning,number_text_decimal_comma,Tender,EN_N_133_2025,awarded_price,"24000,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:774
+warning,number_text_decimal_comma,Tender,EN_N_134_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:776
+warning,number_text_decimal_comma,Tender,EN_N_13_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:778
+warning,number_text_decimal_comma,Tender,EN_N_15_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:780
+warning,number_text_decimal_comma,Tender,EN_N_16_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:782
+warning,number_text_decimal_comma,Tender,EN_N_18_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:784
+warning,number_text_decimal_comma,Tender,EN_N_1_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:786
+warning,number_text_decimal_comma,Tender,EN_N_20_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:788
+warning,number_text_decimal_comma,Tender,EN_N_21_2025,awarded_price,"28627,2",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:790
+warning,number_text_decimal_comma,Tender,EN_N_25_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:792
+warning,number_text_decimal_comma,Tender,EN_N_35_2025,awarded_price,"26348,4",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:794
+warning,number_text_decimal_comma,Tender,EN_N_37_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:796
+warning,number_text_decimal_comma,Tender,EN_N_38_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:798
+warning,number_text_decimal_comma,Tender,EN_N_39_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:800
+warning,number_text_decimal_comma,Tender,EN_N_40_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:802
+warning,number_text_decimal_comma,Tender,EN_N_41_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:804
+warning,number_text_decimal_comma,Tender,EN_N_42_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:806
+warning,number_text_decimal_comma,Tender,EN_N_44_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:808
+warning,number_text_decimal_comma,Tender,EN_N_45_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:810
+warning,number_text_decimal_comma,Tender,EN_N_46_2025,awarded_price,"571,13",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:812
+warning,number_text_decimal_comma,Tender,EN_N_47_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:814
+warning,number_text_decimal_comma,Tender,EN_N_48_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:816
+warning,number_text_decimal_comma,Tender,EN_N_49_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:818
+warning,number_text_decimal_comma,Tender,EN_N_4_2025,awarded_price,"28892,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:820
+warning,number_text_decimal_comma,Tender,EN_N_50_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:822
+warning,number_text_decimal_comma,Tender,EN_N_52_2025,awarded_price,"0,0",data model: number,4:252efca0-e5cf-413b-8c2b-a2da51def5eb:824
+warning,property_not_in_data_model,Bid,,Source_File,,on 64 of 64 nodes,
+warning,property_not_in_data_model,Tender,,Source_File,,on 40 of 40 nodes,
+info,attribute_missing,Bid,,time_submission,,missing on 16 of 64 nodes,
+info,attribute_missing,Bid,,amount,,missing on 30 of 64 nodes,
+info,attribute_missing,Bid,,responsible_signee_name,,missing on 9 of 64 nodes,
+info,attribute_missing,Bid,,contract_price,,missing on 5 of 64 nodes,
+info,attribute_missing,Item,,price_w_taxes,,missing on 15 of 40 nodes,
+info,attribute_missing,Item,,price_wo_taxes,,missing on 15 of 40 nodes,
+info,attribute_missing,Organization,,name,,missing on 7 of 58 nodes,
+info,attribute_missing,Organization,,location,,missing on 5 of 58 nodes,
+info,attribute_missing,Organization,,responsible_person_name,,missing on 11 of 58 nodes,
+info,attribute_missing,Organization,,type,,missing on 31 of 58 nodes,
+info,attribute_missing,ResponsiblePerson,,time_joined,,missing on 9 of 9 nodes (never populated),
+info,attribute_missing,Tender,,starting_price,,missing on 40 of 40 nodes (never populated),
+info,attribute_missing,Tender,,winning_bid,,missing on 1 of 40 nodes,
+info,attribute_missing,Tender,,required_amount,,missing on 9 of 40 nodes,
+info,attribute_missing,Tender,,time_creation,,missing on 35 of 40 nodes,
+info,attribute_missing,Tender,,time_publication,,missing on 40 of 40 nodes (never populated),
+info,attribute_missing,Tender,,time_open,,missing on 40 of 40 nodes (never populated),
+info,attribute_missing,Tender,,time_deadline,,missing on 5 of 40 nodes,
+info,attribute_missing,Tender,,time_awarded,,missing on 40 of 40 nodes (never populated),
+info,attribute_missing,Tender,,time_executed,,missing on 40 of 40 nodes (never populated),
+info,attribute_missing,Tender,,time_closed,,missing on 40 of 40 nodes (never populated),
+info,relationship_absent,INVITES,,,,no relationship of this type in the graph,

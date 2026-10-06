@@ -1,0 +1,4256 @@
+{
+ "pilot": "it",
+ "nodes": 1084,
+ "relationships": 1404,
+ "issues_by_severity": {
+  "error": 14,
+  "warning": 1804,
+  "info": 15
+ },
+ "issues_by_check": {
+  "warning: number_text_number": 790,
+  "warning: datetime_non_iso_date": 600,
+  "warning: number_text_number_with_separators": 213,
+  "warning: id_built_from_missing_value": 200,
+  "info: attribute_missing": 14,
+  "error: bid_with_multiple_organizations": 12,
+  "error: bid_without_tender": 1,
+  "error: tender_without_winning_bid": 1,
+  "warning: organization_multiple_bids_same_tender": 1,
+  "info: relationship_absent": 1
+ },
+ "structure": {
+  "bids_with_one_organization": 344,
+  "bids_with_one_tender": 355,
+  "tenders_with_one_public_entity": 200,
+  "tenders_with_exactly_one_winner": 199
+ },
+ "labels_not_in_data_model": {},
+ "entities": {
+  "Tender": {
+   "count": 200,
+   "labels_seen": {
+    "tender": 200
+   },
+   "attributes": {
+    "id_tender": {
+     "kind": "id",
+     "required": true,
+     "present": 200,
+     "missing": 0,
+     "formats": {
+      "text": 200
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "B0835BC998",
+       "B0872242E6",
+       "B08E7BABD8"
+      ]
+     },
+     "distinct_values": 200,
+     "values": [
+      {
+       "value": "B0835BC998",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B0872242E6",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B08E7BABD8",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B08E87562B",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B09C230373",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B0A6F80913",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B0B4C6A6EA",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B0B6D8263B",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B0B8CFAE3E",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B0BFE2B6D4",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B0C2CC6C98",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B0C4C36E03",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B0CDA20A7B",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B0D113A321",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B0D33F29BB",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B0D4B51311",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B0DAD4AC8D",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B0DF7772C8",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B0E0DFFAAD",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "B0EE56C115",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "ID_Tender": 200
+     }
+    },
+    "starting_price": {
+     "kind": "number",
+     "required": false,
+     "present": 200,
+     "missing": 0,
+     "formats": {
+      "text_number": 197,
+      "text_number_with_separators": 3
+     },
+     "format_status": {
+      "text_number": "warning",
+      "text_number_with_separators": "warning"
+     },
+     "examples": {
+      "text_number": [
+       "81967.21",
+       "677303.55",
+       "36249.62"
+      ],
+      "text_number_with_separators": [
+       "7.008.751",
+       "133.787.916",
+       "25.569.775"
+      ]
+     },
+     "distinct_values": 197,
+     "values": [
+      {
+       "value": "500",
+       "type": "str",
+       "count": 2,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "4000",
+       "type": "str",
+       "count": 2,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "60000",
+       "type": "str",
+       "count": 2,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "81967.21",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "677303.55",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "36249.62",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "128238",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "132000",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "48332.91",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "16155.2",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "4670.88",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "64401.64",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "1722",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "12900",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "139700",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "2804.4",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "20000",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "2592.5",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "80000",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "8713.8",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      }
+     ],
+     "spellings": {
+      "Starting_Price": 200
+     }
+    },
+    "awarded_price": {
+     "kind": "number",
+     "required": false,
+     "present": 199,
+     "missing": 1,
+     "formats": {
+      "text_number": 171,
+      "text_number_with_separators": 28
+     },
+     "format_status": {
+      "text_number": "warning",
+      "text_number_with_separators": "warning"
+     },
+     "examples": {
+      "text_number": [
+       "81967.21",
+       "36213.37",
+       "132000"
+      ],
+      "text_number_with_separators": [
+       "6.931.500.427",
+       "128.109.762",
+       "9.803.025"
+      ]
+     },
+     "distinct_values": 198,
+     "values": [
+      {
+       "value": "0",
+       "type": "str",
+       "count": 2,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "81967.21",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "6.931.500.427",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "36213.37",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "128.109.762",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "132000",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "500",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "44372.62",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "15705",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "4670.88",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "64401.64",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "1722",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "12887.1",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "139650",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "2804",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "20000",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "2592.5",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "80000",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "9.803.025",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "4.700.002",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      }
+     ],
+     "spellings": {
+      "Awarded_Price": 199
+     }
+    },
+    "winning_bid": {
+     "kind": "ref",
+     "required": false,
+     "present": 200,
+     "missing": 0,
+     "formats": {
+      "text": 200
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "bid_83",
+       "bid_85",
+       "bid_84"
+      ]
+     },
+     "distinct_values": 200,
+     "values": [
+      {
+       "value": "bid_83",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_85",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_84",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_82",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_87",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_91",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_77",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_96",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_94",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_1",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_101",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_97",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_70",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_88",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_100",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_98",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_68",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_80",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_103",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_95",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Winning_Bid": 200
+     }
+    },
+    "type": {
+     "kind": "text",
+     "required": false,
+     "present": 189,
+     "missing": 11,
+     "formats": {
+      "text": 189
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "Altra procedura a fase unica",
+       "Dialogo competitivo",
+       "Negoziata senza previa indizione di gara"
+      ]
+     },
+     "distinct_values": 6,
+     "values": [
+      {
+       "value": "Altra procedura a fase unica",
+       "type": "str",
+       "count": 95,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Aperta",
+       "type": "str",
+       "count": 38,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Negoziata senza previa indizione di gara",
+       "type": "str",
+       "count": 37,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Ristretta",
+       "type": "str",
+       "count": 11,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Dialogo competitivo",
+       "type": "str",
+       "count": 5,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Procedura di gara",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Type": 189
+     }
+    },
+    "responsible_signee_name": {
+     "kind": "text",
+     "required": false,
+     "present": 200,
+     "missing": 0,
+     "formats": {
+      "text": 200
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "455cdb334564",
+       "f1305e44daba",
+       "d2b5a88930ee"
+      ]
+     },
+     "distinct_values": 43,
+     "values": [
+      {
+       "value": "36f3a4b71ebb",
+       "type": "str",
+       "count": 48,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "1ce6f302436b",
+       "type": "str",
+       "count": 27,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "d5166c1617aa",
+       "type": "str",
+       "count": 14,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "ca57ad5cf874",
+       "type": "str",
+       "count": 14,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "544e1b471588",
+       "type": "str",
+       "count": 9,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "921999d6a26b",
+       "type": "str",
+       "count": 7,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "41399422a089",
+       "type": "str",
+       "count": 7,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "455cdb334564",
+       "type": "str",
+       "count": 5,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "329589023202",
+       "type": "str",
+       "count": 5,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "PTTLNE67A71L424C",
+       "type": "str",
+       "count": 5,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "d2b5a88930ee",
+       "type": "str",
+       "count": 4,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "27e5199d4504",
+       "type": "str",
+       "count": 4,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "eb099033ee15",
+       "type": "str",
+       "count": 4,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "10c1ad142537",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "197aa29509c1",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "f441ec3e95c3",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "fe944644645b",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "61f8ee5a0032",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "cadff3642cfa",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "ed122137b281",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Responsible_Signee_Name": 200
+     }
+    },
+    "description": {
+     "kind": "text",
+     "required": false,
+     "present": 200,
+     "missing": 0,
+     "formats": {
+      "text": 200
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "Servizi",
+       "Lavori",
+       "Forniture"
+      ]
+     },
+     "distinct_values": 3,
+     "values": [
+      {
+       "value": "Servizi",
+       "type": "str",
+       "count": 103,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Forniture",
+       "type": "str",
+       "count": 66,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Lavori",
+       "type": "str",
+       "count": 31,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Description": 200
+     }
+    },
+    "required_amount": {
+     "kind": "number",
+     "required": false,
+     "present": 0,
+     "missing": 200,
+     "formats": {},
+     "format_status": {},
+     "examples": {},
+     "distinct_values": 0,
+     "values": [],
+     "spellings": {}
+    },
+    "time_creation": {
+     "kind": "datetime",
+     "required": false,
+     "present": 200,
+     "missing": 0,
+     "formats": {
+      "iso_date": 200
+     },
+     "format_status": {
+      "iso_date": "ok"
+     },
+     "examples": {
+      "iso_date": [
+       "2024-02-22",
+       "2024-02-23",
+       "2024-02-21"
+      ]
+     },
+     "distinct_values": 102,
+     "values": [
+      {
+       "value": "2024-04-05",
+       "type": "str",
+       "count": 27,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-07-04",
+       "type": "str",
+       "count": 11,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-07-30",
+       "type": "str",
+       "count": 9,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-07-25",
+       "type": "str",
+       "count": 6,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-07-29",
+       "type": "str",
+       "count": 5,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-02-06",
+       "type": "str",
+       "count": 4,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-03-08",
+       "type": "str",
+       "count": 3,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-03-29",
+       "type": "str",
+       "count": 3,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-04-30",
+       "type": "str",
+       "count": 3,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-05-20",
+       "type": "str",
+       "count": 3,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-06-14",
+       "type": "str",
+       "count": 3,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-07-09",
+       "type": "str",
+       "count": 3,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-07-16",
+       "type": "str",
+       "count": 3,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-08-09",
+       "type": "str",
+       "count": 3,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-02-22",
+       "type": "str",
+       "count": 2,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-02-27",
+       "type": "str",
+       "count": 2,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-02-13",
+       "type": "str",
+       "count": 2,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-03-12",
+       "type": "str",
+       "count": 2,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-03-04",
+       "type": "str",
+       "count": 2,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-03-27",
+       "type": "str",
+       "count": 2,
+       "format": "iso_date",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Time_Creation": 200
+     }
+    },
+    "time_publication": {
+     "kind": "datetime",
+     "required": false,
+     "present": 200,
+     "missing": 0,
+     "formats": {
+      "non_iso_date": 200
+     },
+     "format_status": {
+      "non_iso_date": "warning"
+     },
+     "examples": {
+      "non_iso_date": [
+       "18/03/2024",
+       "23/02/2024",
+       "22/02/2024"
+      ]
+     },
+     "distinct_values": 97,
+     "values": [
+      {
+       "value": "05/06/2024",
+       "type": "str",
+       "count": 27,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "10/07/2024",
+       "type": "str",
+       "count": 10,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "30/08/2024",
+       "type": "str",
+       "count": 8,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "30/07/2024",
+       "type": "str",
+       "count": 6,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "25/07/2024",
+       "type": "str",
+       "count": 5,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "11/03/2024",
+       "type": "str",
+       "count": 4,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "30/04/2024",
+       "type": "str",
+       "count": 4,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "03/05/2024",
+       "type": "str",
+       "count": 4,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "04/04/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "02/04/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "19/04/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "19/01/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "17/05/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "24/05/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "14/06/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "05/07/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "26/06/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "09/07/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "06/08/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "29/08/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      }
+     ],
+     "spellings": {
+      "Time_Publication": 200
+     }
+    },
+    "time_open": {
+     "kind": "datetime",
+     "required": false,
+     "present": 200,
+     "missing": 0,
+     "formats": {
+      "non_iso_date": 200
+     },
+     "format_status": {
+      "non_iso_date": "warning"
+     },
+     "examples": {
+      "non_iso_date": [
+       "18/03/2024",
+       "23/02/2024",
+       "22/02/2024"
+      ]
+     },
+     "distinct_values": 97,
+     "values": [
+      {
+       "value": "05/06/2024",
+       "type": "str",
+       "count": 27,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "10/07/2024",
+       "type": "str",
+       "count": 10,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "30/08/2024",
+       "type": "str",
+       "count": 8,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "30/07/2024",
+       "type": "str",
+       "count": 6,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "25/07/2024",
+       "type": "str",
+       "count": 5,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "11/03/2024",
+       "type": "str",
+       "count": 4,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "30/04/2024",
+       "type": "str",
+       "count": 4,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "03/05/2024",
+       "type": "str",
+       "count": 4,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "04/04/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "02/04/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "19/04/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "19/01/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "17/05/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "24/05/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "14/06/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "05/07/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "26/06/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "09/07/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "06/08/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "29/08/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      }
+     ],
+     "spellings": {
+      "Time_Open": 200
+     }
+    },
+    "time_deadline": {
+     "kind": "datetime",
+     "required": false,
+     "present": 200,
+     "missing": 0,
+     "formats": {
+      "iso_date": 200
+     },
+     "format_status": {
+      "iso_date": "ok"
+     },
+     "examples": {
+      "iso_date": [
+       "2024-03-25",
+       "2024-02-28",
+       "2024-02-25"
+      ]
+     },
+     "distinct_values": 102,
+     "values": [
+      {
+       "value": "2024-07-09",
+       "type": "str",
+       "count": 27,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-07-22",
+       "type": "str",
+       "count": 9,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-10-04",
+       "type": "str",
+       "count": 8,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-07-29",
+       "type": "str",
+       "count": 5,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-05-31",
+       "type": "str",
+       "count": 4,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-07-11",
+       "type": "str",
+       "count": 4,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-09-12",
+       "type": "str",
+       "count": 4,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-03-15",
+       "type": "str",
+       "count": 3,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-03-14",
+       "type": "str",
+       "count": 3,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-05-07",
+       "type": "str",
+       "count": 3,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-02-12",
+       "type": "str",
+       "count": 3,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-05-29",
+       "type": "str",
+       "count": 3,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-06-06",
+       "type": "str",
+       "count": 3,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-06-26",
+       "type": "str",
+       "count": 3,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-07-08",
+       "type": "str",
+       "count": 3,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-08-02",
+       "type": "str",
+       "count": 3,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-08-05",
+       "type": "str",
+       "count": 3,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-02-25",
+       "type": "str",
+       "count": 2,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-03-04",
+       "type": "str",
+       "count": 2,
+       "format": "iso_date",
+       "status": "ok"
+      },
+      {
+       "value": "2024-03-20",
+       "type": "str",
+       "count": 2,
+       "format": "iso_date",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Time_Deadline": 200
+     }
+    },
+    "time_awarded": {
+     "kind": "datetime",
+     "required": false,
+     "present": 200,
+     "missing": 0,
+     "formats": {
+      "non_iso_date": 200
+     },
+     "format_status": {
+      "non_iso_date": "warning"
+     },
+     "examples": {
+      "non_iso_date": [
+       "28/05/2024",
+       "29/02/2024",
+       "09/04/2024"
+      ]
+     },
+     "distinct_values": 102,
+     "values": [
+      {
+       "value": "16/09/2024",
+       "type": "str",
+       "count": 26,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "21/08/2024",
+       "type": "str",
+       "count": 8,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "22/01/2025",
+       "type": "str",
+       "count": 8,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "24/07/2024",
+       "type": "str",
+       "count": 6,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "17/09/2024",
+       "type": "str",
+       "count": 4,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "12/04/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "22/03/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "08/04/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "28/06/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "06/06/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "29/05/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "05/06/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "03/06/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "07/08/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "05/07/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "22/07/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "26/07/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "18/09/2024",
+       "type": "str",
+       "count": 3,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "13/05/2024",
+       "type": "str",
+       "count": 2,
+       "format": "non_iso_date",
+       "status": "warning"
+      },
+      {
+       "value": "10/06/2024",
+       "type": "str",
+       "count": 2,
+       "format": "non_iso_date",
+       "status": "warning"
+      }
+     ],
+     "spellings": {
+      "Time_Awarded": 200
+     }
+    },
+    "time_executed": {
+     "kind": "datetime",
+     "required": false,
+     "present": 0,
+     "missing": 200,
+     "formats": {},
+     "format_status": {},
+     "examples": {},
+     "distinct_values": 0,
+     "values": [],
+     "spellings": {}
+    },
+    "time_closed": {
+     "kind": "datetime",
+     "required": false,
+     "present": 0,
+     "missing": 200,
+     "formats": {},
+     "format_status": {},
+     "examples": {},
+     "distinct_values": 0,
+     "values": [],
+     "spellings": {}
+    }
+   },
+   "properties_not_in_data_model": {},
+   "loader_properties": {
+    "type": 200,
+    "id": 200,
+    "title": 200,
+    "color": 200,
+    "name": 200
+   }
+  },
+  "PublicEntity": {
+   "count": 1,
+   "labels_seen": {
+    "public_entity": 1
+   },
+   "attributes": {
+    "id_public_entity": {
+     "kind": "id",
+     "required": true,
+     "present": 1,
+     "missing": 0,
+     "formats": {
+      "text": 1
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       80014930327
+      ]
+     },
+     "distinct_values": 1,
+     "values": [
+      {
+       "value": 80014930327,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "ID_Public_Entity": 1
+     }
+    },
+    "name": {
+     "kind": "text",
+     "required": false,
+     "present": 1,
+     "missing": 0,
+     "formats": {
+      "text": 1
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "Regione Autonoma Friuli Venezia Giulia"
+      ]
+     },
+     "distinct_values": 1,
+     "values": [
+      {
+       "value": "Regione Autonoma Friuli Venezia Giulia",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Name": 1
+     }
+    },
+    "location": {
+     "kind": "text",
+     "required": false,
+     "present": 1,
+     "missing": 0,
+     "formats": {
+      "text": 1
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "Trieste"
+      ]
+     },
+     "distinct_values": 1,
+     "values": [
+      {
+       "value": "Trieste",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Location": 1
+     }
+    },
+    "department": {
+     "kind": "text",
+     "required": false,
+     "present": 1,
+     "missing": 0,
+     "formats": {
+      "text": 1
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "RFVG_PADES-SERVIZIO CENTRALE UNICA DI COMMITTENZA-SOGGETTO AGGREGATORE REGIONALE FVG"
+      ]
+     },
+     "distinct_values": 1,
+     "values": [
+      {
+       "value": "RFVG_PADES-SERVIZIO CENTRALE UNICA DI COMMITTENZA-SOGGETTO AGGREGATORE REGIONALE FVG",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Department": 1
+     }
+    }
+   },
+   "properties_not_in_data_model": {},
+   "loader_properties": {
+    "id": 1,
+    "title": 1,
+    "color": 1,
+    "name": 1,
+    "type": 1
+   }
+  },
+  "Item": {
+   "count": 200,
+   "labels_seen": {
+    "item": 200
+   },
+   "attributes": {
+    "id_good_service": {
+     "kind": "id",
+     "required": true,
+     "present": 200,
+     "missing": 0,
+     "formats": {
+      "built_from_missing_value": 200
+     },
+     "format_status": {
+      "built_from_missing_value": "warning"
+     },
+     "examples": {
+      "built_from_missing_value": [
+       "nan_bid_5",
+       "nan_bid_83",
+       "nan_bid_85"
+      ]
+     },
+     "distinct_values": 200,
+     "values": [
+      {
+       "value": "nan_bid_5",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_83",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_85",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_84",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_82",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_87",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_91",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_77",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_96",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_94",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_1",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_101",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_97",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_70",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_88",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_100",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_98",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_68",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_80",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      },
+      {
+       "value": "nan_bid_103",
+       "type": "str",
+       "count": 1,
+       "format": "built_from_missing_value",
+       "status": "warning"
+      }
+     ],
+     "spellings": {
+      "ID_Good_Service": 200
+     }
+    },
+    "name": {
+     "kind": "text",
+     "required": false,
+     "present": 0,
+     "missing": 200,
+     "formats": {},
+     "format_status": {},
+     "examples": {},
+     "distinct_values": 0,
+     "values": [],
+     "spellings": {}
+    },
+    "measurement_unit": {
+     "kind": "text",
+     "required": false,
+     "present": 0,
+     "missing": 200,
+     "formats": {},
+     "format_status": {},
+     "examples": {},
+     "distinct_values": 0,
+     "values": [],
+     "spellings": {}
+    },
+    "price_w_taxes": {
+     "kind": "number",
+     "required": false,
+     "present": 0,
+     "missing": 200,
+     "formats": {},
+     "format_status": {},
+     "examples": {},
+     "distinct_values": 0,
+     "values": [],
+     "spellings": {}
+    },
+    "price_wo_taxes": {
+     "kind": "number",
+     "required": false,
+     "present": 0,
+     "missing": 200,
+     "formats": {},
+     "format_status": {},
+     "examples": {},
+     "distinct_values": 0,
+     "values": [],
+     "spellings": {}
+    },
+    "type": {
+     "kind": "text",
+     "required": false,
+     "present": 0,
+     "missing": 200,
+     "formats": {},
+     "format_status": {},
+     "examples": {},
+     "distinct_values": 0,
+     "values": [],
+     "spellings": {}
+    }
+   },
+   "properties_not_in_data_model": {},
+   "loader_properties": {
+    "id": 200,
+    "title": 200,
+    "color": 200,
+    "name": 200,
+    "type": 200
+   }
+  },
+  "Bid": {
+   "count": 356,
+   "labels_seen": {
+    "bid": 356
+   },
+   "attributes": {
+    "id_bid": {
+     "kind": "id",
+     "required": true,
+     "present": 356,
+     "missing": 0,
+     "formats": {
+      "text": 356
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "bid_54",
+       "bid_55",
+       "bid_56"
+      ]
+     },
+     "distinct_values": 356,
+     "values": [
+      {
+       "value": "bid_54",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_55",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_56",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_57",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_58",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_59",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_60",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_61",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_15",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_9",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_10",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_11",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_231",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_220",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_12",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_229",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_219",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_13",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_222",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "bid_401",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "ID_Bid": 356
+     }
+    },
+    "time_submission": {
+     "kind": "datetime",
+     "required": false,
+     "present": 0,
+     "missing": 356,
+     "formats": {},
+     "format_status": {},
+     "examples": {},
+     "distinct_values": 0,
+     "values": [],
+     "spellings": {}
+    },
+    "amount": {
+     "kind": "number",
+     "required": false,
+     "present": 302,
+     "missing": 54,
+     "formats": {
+      "text_number": 211,
+      "text_number_with_separators": 91
+     },
+     "format_status": {
+      "text_number_with_separators": "warning",
+      "text_number": "warning"
+     },
+     "examples": {
+      "text_number_with_separators": [
+       "7.368.932.423",
+       "2.893.462.435",
+       "2.966.518.647"
+      ],
+      "text_number": [
+       "9665.35",
+       "561095.64",
+       "367262.95"
+      ]
+     },
+     "distinct_values": 274,
+     "values": [
+      {
+       "value": "0",
+       "type": "str",
+       "count": 24,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "3960",
+       "type": "str",
+       "count": 2,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "6.452.837.009",
+       "type": "str",
+       "count": 2,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "89090.2",
+       "type": "str",
+       "count": 2,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "480",
+       "type": "str",
+       "count": 2,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "29725",
+       "type": "str",
+       "count": 2,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "7.368.932.423",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "9665.35",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "2.893.462.435",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "2.966.518.647",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "2.854.700.036",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "5.767.675.246",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "1.490.148.072",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "298.806.486",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "561095.64",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "1.418.023.634",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "2.694.211.924",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "1.434.704.396",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "367262.95",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "1500432.44",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      }
+     ],
+     "spellings": {
+      "Amount": 302
+     }
+    },
+    "responsible_signee_name": {
+     "kind": "text",
+     "required": false,
+     "present": 356,
+     "missing": 0,
+     "formats": {
+      "text": 356
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "b05bc6064f67",
+       "f9cb0939e839",
+       "d9e39009bb67"
+      ]
+     },
+     "distinct_values": 262,
+     "values": [
+      {
+       "value": "005f446c8861",
+       "type": "str",
+       "count": 16,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "1643b319d2ca",
+       "type": "str",
+       "count": 13,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "387971f4e2cd",
+       "type": "str",
+       "count": 6,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "7d056d36b91c",
+       "type": "str",
+       "count": 5,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "7783999c3bd7",
+       "type": "str",
+       "count": 5,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "1c50b7eb9829",
+       "type": "str",
+       "count": 5,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "12b82cf49f88",
+       "type": "str",
+       "count": 4,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "36ffb9030cef",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "08a6dfa87647",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "9b6ccc988e17",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "1b5dfb724ca1",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "231791a6548f",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "1190712330a3",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "105dd0b2d5ba",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "3e00797893f2",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "f5e3105f7521",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "d6e128e9a08e",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "3ec025682e5d",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "a91fa1df387b",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "90ad0b443e36",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Responsible_Signee_Name": 356
+     }
+    },
+    "successful_bid": {
+     "kind": "bool",
+     "required": true,
+     "present": 356,
+     "missing": 0,
+     "formats": {
+      "boolean": 356
+     },
+     "format_status": {
+      "boolean": "ok"
+     },
+     "examples": {
+      "boolean": [
+       false,
+       true
+      ]
+     },
+     "distinct_values": 2,
+     "values": [
+      {
+       "value": true,
+       "type": "bool",
+       "count": 200,
+       "format": "boolean",
+       "status": "ok"
+      },
+      {
+       "value": false,
+       "type": "bool",
+       "count": 156,
+       "format": "boolean",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Successful_Bid": 356
+     }
+    },
+    "contract_price": {
+     "kind": "number",
+     "required": false,
+     "present": 302,
+     "missing": 54,
+     "formats": {
+      "text_number": 211,
+      "text_number_with_separators": 91
+     },
+     "format_status": {
+      "text_number_with_separators": "warning",
+      "text_number": "warning"
+     },
+     "examples": {
+      "text_number_with_separators": [
+       "7.368.932.423",
+       "2.893.462.435",
+       "2.966.518.647"
+      ],
+      "text_number": [
+       "9665.35",
+       "561095.64",
+       "367262.95"
+      ]
+     },
+     "distinct_values": 274,
+     "values": [
+      {
+       "value": "0",
+       "type": "str",
+       "count": 24,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "3960",
+       "type": "str",
+       "count": 2,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "6.452.837.009",
+       "type": "str",
+       "count": 2,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "89090.2",
+       "type": "str",
+       "count": 2,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "480",
+       "type": "str",
+       "count": 2,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "29725",
+       "type": "str",
+       "count": 2,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "7.368.932.423",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "9665.35",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "2.893.462.435",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "2.966.518.647",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "2.854.700.036",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "5.767.675.246",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "1.490.148.072",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "298.806.486",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "561095.64",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "1.418.023.634",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "2.694.211.924",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "1.434.704.396",
+       "type": "str",
+       "count": 1,
+       "format": "text_number_with_separators",
+       "status": "warning"
+      },
+      {
+       "value": "367262.95",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      },
+      {
+       "value": "1500432.44",
+       "type": "str",
+       "count": 1,
+       "format": "text_number",
+       "status": "warning"
+      }
+     ],
+     "spellings": {
+      "Contract_Price": 302
+     }
+    }
+   },
+   "properties_not_in_data_model": {},
+   "loader_properties": {
+    "id": 356,
+    "title": 356,
+    "color": 356,
+    "name": 356,
+    "type": 356
+   }
+  },
+  "Organization": {
+   "count": 283,
+   "labels_seen": {
+    "organization": 283
+   },
+   "attributes": {
+    "id_organization": {
+     "kind": "id",
+     "required": true,
+     "present": 283,
+     "missing": 0,
+     "formats": {
+      "text": 283
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       125,
+       126,
+       127
+      ]
+     },
+     "distinct_values": 283,
+     "values": [
+      {
+       "value": 125,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 126,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 127,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 128,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 129,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 130,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 131,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 132,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 1,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 2,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 3,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 4,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 5,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 6,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 7,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 8,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 9,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 10,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 11,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": 12,
+       "type": "int",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "ID_Organization": 283
+     }
+    },
+    "name": {
+     "kind": "text",
+     "required": false,
+     "present": 283,
+     "missing": 0,
+     "formats": {
+      "text": 283
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "b05bc6064f67",
+       "f9cb0939e839",
+       "d9e39009bb67"
+      ]
+     },
+     "distinct_values": 283,
+     "values": [
+      {
+       "value": "b05bc6064f67",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "f9cb0939e839",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "d9e39009bb67",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "2e0cdeb661e0",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "6c54376ebc6c",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "9e17c6f21603",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "17096e6ce738",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "3a1c41472a63",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "58c23e1df030",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "d7ead474e2b4",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "f0d36b199e0e",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "36ffb9030cef",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "08a6dfa87647",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "9b6ccc988e17",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "34557e8405b1",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "aa056248db65",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "1bd8cb8f10dd",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "d6e128e9a08e",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "a91fa1df387b",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "9b3f757b23e2",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Name": 283
+     }
+    },
+    "location": {
+     "kind": "text",
+     "required": false,
+     "present": 283,
+     "missing": 0,
+     "formats": {
+      "text": 283
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "PATERNO'",
+       "Grandate",
+       "ROMA"
+      ]
+     },
+     "distinct_values": 165,
+     "values": [
+      {
+       "value": "UDINE",
+       "type": "str",
+       "count": 18,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Trieste",
+       "type": "str",
+       "count": 13,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "TRIESTE",
+       "type": "str",
+       "count": 11,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "MILANO",
+       "type": "str",
+       "count": 10,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Udine",
+       "type": "str",
+       "count": 8,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Milano",
+       "type": "str",
+       "count": 8,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "TOLMEZZO",
+       "type": "str",
+       "count": 6,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "ROMA",
+       "type": "str",
+       "count": 5,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "SAN GIORGIO DI NOGARO",
+       "type": "str",
+       "count": 5,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "TARCENTO",
+       "type": "str",
+       "count": 4,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Campoformido",
+       "type": "str",
+       "count": 4,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "VILLA SANTINA",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Pordenone",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "PORDENONE",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Gorizia",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "udine",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "trieste",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Napoli",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "MOLFETTA",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "CHIOGGIA",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Location": 283
+     }
+    },
+    "responsible_person_name": {
+     "kind": "text",
+     "required": false,
+     "present": 283,
+     "missing": 0,
+     "formats": {
+      "text": 283
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "b05bc6064f67",
+       "f9cb0939e839",
+       "d9e39009bb67"
+      ]
+     },
+     "distinct_values": 283,
+     "values": [
+      {
+       "value": "b05bc6064f67",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "f9cb0939e839",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "d9e39009bb67",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "2e0cdeb661e0",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "6c54376ebc6c",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "9e17c6f21603",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "17096e6ce738",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "3a1c41472a63",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "58c23e1df030",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "d7ead474e2b4",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "f0d36b199e0e",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "36ffb9030cef",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "08a6dfa87647",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "9b6ccc988e17",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "34557e8405b1",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "aa056248db65",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "1bd8cb8f10dd",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "d6e128e9a08e",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "a91fa1df387b",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "9b3f757b23e2",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Responsible_Person_Name": 283
+     }
+    },
+    "type": {
+     "kind": "text",
+     "required": false,
+     "present": 283,
+     "missing": 0,
+     "formats": {
+      "text": 283
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "Srl",
+       "Società Unipersonale a Responsabilità Limitata",
+       "SpA"
+      ]
+     },
+     "distinct_values": 20,
+     "values": [
+      {
+       "value": "Srl",
+       "type": "str",
+       "count": 164,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Libero professionista",
+       "type": "str",
+       "count": 29,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "SpA",
+       "type": "str",
+       "count": 26,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Ditta individuale",
+       "type": "str",
+       "count": 23,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Società cooperativa",
+       "type": "str",
+       "count": 6,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Snc",
+       "type": "str",
+       "count": 6,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Studio Associato",
+       "type": "str",
+       "count": 6,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Associazione",
+       "type": "str",
+       "count": 5,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Sas",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Società Cooperativa a Responsabilità Limitata",
+       "type": "str",
+       "count": 3,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Società Consortile a Responsabilità Limitata",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "rns.legalstructure/notDefined",
+       "type": "str",
+       "count": 2,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Società Unipersonale a Responsabilità Limitata",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Organizzazione non lucrativa di utilità sociale",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Fondazione",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Consorzio",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Società Consortile per Azioni",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Società di ingegneria",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Ente Pubblico",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "Società europea (SE)",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Type": 283
+     }
+    }
+   },
+   "properties_not_in_data_model": {},
+   "loader_properties": {
+    "id": 283,
+    "title": 283,
+    "color": 283,
+    "name": 283,
+    "type": 283
+   }
+  },
+  "ResponsiblePerson": {
+   "count": 44,
+   "labels_seen": {
+    "responsible_person": 44
+   },
+   "attributes": {
+    "first_name": {
+     "kind": "text",
+     "required": false,
+     "present": 44,
+     "missing": 0,
+     "formats": {
+      "text": 44
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "c6ec616eb549",
+       "1ce6f302436b",
+       "cf85e9783b81"
+      ]
+     },
+     "distinct_values": 44,
+     "values": [
+      {
+       "value": "c6ec616eb549",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "1ce6f302436b",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "cf85e9783b81",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "455cdb334564",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "f61b0326fbd7",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "3c06d199a694",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "08d316d30fc9",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "ed122137b281",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "6c870c8ef7fa",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "f1305e44daba",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "27e5199d4504",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "fe944644645b",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "61f8ee5a0032",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "8a229dcb19fe",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "cadff3642cfa",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "10c1ad142537",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "d88f2efe083e",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "197aa29509c1",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "093b6829614b",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "41399422a089",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "First_Name": 44
+     }
+    },
+    "last_name": {
+     "kind": "text",
+     "required": false,
+     "present": 44,
+     "missing": 0,
+     "formats": {
+      "text": 44
+     },
+     "format_status": {
+      "text": "ok"
+     },
+     "examples": {
+      "text": [
+       "c6ec616eb549",
+       "1ce6f302436b",
+       "cf85e9783b81"
+      ]
+     },
+     "distinct_values": 44,
+     "values": [
+      {
+       "value": "c6ec616eb549",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "1ce6f302436b",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "cf85e9783b81",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "455cdb334564",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "f61b0326fbd7",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "3c06d199a694",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "08d316d30fc9",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "ed122137b281",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "6c870c8ef7fa",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "f1305e44daba",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "27e5199d4504",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "fe944644645b",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "61f8ee5a0032",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "8a229dcb19fe",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "cadff3642cfa",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "10c1ad142537",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "d88f2efe083e",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "197aa29509c1",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "093b6829614b",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      },
+      {
+       "value": "41399422a089",
+       "type": "str",
+       "count": 1,
+       "format": "text",
+       "status": "ok"
+      }
+     ],
+     "spellings": {
+      "Last_Name": 44
+     }
+    },
+    "time_joined": {
+     "kind": "datetime",
+     "required": false,
+     "present": 0,
+     "missing": 44,
+     "formats": {},
+     "format_status": {},
+     "examples": {},
+     "distinct_values": 0,
+     "values": [],
+     "spellings": {}
+    }
+   },
+   "properties_not_in_data_model": {},
+   "loader_properties": {
+    "id": 44,
+    "title": 44,
+    "color": 44,
+    "name": 44,
+    "type": 44
+   }
+  }
+ },
+ "relationship_types": {
+  "INVITES": {
+   "count": 0,
+   "in_data_model": true,
+   "data_model": "Tender -> Organization",
+   "seen": []
+  },
+  "ISSUED_BY": {
+   "count": 200,
+   "in_data_model": true,
+   "data_model": "Tender -> PublicEntity",
+   "seen": [
+    {
+     "direction": "Tender -> PublicEntity",
+     "status": "as_in_data_model",
+     "count": 200
+    }
+   ]
+  },
+  "ISSUES": {
+   "count": 200,
+   "in_data_model": true,
+   "data_model": "PublicEntity -> Tender",
+   "seen": [
+    {
+     "direction": "PublicEntity -> Tender",
+     "status": "as_in_data_model",
+     "count": 200
+    }
+   ]
+  },
+  "REQUIRES": {
+   "count": 200,
+   "in_data_model": true,
+   "data_model": "Tender -> Item",
+   "seen": [
+    {
+     "direction": "Tender -> Item",
+     "status": "as_in_data_model",
+     "count": 200
+    }
+   ]
+  },
+  "RESPONSIBLE_OF": {
+   "count": 44,
+   "in_data_model": true,
+   "data_model": "ResponsiblePerson -> PublicEntity",
+   "seen": [
+    {
+     "direction": "ResponsiblePerson -> PublicEntity",
+     "status": "as_in_data_model",
+     "count": 44
+    }
+   ]
+  },
+  "SUBMITS": {
+   "count": 405,
+   "in_data_model": true,
+   "data_model": "Organization -> Bid",
+   "seen": [
+    {
+     "direction": "Organization -> Bid",
+     "status": "as_in_data_model",
+     "count": 405
+    }
+   ]
+  },
+  "SUBMITTED_FOR": {
+   "count": 355,
+   "in_data_model": true,
+   "data_model": "Bid -> Tender",
+   "seen": [
+    {
+     "direction": "Bid -> Tender",
+     "status": "as_in_data_model",
+     "count": 355
+    }
+   ]
+  }
+ }
+}

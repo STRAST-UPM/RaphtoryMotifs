@@ -67,6 +67,19 @@ RETURN type(r) AS rel,
  
 
 
+# Data-model audit (audit_graph.py): every node and relationship untouched,
+# identified by elementId -- unique even when two nodes share a business id.
+AUDIT_NODES = """
+MATCH (n)
+RETURN elementId(n) AS key, labels(n) AS labels, properties(n) AS props
+"""
+
+AUDIT_RELS = """
+MATCH (a)-[r]->(b)
+RETURN type(r) AS rel, elementId(a) AS src, elementId(b) AS dst
+"""
+
+
 # Change detector used by the listener.
 STATE = """
 MATCH (n)

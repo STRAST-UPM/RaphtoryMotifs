@@ -6,11 +6,19 @@ networks:
 x-cedar-risk: &cedar-risk
   networks: [cedar-network]
   env_file: .env              # same settings as a local run (PILOTS, GRAPH_*, KAFKA_*, LOG_*)
-  # inside Docker, the local broker of the "local-kafka" profile is kafka:9094,
-  # not localhost:9092 -> set KAFKA_BOOTSTRAP=kafka:9094 in .env when using it
+  environment:
+    # the local broker is kafka:9094 on this network (localhost:8004 is the
+    # host's); without KAFKA_DOCKER_BOOTSTRAP_SERVERS (production) the .env value
+    KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_DOCKER_BOOTSTRAP_SERVERS:-${KAFKA_BOOTSTRAP_SERVERS}}
+    # the credentials folder of .env, mounted read-only below
+    KAFKA_CREDENTIALS_DIR: /app/kafka-credentials
+    KAFKA_CA_FILE: ""
+    KAFKA_CERT_FILE: ""
+    KAFKA_KEY_FILE: ""
   volumes:
     - ./outputs:/app/outputs  # saved responses
     - ./logs:/app/logs        # log files
+    - ${KAFKA_CREDENTIALS_DIR:?set KAFKA_CREDENTIALS_DIR in .env}:/app/kafka-credentials:ro
   restart: unless-stopped
 
 services:
@@ -64,7 +72,10 @@ services:
         condition: service_healthy
     restart: on-failure
 
-  # ---- Kafka broker (KRaft + SASL_PLAINTEXT/PLAIN) --------------------------
+  # ---- Kafka broker: local replica of the CEDAR production cluster ----------
+  # Same security as production (secure-kafka/README.md): SASL_SSL = TLS with
+  # a REQUIRED client certificate signed by the CA + SASL PLAIN user/password.
+  # Credentials: ./kafka/make-local-credentials.sh (local CA, not production).
   kafka:
     profiles: ["local-kafka"]
     image: apache/kafka:3.9.0
@@ -73,11 +84,11 @@ services:
     networks: [cedar-network]
 
     ports:
-      # External access from the host machine
-      - "9092:9092"
+      # host access, on the production port: localhost:8004
+      - "8004:8004"
 
     volumes:
-      - ./kafka/secrets:/etc/kafka/secrets
+      - ./kafka/secrets/local/broker:/etc/kafka/secrets:ro
 
     environment:
       # ---- KRaft -----------------------------------------------------------
@@ -86,30 +97,29 @@ services:
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
 
       # ---- Listeners -------------------------------------------------------
-      #
-      # EXTERNAL:
-      #   Host applications connect to localhost:9092
-      #
-      # INTERNAL:
-      #   Other Docker containers connect to kafka:9094
-      #
-      # CONTROLLER:
-      #   KRaft controller communication on 9093
-      #
-      KAFKA_LISTENERS: EXTERNAL://:9092,INTERNAL://:9094,CONTROLLER://:9093
-
-      KAFKA_ADVERTISED_LISTENERS: EXTERNAL://localhost:9092,INTERNAL://kafka:9094
-
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: EXTERNAL:SASL_PLAINTEXT,INTERNAL:SASL_PLAINTEXT,CONTROLLER:PLAINTEXT
-
+      #   EXTERNAL    host applications       localhost:8004  (production: kafka.cedar-heu-project.eu:8004)
+      #   INTERNAL    other Docker containers kafka:9094
+      #   CONTROLLER  KRaft, inside the broker only
+      # (the names must not contain "SSL": the image's own SSL setup would take over)
+      KAFKA_LISTENERS: EXTERNAL://:8004,INTERNAL://:9094,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: EXTERNAL://localhost:8004,INTERNAL://kafka:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: EXTERNAL:SASL_SSL,INTERNAL:SASL_SSL,CONTROLLER:PLAINTEXT
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
 
-      # ---- SASL ------------------------------------------------------------
+      # ---- TLS: broker certificate + CA, client certificate required ------
+      KAFKA_SSL_KEYSTORE_TYPE: PEM
+      KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/broker.pem
+      KAFKA_SSL_TRUSTSTORE_TYPE: PEM
+      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka-cedar-ca-1.crt
+      # on SASL_SSL listeners Kafka ignores the global ssl.client.auth:
+      # it must be set per listener (listener.name.<name>.ssl.client.auth)
+      KAFKA_LISTENER_NAME_EXTERNAL_SSL_CLIENT_AUTH: required
+      KAFKA_LISTENER_NAME_INTERNAL_SSL_CLIENT_AUTH: required
+
+      # ---- SASL PLAIN: users in kafka_server_jaas.conf ---------------------
       KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
       KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
-
       KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/kafka_server_jaas.conf"
 
       # ---- Single broker ---------------------------------------------------
@@ -117,6 +127,8 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      # responses for "all" carry the whole graph (kafka_client.MAX_MESSAGE_BYTES)
+      KAFKA_MESSAGE_MAX_BYTES: 10485760
 
   # ---- Kafka topic initialization ------------------------------------------
   kafka-init:
@@ -130,21 +142,19 @@ services:
       - kafka
 
     volumes:
-      - ./kafka/secrets:/etc/kafka/secrets
-
-    environment:
-      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/kafka_server_jaas.conf"
+      - ./kafka/secrets/local/broker:/etc/kafka/secrets:ro
 
     entrypoint: ["/bin/bash", "-c"]
 
     command:
       - |
+        CONFIG=/etc/kafka/secrets/admin-client.properties
         echo "Waiting for Kafka..."
 
         until /opt/kafka/bin/kafka-topics.sh \
           --bootstrap-server kafka:9094 \
           --list \
-          --command-config /etc/kafka/secrets/client-sasl.properties >/dev/null 2>&1
+          --command-config $$CONFIG >/dev/null 2>&1
         do
           echo "Kafka not ready yet..."
           sleep 2
@@ -169,7 +179,7 @@ services:
             --topic "$$topic" \
             --partitions 1 \
             --replication-factor 1 \
-            --command-config /etc/kafka/secrets/client-sasl.properties
+            --command-config $$CONFIG
         done
 
         echo ""
@@ -180,4 +190,4 @@ services:
         /opt/kafka/bin/kafka-topics.sh \
           --bootstrap-server kafka:9094 \
           --list \
-          --command-config /etc/kafka/secrets/client-sasl.properties
+          --command-config $$CONFIG

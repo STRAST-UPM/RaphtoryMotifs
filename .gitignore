@@ -33,6 +33,7 @@ output.json
 kafka/init
 kafka/docker-compose.yml
 kafka/scripts.sh
+export.py
 
 # Distribution / packaging
 .Python
