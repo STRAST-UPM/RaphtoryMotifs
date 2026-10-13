@@ -105,12 +105,4 @@ MERGE (o)-[:SUBMITS]->(b)
 MERGE (b)-[:SUBMITTED_FOR]->(t)
 """
 
-
-# Change detector used by the listener.
-STATE = """
-MATCH (n)
-OPTIONAL MATCH ()-[r]->()
-RETURN count(DISTINCT n) AS node_count,
-       count(DISTINCT r) AS relationship_count
-"""
  

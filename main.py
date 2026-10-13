@@ -3,8 +3,8 @@
     request on <pilot>_analyse  (from the UI, or from send_request.py)
       -> scores of that pilot's graph: Neo4j -> Raphtory -> motifs ->
          organization / public entity / tender anomaly scores
-         (computed on the first request, then recomputed on a later request
-          only if the Neo4j graph has changed -- nothing runs without a request)
+         (run on every request, on the graph as it is at that moment --
+          nothing runs without a request)
       -> the requested entities and indicators are picked out
       -> ONE response, saved as JSON, then published on <pilot>_results_available
 
@@ -57,6 +57,7 @@ from cedar_risk.utils.kafka_client import (
     InvalidRequest, parse_request, request_plan, describe_plan, answer,
     build_message, make_producer, make_consumer, publish, kafka_settings,
     pilot_topic, now_ms)
+
 from cedar_risk.utils.config import DELAY
 from cedar_risk.utils.logger import get_logger, setup_logging, describe_error
 from cedar_risk.utils.neo4j_store import pilot_endpoint, pilot_setting, resolve_pilots
@@ -136,8 +137,7 @@ def save_message(pilot, message, out_dir):
 
 
 class PilotContext:
-    """Endpoint, API key, topics, output folder, change-listener and the
-    cached scores of one pilot."""
+    """Endpoint, API key, topics, output folder and the last scores of one pilot."""
 
     def __init__(self, pilot, out_dir):
         self.pilot = pilot
@@ -149,33 +149,16 @@ class PilotContext:
                 "(or GRAPH_ENDPOINT / GRAPH_API_KEY) in your .env.")
         self.request_topic = pilot_topic(pilot, "request")
         self.results_topic = pilot_topic(pilot, "results")
-        self.listener = neo4j_store.Neo4jListener(endpoint=self.endpoint, api_key=self.api_key)
-        self.scores = None      # {node_type: {node_id: score}} of the current graph
-        self.dirty = True       # no scores yet, graph changed, or last run failed
+        self.scores = None      # {node_type: {node_id: score}} of the last successful run
 
-    def refresh(self):
-        """Scores of the current graph, called only when a request arrives:
-        computed on the first request, then again only when the Neo4j graph
-        has changed since the last analysis (or the last run failed)."""
-        if not self.dirty and self.listener.has_changed():
-            log.info("[pilot]   %s: graph change detected -> re-running the analysis",
-                     self.pilot)
-            self.dirty = True
-        if self.dirty:
-            log.info("[analysis] %s: starting analysis -> %s", self.pilot, self.endpoint)
-            self.listener.has_changed()     # snapshot the graph state this run is based on
-            org, ent, ten = run(self.endpoint, self.api_key)
-            self.scores = {"Organization": org, "PublicEntity": ent, "Tender": ten}
-            self.dirty = False
-            log.info("[analysis] %s: analysis finished", self.pilot)
+    def analyse(self):
+        """Scores of the graph as it is now: the analysis runs on every request.
+        The result is kept only as a fallback for a later failed run."""
+        log.info("[analysis] %s: starting analysis -> %s", self.pilot, self.endpoint)
+        org, ent, ten = run(self.endpoint, self.api_key)
+        self.scores = {"Organization": org, "PublicEntity": ent, "Tender": ten}
+        log.info("[analysis] %s: analysis finished", self.pilot)
         return self.scores
-
-    def close(self):
-        try:
-            self.listener.close()
-        except Exception as e:
-            log.exception("[pilot]   %s: closing the Neo4j listener failed: %s",
-                          self.pilot, describe_error(e))
 
 
 def handle_request(ctx, record, producer):
@@ -200,7 +183,7 @@ def handle_request(ctx, record, producer):
 
     failure = None
     try:
-        scores = ctx.refresh()
+        scores = ctx.analyse()
     except Exception as e:
         scores = ctx.scores
         if scores is not None:
@@ -313,8 +296,6 @@ def main():
         sys.exit(1)                 # already logged with its traceback
     finally:
         consumer.close()
-        for ctx in contexts:
-            ctx.close()
         if producer is not None:
             producer.close()
 

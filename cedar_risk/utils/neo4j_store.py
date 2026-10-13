@@ -8,7 +8,7 @@ connects to Neo4j over Bolt. This module is read-only.
 import requests
 import os
 
-from .cypher_queries import READ_NODES, READ_RELS, STATE
+from .cypher_queries import READ_NODES, READ_RELS
 
 
 def run_cypher(query, endpoint, api_key, parameters=None):
@@ -38,31 +38,6 @@ def read_from_neo4j(endpoint, api_key):
     nodes = run_cypher(READ_NODES, endpoint, api_key)
     rels = run_cypher(READ_RELS, endpoint, api_key)
     return nodes, rels
-
-
-class Neo4jListener:
-    """Polls the HTTP gateway to detect graph changes."""
-
-    def __init__(self, endpoint, api_key):
-        self.endpoint = endpoint
-        self.api_key = api_key
-        self.last_state = None
-
-    def has_changed(self):
-        record = run_cypher(STATE, self.endpoint, self.api_key)[0]
-        current_state = (record["node_count"], record["relationship_count"])
-
-        if self.last_state is None:
-            self.last_state = current_state
-            return False
-        if current_state != self.last_state:
-            self.last_state = current_state
-            return True
-        return False
-
-    def close(self):
-        """Kept for compatibility with the previous implementation."""
-        pass
 
 
 def pilot_setting(name, pilot, default=None):
