@@ -29,11 +29,14 @@ cedar-neo4j/
 older_files/
 outputs/
 logs/
+synthetic_anomalies/
 output.json
 kafka/init
 kafka/docker-compose.yml
 kafka/scripts.sh
+audits/
 export.py
+data_generation.py
 
 # Distribution / packaging
 .Python

@@ -107,8 +107,7 @@ GRAPH_ENDPOINT=http://localhost:8000/neo4j/query
 GRAPH_API_KEY=cedar_local_0bc4c44d8c89412fbc4f6271eb28c3f4952f0e89f06c487bb6fb61d6e4fd95af
 
 # Kafka -- same variables as the CEDAR production template (secure-kafka/README.md)
-KAFKA_BOOTSTRAP_SERVERS=localhost:8004
-KAFKA_DOCKER_BOOTSTRAP_SERVERS=kafka:9094
+KAFKA_BOOTSTRAP_SERVERS=localhost:8004       # or echo:8004, kafka.cedar-heu-project.eu:8004
 KAFKA_CREDENTIALS_DIR=./kafka/secrets/local/upm
 KAFKA_KEY_PASSWORD=<line 1 of cred.txt>
 KAFKA_SASL_USERNAME=<line 2 of cred.txt>
@@ -128,7 +127,7 @@ docker compose --profile local-kafka up -d   # broker on localhost:8004 + topic 
 `kafka/secrets/local/upm/` has the same files as the production archive
 `secure-kafka/users/upm.7z`. To move to production, copy `.env.example` to `.env`:
 point `KAFKA_CREDENTIALS_DIR` to the extracted `upm/` folder, copy the three
-lines of its `cred.txt`, and drop `KAFKA_DOCKER_BOOTSTRAP_SERVERS`.
+lines of its `cred.txt`.
 
 ## 3. Build and run the risk-assessment module
 

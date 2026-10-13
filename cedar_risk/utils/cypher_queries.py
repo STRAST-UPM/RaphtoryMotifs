@@ -80,6 +80,32 @@ RETURN type(r) AS rel, elementId(a) AS src, elementId(b) AS dst
 """
 
 
+# Synthetic anomaly graph (synthetic_anomalies/create_neo4j_graph.py), written
+# in the same schema as the pilot graphs, so READ_NODES / READ_RELS and the
+# scoring read it unchanged. LOCAL graph only: SYNTHETIC_CLEAR empties it.
+SYNTHETIC_CLEAR = "MATCH (n) DETACH DELETE n"
+
+SYNTHETIC_LOAD = """
+UNWIND $rows AS r
+MERGE (pe:public_entity {ID_Public_Entity: r.entity})
+MERGE (t:tender {ID_Tender: r.tender})
+  SET t.Winning_Bid = r.winning_bid,
+      t.Awarded_Price = r.awarded_price,
+      t.Responsible_Signee_Name = r.official,
+      t.Time_Publication = r.time_publication
+MERGE (pe)-[:ISSUES]->(t)
+MERGE (t)-[:ISSUED_BY]->(pe)
+MERGE (o:organization {ID_Organization: r.organization})
+MERGE (b:bid {ID_Bid: r.bid})
+  SET b.Time_Submission = r.time_submission,
+      b.Contract_Price = r.contract_price,
+      b.Responsible_Signee_Name = r.person,
+      b.Successful_Bid = r.successful
+MERGE (o)-[:SUBMITS]->(b)
+MERGE (b)-[:SUBMITTED_FOR]->(t)
+"""
+
+
 # Change detector used by the listener.
 STATE = """
 MATCH (n)

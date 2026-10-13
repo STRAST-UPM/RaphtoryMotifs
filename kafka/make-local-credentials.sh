@@ -25,6 +25,14 @@
 #   ./kafka/make-local-credentials.sh upm ui       # several users
 #   ./kafka/make-local-credentials.sh --force upm  # start over with a new CA
 #
+# Broker on another machine: its certificate must name the host clients connect
+# to (they check it, as in production). Add the names / IPs with --broker-host
+# (repeatable) or KAFKA_BROKER_HOSTS; only the broker certificate is reissued,
+# the CA and the users' credentials stay valid:
+#   ./kafka/make-local-credentials.sh --broker-host echo --broker-host echo.dit.upm.es
+#   KAFKA_BROKER_HOSTS="echo echo.dit.upm.es 138.4.11.230" ./kafka/make-local-credentials.sh
+# and start that broker with KAFKA_ADVERTISED_HOST=<one of them> (docker-compose.yml).
+#
 # Existing files are kept, so re-running only adds what is missing; restart
 # the broker afterwards (docker compose --profile local-kafka up -d --force-recreate).
 
@@ -36,12 +44,17 @@ SUBJ="/C=EU/ST=EU/L=EU/O=KAFKA/OU=LOCAL"     # production: .../OU=TEST
 
 force=0
 users=()
-for arg in "$@"; do
-    case "$arg" in
+hosts_env=${KAFKA_BROKER_HOSTS:-}
+broker_hosts=(${hosts_env//,/ })        # "a b" or "a,b"
+while [[ $# -gt 0 ]]; do
+    case "$1" in
         --force) force=1 ;;
-        -h|--help) sed -n '2,30p' "$0"; exit 0 ;;
-        *) users+=("$arg") ;;
+        --broker-host) broker_hosts+=("$2"); shift ;;
+        --broker-host=*) broker_hosts+=("${1#*=}") ;;
+        -h|--help) sed -n '2,38p' "$0"; exit 0 ;;
+        *) users+=("$1") ;;
     esac
+    shift
 done
 [[ ${#users[@]} -eq 0 ]] && users=(upm)
 
@@ -86,11 +99,22 @@ fi
 cp "$ROOT/ca/kafka-cedar-ca-1.crt" "$ROOT/broker/"
 
 # ---- broker: PEM keystore = key + certificate in one file -----------------
+# names clients may use to reach it: Docker network, this machine, + --broker-host
+broker_san="DNS:kafka,DNS:kafka-local,DNS:localhost,IP:127.0.0.1"
+for h in "${broker_hosts[@]}"; do
+    if [[ $h =~ ^[0-9]+(\.[0-9]+){3}$ ]]; then broker_san+=",IP:$h"; else broker_san+=",DNS:$h"; fi
+done
+if [[ -f "$ROOT/broker/broker.pem" && "$(cat "$ROOT/broker/broker.san" 2>/dev/null)" != "$broker_san" \
+      && ${#broker_hosts[@]} -gt 0 ]]; then
+    echo "broker host names changed: reissuing the broker certificate (CA and users kept)"
+    rm -f "$ROOT/broker/broker.pem"
+fi
 if [[ ! -f "$ROOT/broker/broker.pem" ]]; then
-    echo "creating the broker certificate"
-    sign broker "$ROOT/broker" kafka "DNS:kafka,DNS:kafka-local,DNS:localhost,IP:127.0.0.1"
+    echo "creating the broker certificate for: ${broker_san//DNS:/}"
+    sign broker "$ROOT/broker" kafka "$broker_san"
     cat "$ROOT/broker/broker.key" "$ROOT/broker/broker.certificate.pem" > "$ROOT/broker/broker.pem"
     rm "$ROOT/broker/broker.key" "$ROOT/broker/broker.certificate.pem"
+    echo "$broker_san" > "$ROOT/broker/broker.san"
 fi
 
 # ---- admin: the broker's own SASL user, used by kafka-init ----------------

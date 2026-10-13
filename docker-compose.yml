@@ -4,12 +4,12 @@ networks:
   cedar-network:
 
 x-cedar-risk: &cedar-risk
-  networks: [cedar-network]
+  # the host's network: localhost and host names mean the same as for
+  # `python main.py`, so KAFKA_BOOTSTRAP_SERVERS in .env alone picks the broker
+  # (localhost:8004 = the local one, echo:8004 = echo, production, ...)
+  network_mode: host
   env_file: .env              # same settings as a local run (PILOTS, GRAPH_*, KAFKA_*, LOG_*)
   environment:
-    # the local broker is kafka:9094 on this network (localhost:8004 is the
-    # host's); without KAFKA_DOCKER_BOOTSTRAP_SERVERS (production) the .env value
-    KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_DOCKER_BOOTSTRAP_SERVERS:-${KAFKA_BOOTSTRAP_SERVERS}}
     # the credentials folder of .env, mounted read-only below
     KAFKA_CREDENTIALS_DIR: /app/kafka-credentials
     KAFKA_CA_FILE: ""
@@ -65,12 +65,33 @@ services:
     image: cedar-http-api
     container_name: cedar-http-api
     networks: [cedar-network]
+    environment:
+      GRAPH_API_KEY: ${SYNTHETIC_GRAPH_API_KEY:?set SYNTHETIC_GRAPH_API_KEY in .env}
     ports:
       - "8000:8000"
     depends_on:
       neo4j:
         condition: service_healthy
     restart: on-failure
+
+  # ---- Synthetic anomaly scenarios -> local Neo4j (one-shot) --------------
+  # Empties the local graph and loads synthetic_anomalies/data_generation.py's
+  # market, in the pilot schema; then exits. Score it: python synthetic_anomalies/test_synthetic.py
+  synthetic-graph:
+    profiles: ["local-neo4j"]
+    build: { context: ., target: source }
+    image: cedar-risk:source
+    container_name: synthetic-graph
+    networks: [cedar-network]
+    depends_on: [cedar-http-api]
+    volumes:
+      - ./synthetic_anomalies:/app/synthetic_anomalies:ro
+    environment:
+      SYNTHETIC_GRAPH_ENDPOINT: http://cedar-http-api:8000/neo4j/query
+      SYNTHETIC_GRAPH_API_KEY: ${SYNTHETIC_GRAPH_API_KEY:?set SYNTHETIC_GRAPH_API_KEY in .env}
+      LOG_FILE: none
+    entrypoint: ["python", "synthetic_anomalies/create_neo4j_graph.py"]
+    restart: "no"
 
   # ---- Kafka broker: local replica of the CEDAR production cluster ----------
   # Same security as production (secure-kafka/README.md): SASL_SSL = TLS with
@@ -102,7 +123,11 @@ services:
       #   CONTROLLER  KRaft, inside the broker only
       # (the names must not contain "SSL": the image's own SSL setup would take over)
       KAFKA_LISTENERS: EXTERNAL://:8004,INTERNAL://:9094,CONTROLLER://:9093
-      KAFKA_ADVERTISED_LISTENERS: EXTERNAL://localhost:8004,INTERNAL://kafka:9094
+      # EXTERNAL is the address the broker tells clients to use after bootstrap:
+      # on another machine, set KAFKA_ADVERTISED_HOST (that machine's .env) to the
+      # name clients reach it by -- it must also be in the broker certificate
+      # (make-local-credentials.sh --broker-host)
+      KAFKA_ADVERTISED_LISTENERS: EXTERNAL://${KAFKA_ADVERTISED_HOST:-localhost}:8004,INTERNAL://kafka:9094
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: EXTERNAL:SASL_SSL,INTERNAL:SASL_SSL,CONTROLLER:PLAINTEXT
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
