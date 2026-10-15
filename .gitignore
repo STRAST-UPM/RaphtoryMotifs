@@ -27,6 +27,7 @@ cedar_export/
 cedar_scores/
 cedar-neo4j/
 older_files/
+data_model/
 outputs/
 logs/
 synthetic_anomalies/
