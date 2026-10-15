@@ -1,16 +1,13 @@
 """Logging setup shared by the CEDAR risk tool.
 
-    from cedar_risk.utils.logger import get_logger
-    log = get_logger(__name__)
-    log.info("analysis started")
-
-.env:
-    LOG_LEVEL=INFO              DEBUG / INFO / WARNING / ERROR (default: INFO)
-    LOG_FILE=logs/cedar.log     log file (default: logs/cedar.log), rotated at
-                                midnight into cedar.log.YYYY-MM-DD
-    LOG_FILE=none               console only, no file
-    LOG_BACKUPS=14              keep only the last 14 days, older files are
-                                deleted (default: unset -> every day is kept)
+Logger Config :
+    .env:
+       LOG_LEVEL=INFO              DEBUG / INFO / WARNING / ERROR (default: INFO)
+       LOG_FILE=logs/cedar.log     log file (default: logs/cedar.log), rotated at
+                                   midnight into cedar.log.YYYY-MM-DD
+       LOG_FILE=none               console only, no file
+       LOG_BACKUPS=14              keep only the last 14 days, older files are
+                                   deleted (default: unset -> every day is kept)
 """
 
 import logging
@@ -27,8 +24,8 @@ _configured = False
 
 
 def setup_logging(level=None, log_file=None):
-    """Configure the "cedar_risk" logger once: console (stderr) and a daily
-    rotated file (LOG_FILE, default logs/cedar.log). Later calls are no-ops."""
+    """Configure the logger once: console (stderr) and a daily
+    rotated file (LOG_FILE, default logs/cedar.log) """
     global _configured
     root = logging.getLogger(_ROOT)
     if _configured:
@@ -57,7 +54,7 @@ def setup_logging(level=None, log_file=None):
 
 
 def get_logger(name=None):
-    """A child of the "cedar_risk" logger. Call setup_logging() once at
+    """A child of the  logger. Call setup_logging() once at
     start-up (after load_dotenv) so LOG_LEVEL / LOG_FILE are honoured."""
     if not name or name == "__main__":
         return logging.getLogger(f"{_ROOT}.main")

@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 730" width="1200" height="730" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2b5c8a"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2f7a3a"/>
+    </marker>
+    <marker id="arrow-gold" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9a7420"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="730" fill="#ffffff"/>
+
+  <!-- ===================== UI ===================== -->
+  <rect x="20" y="262" width="140" height="96" rx="10" fill="#f6f6f6" stroke="#666" stroke-width="1.5"/>
+  <text x="90" y="316" text-anchor="middle" font-size="16" font-weight="bold" fill="#222">CEDAR UI</text>
+
+  <!-- ===================== Kafka ===================== -->
+  <rect x="200" y="40" width="250" height="560" rx="12" fill="#f4f4f4" stroke="#333" stroke-width="1.8"/>
+  <text x="325" y="72" text-anchor="middle" font-size="19" font-weight="bold" fill="#222">Kafka broker</text>
+  <text x="325" y="93" text-anchor="middle" font-size="12" fill="#555">SASL_SSL (TLS + SASL)</text>
+  <text x="325" y="110" text-anchor="middle" font-size="11" fill="#777">KAFKA_BOOTSTRAP_SERVERS</text>
+
+  <rect x="220" y="130" width="210" height="110" rx="8" fill="#ffffff" stroke="#555" stroke-width="1.5"/>
+  <text x="325" y="160" text-anchor="middle" font-size="15" font-weight="bold" fill="#222">Request topic</text>
+  <text x="325" y="184" text-anchor="middle" font-size="13" fill="#2b5c8a">&lt;pilot&gt;_analyse</text>
+  <text x="325" y="204" text-anchor="middle" font-size="12" fill="#555">it_analyse · sl_analyse</text>
+  <text x="325" y="226" text-anchor="middle" font-size="11" fill="#777">KAFKA_REQUEST_TOPICS</text>
+
+  <rect x="220" y="420" width="210" height="110" rx="8" fill="#ffffff" stroke="#555" stroke-width="1.5"/>
+  <text x="325" y="450" text-anchor="middle" font-size="15" font-weight="bold" fill="#222">Results topic</text>
+  <text x="325" y="474" text-anchor="middle" font-size="13" fill="#2b5c8a">&lt;pilot&gt;_results_available</text>
+  <text x="325" y="494" text-anchor="middle" font-size="12" fill="#555">it_results_available · …</text>
+  <text x="325" y="516" text-anchor="middle" font-size="11" fill="#777">KAFKA_RESULTS_TOPICS</text>
+
+  <!-- UI -> request topic, results topic -> UI -->
+  <path d="M90,262 L90,185 L216,185" fill="none" stroke="#2b5c8a" stroke-width="2.2" marker-end="url(#arrow)"/>
+  <text x="98" y="176" font-size="12" fill="#2b5c8a">request</text>
+  <path d="M216,475 L90,475 L90,362" fill="none" stroke="#2b5c8a" stroke-width="2.2" marker-end="url(#arrow)"/>
+  <text x="98" y="494" font-size="12" fill="#2b5c8a">response</text>
+
+  <!-- ===================== Module ===================== -->
+  <rect x="510" y="20" width="430" height="600" rx="14" fill="#eef4fb" stroke="#2b5c8a" stroke-width="2"/>
+  <text x="725" y="52" text-anchor="middle" font-size="19" font-weight="bold" fill="#1d3f60">UPM: Raphtory Motifs module</text>
+  <text x="725" y="74" text-anchor="middle" font-size="12" fill="#3b5f80">runs only when a request arrives</text>
+
+  <!-- step boxes: x=540 w=370 h=62, gap 18 -->
+  <g font-size="13" fill="#222">
+    <rect x="540" y="96" width="370" height="62" rx="8" fill="#ffffff" stroke="#7a9cc0"/>
+    <text x="560" y="122" font-weight="bold">1  Consume the request</text>
+    <text x="560" y="144" font-size="12" fill="#555">indicator UPM_RAPHTORY_UC5_AI8 · KAFKA_GROUP_ID</text>
+
+    <rect x="540" y="176" width="370" height="62" rx="8" fill="#ffffff" stroke="#7a9cc0"/>
+    <text x="560" y="202" font-weight="bold">2  Read the pilot graph</text>
+    <text x="560" y="224" font-size="12" fill="#555">every node and relationship, through the HTTP gateway</text>
+
+    <rect x="540" y="256" width="370" height="62" rx="8" fill="#fdf0f4" stroke="#c0567a"/>
+    <text x="560" y="282" font-weight="bold">3  Raphtory temporal graph</text>
+    <text x="560" y="304" font-size="12" fill="#555">values unified across pilots, nodes and edges timed</text>
+
+    <rect x="540" y="336" width="370" height="62" rx="8" fill="#ffffff" stroke="#7a9cc0"/>
+    <text x="560" y="362" font-weight="bold">4  Motifs</text>
+    <text x="560" y="384" font-size="12" fill="#555">collusion: 3 organizations · favoritism: entity + group</text>
+
+    <rect x="540" y="416" width="370" height="62" rx="8" fill="#ffffff" stroke="#7a9cc0"/>
+    <text x="560" y="442" font-weight="bold">5  Risk scores (0 – 1)</text>
+    <text x="560" y="464" font-size="12" fill="#555">organizations · public entities · tenders</text>
+
+    <rect x="540" y="496" width="370" height="62" rx="8" fill="#ffffff" stroke="#7a9cc0"/>
+    <text x="560" y="522" font-weight="bold">6  Build the response</text>
+    <text x="560" y="544" font-size="12" fill="#555">requested entities only · CEDAR message template</text>
+  </g>
+  <!-- step-to-step arrows -->
+  <g stroke="#2b5c8a" stroke-width="2" marker-end="url(#arrow)">
+    <line x1="725" y1="158" x2="725" y2="174"/>
+    <line x1="725" y1="238" x2="725" y2="254"/>
+    <line x1="725" y1="318" x2="725" y2="334"/>
+    <line x1="725" y1="398" x2="725" y2="414"/>
+    <line x1="725" y1="478" x2="725" y2="494"/>
+  </g>
+
+  <!-- request topic -> step 1 ; step 6 -> results topic -->
+  <path d="M434,185 L470,185 L470,127 L536,127" fill="none" stroke="#2b5c8a" stroke-width="2.2" marker-end="url(#arrow)"/>
+  <path d="M540,527 L470,527 L470,475 L434,475" fill="none" stroke="#2b5c8a" stroke-width="2.2" marker-end="url(#arrow)"/>
+  <text x="506" y="546" text-anchor="end" font-size="12" fill="#2b5c8a">publish</text>
+
+  <!-- ===================== Neo4j ===================== -->
+  <rect x="990" y="140" width="190" height="136" rx="12" fill="#eef7ee" stroke="#2f7a3a" stroke-width="1.8"/>
+  <text x="1085" y="170" text-anchor="middle" font-size="16" font-weight="bold" fill="#1f5426">Pilot graph</text>
+  <text x="1085" y="190" text-anchor="middle" font-size="13" fill="#1f5426">Neo4j</text>
+  <text x="1085" y="214" text-anchor="middle" font-size="11" fill="#555">HTTP gateway</text>
+  <text x="1085" y="234" text-anchor="middle" font-size="11" fill="#555">GRAPH_ENDPOINT</text>
+  <text x="1085" y="252" text-anchor="middle" font-size="11" fill="#555">GRAPH_API_KEY</text>
+  <!-- query / graph -->
+  <line x1="912" y1="196" x2="986" y2="196" stroke="#2f7a3a" stroke-width="2.2" marker-end="url(#arrow-green)"/>
+  <text x="922" y="188" font-size="11" fill="#2f7a3a">query</text>
+  <line x1="986" y1="222" x2="914" y2="222" stroke="#2f7a3a" stroke-width="2.2" marker-end="url(#arrow-green)"/>
+  <text x="922" y="240" font-size="11" fill="#2f7a3a">graph</text>
+
+  <!-- ===================== Disk ===================== -->
+  <rect x="540" y="648" width="370" height="72" rx="10" fill="#fff8e6" stroke="#9a7420" stroke-width="1.6"/>
+  <text x="725" y="671" text-anchor="middle" font-size="14" font-weight="bold" fill="#5a4310">Saved on disk, if OUTPUT_DIR is set</text>
+  <text x="725" y="692" text-anchor="middle" font-size="12" fill="#555">&lt;OUTPUT_DIR&gt;/&lt;pilot&gt;/&lt;time&gt;_&lt;requestID&gt;.json</text>
+  <text x="725" y="710" text-anchor="middle" font-size="11" fill="#777">not set: only published · log: LOG_FILE</text>
+  <line x1="725" y1="558" x2="725" y2="644" stroke="#9a7420" stroke-width="2.2" marker-end="url(#arrow-gold)"/>
+  <text x="733" y="610" font-size="12" fill="#9a7420">save (optional)</text>
+</svg>

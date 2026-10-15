@@ -80,7 +80,6 @@ def tender_description(
     coll_group,
     fav_group,
     entity,
-    winner,
     open_stage,
 ):
     """Generate the description for a tender anomaly."""

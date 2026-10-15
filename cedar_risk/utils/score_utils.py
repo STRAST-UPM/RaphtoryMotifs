@@ -4,14 +4,11 @@ from collections import Counter
 from .config import THRESHOLDS
 
 
-REPEAT = THRESHOLDS["REPEAT"]
+REPEAT = THRESHOLDS["REPEAT"]      # shared by motifs.py and indicators.py
 SUCCESS = THRESHOLDS["SUCCESS"]
 WINS_MIN = THRESHOLDS["WINS_MIN"]
 
-# Size of the organization group of the original scenarios (triplets: three
-# organizations bidding on the same tender). Smaller groups (pairs, then a single
-# organization) are only used as fallbacks, discounted by how far they are from
-# this scenario -- see scoring.py.
+# Organization Group Size in Both Collusion and Favoritism Motifs
 GROUP_SIZE = THRESHOLDS.get("GROUP_SIZE", 3)
 
 
@@ -19,10 +16,6 @@ def group_need(group):
     """A group is 'present' in a tender when at least this many of its members bid."""
     return min(GROUP_SIZE, len(group))
 
-
-# --------------------------------------------------------------------------- #
-# Tolerant helpers for incomplete data
-# --------------------------------------------------------------------------- #
 
 def is_positive(x):
     """True for a real, finite, strictly positive number (None / NaN / 0 / text -> False)."""
@@ -56,9 +49,7 @@ def dominant_share(values):
     return Counter(values).most_common(1)[0][1] / len(values)
 
 
-# --------------------------------------------------------------------------- #
-# Scoring functions (unchanged principle)
-# --------------------------------------------------------------------------- #
+# Scoring functions
 
 def sim(x, target):
     """
@@ -115,7 +106,7 @@ def combine(values):
         - High Targeting Rate 
         - Responsible person consistency
         - Restricted Competition
-        - High Recuurence          
+        - High Recurrence Rate         
     """
     prod = 1.0
 

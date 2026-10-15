@@ -1,24 +1,4 @@
-"""All Cypher used against the CEDAR data-model graph, in one place."""
-
-
-
-READ_NODES_BACKUP = """
-MATCH (n)
-RETURN labels(n)[0] AS label,
-       n.id AS id,
-       properties(n) AS props
-"""
-
-
-# Every relationship with its endpoints' ids and all its properties.
-READ_RELS_BACKUP = """
-MATCH (a)-[r]->(b)
-RETURN type(r) AS rel,
-       a.id AS src,
-       b.id AS dst,
-       properties(r) AS props
-"""
-
+"""All Cypher used against the CEDAR data-model graph"""
 
 
 READ_NODES = """
@@ -60,29 +40,8 @@ RETURN type(r) AS rel,
 """
 
 
+# Synthetic anomaly graph generating and loading 
 
-
-
-
- 
-
-
-# Data-model audit (audit_graph.py): every node and relationship untouched,
-# identified by elementId -- unique even when two nodes share a business id.
-AUDIT_NODES = """
-MATCH (n)
-RETURN elementId(n) AS key, labels(n) AS labels, properties(n) AS props
-"""
-
-AUDIT_RELS = """
-MATCH (a)-[r]->(b)
-RETURN type(r) AS rel, elementId(a) AS src, elementId(b) AS dst
-"""
-
-
-# Synthetic anomaly graph (synthetic_anomalies/create_neo4j_graph.py), written
-# in the same schema as the pilot graphs, so READ_NODES / READ_RELS and the
-# scoring read it unchanged. LOCAL graph only: SYNTHETIC_CLEAR empties it.
 SYNTHETIC_CLEAR = "MATCH (n) DETACH DELETE n"
 
 SYNTHETIC_LOAD = """

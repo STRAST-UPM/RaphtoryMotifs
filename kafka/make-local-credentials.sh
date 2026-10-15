@@ -26,15 +26,16 @@
 #   ./kafka/make-local-credentials.sh --force upm  # start over with a new CA
 #
 # Broker on another machine: its certificate must name the host clients connect
-# to (they check it, as in production). Add the names / IPs with --broker-host
-# (repeatable) or KAFKA_BROKER_HOSTS; only the broker certificate is reissued,
-# the CA and the users' credentials stay valid:
-#   ./kafka/make-local-credentials.sh --broker-host echo --broker-host echo.dit.upm.es
-#   KAFKA_BROKER_HOSTS="echo echo.dit.upm.es 138.4.11.230" ./kafka/make-local-credentials.sh
-# and start that broker with KAFKA_ADVERTISED_HOST=<one of them> (docker-compose.yml).
+# to (they check it, as in production). The host of KAFKA_BOOTSTRAP_SERVERS in
+# the root .env is added automatically -- the same host kafka/docker-compose.yml
+# advertises -- so on echo (KAFKA_BOOTSTRAP_SERVERS=echo:8004) just run the
+# script there. More names / IPs: --broker-host (repeatable) or KAFKA_BROKER_HOSTS.
+# Only the broker certificate is reissued; the CA and the users' credentials
+# stay valid:
+#   ./kafka/make-local-credentials.sh --broker-host echo.dit.upm.es
 #
 # Existing files are kept, so re-running only adds what is missing; restart
-# the broker afterwards (docker compose --profile local-kafka up -d --force-recreate).
+# the broker afterwards (docker compose -f kafka/docker-compose.yml up -d --force-recreate).
 
 set -euo pipefail
 
@@ -51,12 +52,24 @@ while [[ $# -gt 0 ]]; do
         --force) force=1 ;;
         --broker-host) broker_hosts+=("$2"); shift ;;
         --broker-host=*) broker_hosts+=("${1#*=}") ;;
-        -h|--help) sed -n '2,38p' "$0"; exit 0 ;;
+        -h|--help) sed -n '2,37p' "$0"; exit 0 ;;
         *) users+=("$1") ;;
     esac
     shift
 done
 [[ ${#users[@]} -eq 0 ]] && users=(upm)
+
+# + the host clients use: KAFKA_BOOTSTRAP_SERVERS of the root .env (first server)
+env_file="$(cd "$(dirname "$0")/.." && pwd)/.env"
+if [[ -f "$env_file" ]]; then
+    b=$(sed -n 's/^[[:space:]]*KAFKA_BOOTSTRAP_SERVERS[[:space:]]*=//p' "$env_file" \
+        | tail -1 | sed 's/[[:space:]]#.*//' | tr -d "\"' \r")
+    b=${b%%,*}; h=${b%:*}
+    case "$h" in
+        ""|localhost|127.0.0.1|kafka|kafka-local) ;;      # already in every broker certificate
+        *) broker_hosts+=("$h") ;;
+    esac
+fi
 
 [[ $force -eq 1 ]] && rm -rf "$ROOT"
 umask 077

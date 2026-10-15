@@ -1,26 +1,18 @@
-"""Raphtory temporal graph built from the real CEDAR pilot graphs (it / ua / sl).
-
-Everything in Neo4j is loaded as it is: every node label, every relationship
-type, every property with its original name (values stay as stored, except the
-used properties below). The time index is parsed, because Raphtory needs one.
-
-The properties the risk-score module uses are converted in place (see
-`unify.py`): Successful_Bid becomes a real bool, prices become floats, ... They
-keep their own names and no copies are added, so the tender index -- the only
-thing the risk-score module reads -- has the same types for every pilot.
+"""
+Loading the Pilots (it , sl , ua ) Neo4j Graph into the Raphtory Temporal Graph Format
 """
 
 from datetime import datetime
-
 from raphtory import Graph
-
 from .unify import norm as _norm, pick, parse_time, to_bool, unify_props
 
-DEFAULT_TIME = datetime(1970, 1, 1)          # only for nodes with no usable time at all
 
-# Which property gives the time of a tender / a bid (first parseable wins).
+DEFAULT_TIME = datetime(1970, 1, 1) # only for nodes with no usable time at all
+
+
 TENDER_TIME_FIELDS = ("Time_Publication", "Time_Creation", "Time_Open", "Time_Deadline")
 BID_TIME_FIELDS = ("Time_Submission",)       # if absent, the bid takes its tender's time
+
 
 # For each relationship, the endpoint whose time the edge takes.
 EDGE_ANCHOR = {
@@ -32,8 +24,6 @@ EDGE_ANCHOR = {
     "RESPONSIBLE_OF": "dst",   # responsible_person -> entity : entity time
 }
 
-
-# ----------------------------------------------------------------- helpers
 def _first_time(props, fields):
     for f in fields:
         dt = parse_time(pick(props, f))
@@ -42,7 +32,6 @@ def _first_time(props, fields):
     return None
 
 
-# --------------------------------------------------------------- time index
 def _resolve_times(by_id, rels):
     t = {}
     for nid, n in by_id.items():
@@ -93,11 +82,9 @@ def _clean(props):
     return {k: v for k, v in (props or {}).items() if v is not None}
 
 
-# ------------------------------------------------------------------- build
+
 def _harmonize(prop_dicts, what):
-    """Raphtory allows one value type per property name. If a property holds
-    mixed types across nodes (or edges), make it uniform: int+float -> float,
-    anything else -> text. Uniform properties are left exactly as they are."""
+    """Standardizing Node Properties Across the Graph"""
     seen = {}
     for d in prop_dicts:
         for k, v in d.items():
@@ -113,7 +100,7 @@ def _harmonize(prop_dicts, what):
 
 
 def build_temporal_graph(nodes, rels):
-    """Nodes = Neo4j labels (verbatim) with all their properties;
+    """Nodes = Neo4j labels  with all their properties;
     edges = relationship types as layers, with all their properties."""
     by_id = {}
     dropped = 0
@@ -143,10 +130,8 @@ def build_temporal_graph(nodes, rels):
     return g
 
 
-# ------------------------------------------------------------ tender index
 def node_ids(g):
-    """Ids of every organization, public entity and tender in the graph, so that
-    each of them gets a risk score even if it has no connection."""
+    """Ids of every organization, public entity and tender in the graph"""
     kinds = {"organization": "organization", "publicentity": "public_entity",
              "tender": "tender"}
     out = {"organization": [], "public_entity": [], "tender": []}
@@ -158,7 +143,8 @@ def node_ids(g):
 
 
 def tender_index(g):
-    """One pass over the temporal graph; the analysis reads only this.
+    """
+    One pass over the temporal graph; the analysis reads only this.
     Types are the same for every pilot (the used properties are converted in place):
 
     idx[tender_id] = {
@@ -166,17 +152,10 @@ def tender_index(g):
         "official":    str | None      tender responsible signee
         "winner":      str | None      organization of the successful bid (None = no winner)
         "winner_bid":  float | None    awarded price
-        "bids": [{"bid": str, "bid_id": ..., "org": str, "orgs": [str],
+        "bids": [{"bid": str, "bid_id": ..., "org": str,
                   "amount": float | None, "person": str | None, "successful": bool}],
         "participants": [str]          sorted organizations that bid
     }
-
-    A bid counts as successful only if its flag says so; a bid with no flag is
-    not the winner (successful=False). A bid submitted by several
-    organizations keeps the first one (sorted) in `org` and lists all in `orgs`.
-    If several bids are flagged successful, the winner is the one whose ID_Bid
-    equals the tender's Winning_Bid, else the lowest amount, else the first by
-    bid name -- so the result never depends on iteration order.
     """
     idx = {}
     skipped_bids = 0
@@ -196,7 +175,7 @@ def tender_index(g):
                 skipped_bids += 1
                 continue
             recs.append({"bid": b.name, "bid_id": pick(bp, "id_bid"),
-                         "org": orgs[0], "orgs": orgs,
+                         "org": orgs[0],
                          "amount": pick(bp, "contract_price"),
                          "person": pick(bp, "responsible_signee_name"),
                          "successful": to_bool(pick(bp, "successful_bid"))})

@@ -9,7 +9,7 @@ main.py must be running (in another terminal) to answer.
     python send_request.py --pilots sl --tender B0835BC998 C1234ABCD5
     python send_request.py --pilots it --organization all --tender B0835BC998
     python send_request.py --everything       -> one {"entityType": "all", "entityId": "all"}
-    python send_request.py --indicators UPM_RAPHTORY_TENDER_RISK
+    python send_request.py --indicators OTHER_TOOL_ID -> a request NOT for us (no response expected)
     python send_request.py --wait 0           -> send only, don't wait for the response
     python send_request.py --print            -> also print the request and the full response
 
@@ -35,8 +35,8 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 
 from cedar_risk.utils.kafka_client import (
-    ALL, TOOL_NAME, build_request, kafka_settings, make_producer, pilot_topic,
-    publish, tail_consumer)
+    kafka_settings, make_producer, pilot_topic, publish, tail_consumer)
+from cedar_risk.utils.messages import ALL, INDICATOR_ID, TOOL_NAME, build_request
 from cedar_risk.utils.neo4j_store import pilot_setting, resolve_pilots
 
 
@@ -85,8 +85,8 @@ if __name__ == "__main__":
                     help='public entity IDs, or "all"')
     ap.add_argument("--everything", action="store_true",
                     help='a single {"entityType": "all", "entityId": "all"} entry')
-    ap.add_argument("--indicators", nargs="+", metavar="INDICATOR_ID",
-                    help="indicator_id strings (default: none = all indicators)")
+    ap.add_argument("--indicators", nargs="+", metavar="INDICATOR_ID", default=[INDICATOR_ID],
+                    help=f"indicator_id strings (default: {INDICATOR_ID}, this tool's)")
     ap.add_argument("--kg-version", help="kg.versionId (default: KG_VERSION_<PILOT> "
                                          "or KG_VERSION in .env, else 'latest')")
     ap.add_argument("--issuer", default="ui", help="issuer field (default: ui)")

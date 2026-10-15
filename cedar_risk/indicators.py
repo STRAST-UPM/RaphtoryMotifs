@@ -3,16 +3,21 @@ import pandas as pd
 
 from  .utils.score_utils import (sim, combine, success_measurement, recurrence,
                                  group_need, reference_price, dominant_share,
-                                 is_positive)
+                                 is_positive, REPEAT)
 from .utils.config import THRESHOLDS
 
 
-REPEAT = THRESHOLDS["REPEAT"]
 BID_GAP = THRESHOLDS["BID_GAP"]
+
+# The checks reported for a group, as keys of group_checks() / entity_checks()
+ORG_CHECKS = ["repetition", "group_success_rate", "fake_competition",
+              "winner_rotation", "person_consistency"]
+ENTITY_CHECKS = ["repetition", "success_rate", "targeting_rate",
+                 "official_consistency", "restricted_competition"]
 
 # Every indicator below tolerates incomplete data (missing amounts, prices,
 # responsible persons, officials): a missing value is skipped, and an indicator
-# with nothing to measure scores 0 instead of failing.
+# with nothing to measure scores 0 instead of raising errors.
 
 
 def group_success_rate(group, tenders):

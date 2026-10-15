@@ -32,11 +32,12 @@ logs/
 synthetic_anomalies/
 output.json
 kafka/init
-kafka/docker-compose.yml
 kafka/scripts.sh
 audits/
 export.py
 data_generation.py
+audit_data_model.py
+audit_graph.py
 
 # Distribution / packaging
 .Python

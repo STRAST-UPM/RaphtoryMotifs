@@ -3,19 +3,17 @@
 The three pilots store the same things differently (Successful_Bid is a
 boolean in IT, "Yes"/"[HANDWRITTEN]" in SL, 1/0 in UA; prices are strings in
 IT and floats elsewhere). The used properties are converted IN PLACE: they keep
-their own name in the node, only the value gets a fixed type. No copies, no
-extra properties. Everything else is left exactly as stored.
+their own name in the node, only the value gets a fixed type. 
+
 
     bid     Successful_Bid           bool   always present; missing / unknown -> False
             Contract_Price           float  dropped if unreadable
             Responsible_Signee_Name  str
+    
     tender  Winning_Bid              str
             Awarded_Price            float  dropped if unreadable
             Responsible_Signee_Name  str
 
-The name is the one found in the node (UA writes Contract_price, SuccessfulBid,
-...). Only a Successful_Bid that is missing altogether is created, as
-`Successful_Bid = False`.
 """
 
 import math
@@ -52,7 +50,7 @@ def to_bool(v):
 
 
 def to_float(v):
-    """Best-effort number, None if unreadable.
+    """To number, None if unreadable.
     '81967.21' -> 81967.21 ; '0,0' -> 0.0 ; '1.234,56' -> 1234.56 ;
     '6.931.500.427' -> 6931500427.0 ; '1,234' -> 1.234 (decimal comma)"""
     if v is None:

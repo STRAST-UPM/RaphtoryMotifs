@@ -1,51 +1,11 @@
 from collections import defaultdict , Counter
 from operator import itemgetter
 
-import pandas as pd
-
-from .utils.config import THRESHOLDS
-from .utils.score_utils import involvement, sim, GROUP_SIZE
-from .indicators import group_checks , entity_checks 
+from .utils.score_utils import involvement, sim, group_need, GROUP_SIZE
+from .indicators import group_checks , entity_checks, ORG_CHECKS, ENTITY_CHECKS
 from .motifs import org_motifs, entity_group_motifs
 
 from .descriptions import org_description , tender_description , entity_description
-
-
-REPEAT = THRESHOLDS["REPEAT"]
-SUCCESS = THRESHOLDS["SUCCESS"]
-
-
-
-ORG_CHECKS = ["repetition", "group_success_rate", "fake_competition",
-              "winner_rotation", "person_consistency"]
-
-ENTITY_CHECKS = ["repetition", "success_rate", "targeting_rate",
-                 "official_consistency", "restricted_competition"]
-
-
-# --------------------------------------------------------------------------- #
-# How every node gets a score
-# --------------------------------------------------------------------------- #
-# The original scenarios (collusion between a group of GROUP_SIZE = 3
-# organizations, favoritism between an entity and such a group) are kept
-# exactly as they are and decide whenever the node has evidence for them.
-#
-# When the data has too few connections for that (tenders with only 1-2
-# bidders), the node is scored with the SAME indicators on a smaller group --
-# first a pair of organizations, then a single organization -- and the result
-# is discounted by how far that group is from the scenario:
-#
-#       closeness(k) = sim(k, GROUP_SIZE) = min(k / 3, 1)^2
-#           group of 3 -> 1.00   (original scenario, no discount)
-#           group of 2 -> 0.44
-#           single     -> 0.11
-#
-# so a node always gets a score, and a weaker structure can never look more
-# suspicious than the original scenario it approximates.
-# --------------------------------------------------------------------------- #
-
-def _basis(k):
-    return "single organization" if k == 1 else f"group of {k}"
 
 
 ## Cache the score of each organization group to avoid recomputing it
@@ -57,7 +17,7 @@ def _checks(g, T, cache):
  
 def organization_scores(T, trip, cliques, all_orgs=()):
     """
-    Compute the anomaly score for every organization.
+    Compute the risk score for every organization.
 
     An organization may belong to one or more detected group.
     Each candidate group is evaluated and the highest
@@ -65,8 +25,7 @@ def organization_scores(T, trip, cliques, all_orgs=()):
 
     Organizations with no triplet evidence are scored on pairs of co-bidders,
     then on their own bidding record (discounted by closeness to the
-    original scenario). `all_orgs` adds organizations that never bid
-    (score 0), so that every organization in the graph gets a score.
+    original manipulation scenario). 
     """
 
     ## Participants of each tender
@@ -85,7 +44,7 @@ def organization_scores(T, trip, cliques, all_orgs=()):
         members = set(g)
         ## A clique is considered present in a tender when at least three of
         ## its organizations participate.
-        need = min(GROUP_SIZE, len(members)) 
+        need = group_need(members)
         hits = Counter()
         for p in parts.values():
             if len(members & p) >= need:
@@ -105,12 +64,12 @@ def organization_scores(T, trip, cliques, all_orgs=()):
     ## Calculate number of  bids submitted by each organization 
     bids_in = Counter(o for t in T.values() for o in t["participants"])
 
-    ## The organization's own success rate (its wins / its own appearances) --
-    ## not to be confused with `group_success_rate` in the components below,
-    ## which is the success rate of a detected GROUP the organization belongs to.
+    ## The organization's own success rate (its wins / its own appearances) 
     wins_by_org = Counter(t["winner"] for t in T.values() if t.get("winner"))
 
-    ## Fallback groups (pairs, then the organization alone), largest first
+    ## Fallback groups (pairs, then the organization alone)
+    ## This ensures that organizations are assessed even when 
+    ## they are not involved in any triplet motifs.
     fallback = {}
     for k in range(GROUP_SIZE - 1, 0, -1):
         by_k = defaultdict(list)
@@ -125,8 +84,7 @@ def organization_scores(T, trip, cliques, all_orgs=()):
 
     result = {}
     for o in sorted(set(bids_in) | set(all_orgs)):
-        cands = []              # (score, checks, group, involvement, closeness)
-        basis = _basis(GROUP_SIZE)
+        cands = []              # (score, checks, group)
 
         ## Score the organization through every clique it belongs to
         for clique, participation in clique_participation.items():
@@ -134,50 +92,44 @@ def organization_scores(T, trip, cliques, all_orgs=()):
                 continue
             inv = involvement(participation["hits"][o],participation["max_hits"])
             ch = _checks(clique, T, cache)
-            cands.append((ch["overall"] * inv, ch, clique, inv, 1.0))
+            cands.append((ch["overall"] * inv, ch, clique))
    
 
         ## Score the organization through every triplet it belongs to
         for tr in by_org.get(o, ()):
             ch = _checks(tr, T, cache)
-            cands.append((ch["overall"], ch, tr, 1.0, 1.0))
+            cands.append((ch["overall"], ch, tr))
 
 
         ## No triplet evidence: fall back to smaller groups, discounted
         if not cands:
             for k, by_k in fallback.items():
-                #closeness = sim(k, GROUP_SIZE) 
                 closeness = min(k/GROUP_SIZE ,1)
                 for grp in by_k.get(o, ()):
                     ch = _checks(grp, T, cache)
-                    cands.append((ch["overall"] * closeness, ch, grp, 1.0, closeness))
+                    cands.append((ch["overall"] * closeness, ch, grp))
                 if cands:
-                    basis = _basis(k)
                     break
 
 
         ## Keep the strongest anomaly signal among all candidate groups
         if cands:
-            overall, ch, group, inv, closeness = max(cands, key=itemgetter(0)) ## give the organization the highest anomaly score
+            overall, ch, group = max(cands, key=itemgetter(0)) ## give the organization the highest anomaly score
         else:
-            overall, ch, group, inv, closeness = 0.0, {}, None, 0.0, 0.0
-            basis = "no bids"
+            overall, ch, group = 0.0, {}, None
 
  
         overall = round(float(overall), 3)
         names = list(group) if group else None
         comps = {check: round(float(ch.get(check, 0.0)), 3) for check in ORG_CHECKS}
-        comps["involvement"] = round(float(inv), 3)
         ## raw recurrence (tenders bid on together) + risk score of the success rate
         comps["appearances"] = int(ch.get("appearances", 0))
         comps["success_risk"] = round(float(ch.get("success_risk", 0.0)), 3)
-        #comps["closeness"] = round(float(closeness), 3)
         success_rate = round(wins_by_org[o] / bids_in[o], 3) if bids_in[o] else 0.0
-        result[o] = {"node_type": "Organization", "node_id": o, "overall": overall,
+        result[o] = {"overall": overall,
                      "description": org_description(overall, ch, names),
                      "group": names,
                      "components": comps,
-                     "basis": basis,
                      "success_rate": success_rate,
                      "bids_submitted": bids_in[o]}
     return result
@@ -185,7 +137,7 @@ def organization_scores(T, trip, cliques, all_orgs=()):
 
 def entity_scores(T, quad, all_entities=()):
     """
-    Compute an anomaly score for every public entity.
+    Compute a risk score for every public entity.
 
     For each public entity, the method evaluates the organization groups that
     repeatedly compete in its tenders. Each group is assessed for potential
@@ -194,11 +146,10 @@ def entity_scores(T, quad, all_entities=()):
 
     An entity with no triplet evidence is scored on pairs, then on single
     winning organizations (discounted by closeness to the original
-    scenario). `all_entities` adds entities that issued no tender (score 0).
-    Tenders without an issuing entity are ignored here.
+    scenario).
     """
 
-    ## Entity + organization-group motifs, original size first, then smaller
+    ## Entity + organization-group motifs
     quads = {GROUP_SIZE: quad}
     for k in range(GROUP_SIZE - 1, 0, -1):
         quads[k] = entity_group_motifs(T, size=k)
@@ -223,8 +174,6 @@ def entity_scores(T, quad, all_entities=()):
 
         best_score = None
         best_group = None
-        closeness = 0.0
-        basis = "no closed tenders"
 
         ## Original scenario first; smaller groups only if it has no evidence
         for k, by_entity in by_entity_k.items():
@@ -234,7 +183,7 @@ def entity_scores(T, quad, all_entities=()):
             candidate_groups = sorted(
                 by_entity.get(entity, []),
                 key=lambda x: -x[1]
-            )[:3]
+            )[:3] ## Keep the top 3 groups for the potential favoritism assessment
 
             k_closeness = sim(k, GROUP_SIZE)
 
@@ -249,7 +198,6 @@ def entity_scores(T, quad, all_entities=()):
                     best_group = group
 
             if best_score is not None:
-                closeness, basis = k_closeness, _basis(k)
                 break
 
         ## Entity has no suspicious organization groups
@@ -264,14 +212,12 @@ def entity_scores(T, quad, all_entities=()):
             check: round(float(best_score.get(check, 0.0)), 3)
             for check in ENTITY_CHECKS
         }
-        #components["closeness"] = round(float(closeness), 3)
+
         ## raw recurrence (entity tenders the group bid on) + risk score of the success rate
         components["appearances"] = int(best_score.get("appearances", 0))
         components["success_risk"] = round(float(best_score.get("success_risk", 0.0)), 3)
 
         result[entity] = {
-            "node_type": "PublicEntity",
-            "node_id": entity,
             "overall": overall,
             "description": entity_description(
                 overall,
@@ -280,7 +226,6 @@ def entity_scores(T, quad, all_entities=()):
             ),
             "group": group_names,
             "components": components,
-            "basis": basis,
             "tenders_issued": tenders_by_entity[entity],
         }
 
@@ -292,7 +237,7 @@ def entity_scores(T, quad, all_entities=()):
 
 def tender_scores(T, org_anom, entity_anom):
     """
-    Compute an anomaly score for every tender.
+    Compute a risk score for every tender.
 
     The tender itself is not analysed directly. Instead, its risk is inherited
     from the anomaly scores already assigned to the participating organizations
@@ -308,9 +253,6 @@ def tender_scores(T, org_anom, entity_anom):
     -----------
     Since no winner exists yet, the score estimates the likelihood that a
     suspicious organization group will win.
-
-    A tender with a missing entity, winner or bidders still gets a score from
-    whatever is available (0 when nothing is).
     """
 
     result = {}
@@ -381,8 +323,6 @@ def tender_scores(T, org_anom, entity_anom):
         overall = round(max(collusion, favoritism), 3)
 
         result[tender_id] = {
-            "node_type": "Tender",
-            "node_id": tender_id,
             "overall": overall,
             "description": tender_description(
                 overall,
@@ -391,7 +331,6 @@ def tender_scores(T, org_anom, entity_anom):
                 coll_group,
                 fav_group,
                 entity,
-                winner,
                 open_stage,
             ),
             "components": {

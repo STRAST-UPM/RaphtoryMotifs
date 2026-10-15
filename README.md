@@ -1,71 +1,54 @@
 # CEDAR Risk Scoring
 
-A risk-assessment module that assigns an anomaly score to every **organization**,
-**public entity**, and **tender** in a public-procurement graph. It targets two
-procurement-fraud scenarios:
+A risk-assessment module that assigns an anomaly score (0 – 1) to every
+**organization**, **public entity** and **tender** of a CEDAR pilot's
+public-procurement graph. It targets two procurement-fraud scenarios:
 
 - **Collusion** — a group of organizations that repeatedly bid together and share
   contracts through coordinated behaviour.
 - **Favoritism** — a contracting authority that repeatedly awards its tenders to
   the same group of organizations.
 
-The module is built on a **Raphtory** temporal graph and publishes its results to
-a **Kafka** topic following the VICOM message template.
+The module is a Kafka service: it listens for analysis requests, scores the
+requested pilot's graph, and answers with one response that follows the CEDAR
+Kafka message contract.
 
-## Pipeline
+## How it works
 
 <p align="center">
-  <a href="images/cedar_white_bg.png" target="_blank">
-    <img
-      src="images/cedar_white_bg.png"
-      alt="CEDAR risk-scoring pipeline"
-      width="80%"
-      style="border: 2px solid rgb(201, 196, 196);"
-    >
-  </a>
+  <img src="images/pipeline.svg" alt="UPM Raphtory Motifs module: request topic, Neo4j, Raphtory, motifs, scores, results topic" width="95%">
 </p>
 
-1. **Retrieve** the procurement data from the Neo4j graph and rebuild it as a
-   Raphtory temporal graph.
+1. **Consume the request.** The UI publishes a request on the pilot's request
+   topic (e.g. `it_analyse`). The module keeps only the requests that ask for its
+   indicator, `UPM_RAPHTORY_UC5_AI8`; the topics are shared with other tools.
+2. **Read the pilot graph.** Every node and relationship of the pilot's
+   knowledge graph is read from Neo4j, through the pilot's HTTP gateway.
+3. **Build a Raphtory temporal graph.** The values the pilots store differently
+   (booleans, prices, dates) are unified, and every node and edge gets a time.
+4. **Extract motifs**, the recurring patterns of each scenario:
+   - **Collusion:** groups of 3 organizations that repeatedly bid on the same tenders.
+   - **Favoritism:** a public entity repeatedly awarding its tenders to the same group.
+5. **Score** every organization, public entity and tender.
+6. **Build the response** with the requested entities only, **save it to disk**
+   if `OUTPUT_DIR` is set, then **publish** it on the pilot's results topic
+   (e.g. `it_results_available`).
 
-2. **Extract motifs** — detect the recurring structural patterns in the Raphtory
-   graph that flag each scenario:
-   - **Motif 1 — collusion:** groups of organizations that repeatedly bid together
-     on the same tenders.
-   - **Motif 2 — favoritism:** public entities that repeatedly award their tenders
-     to the same group of organizations.
-
-3. **Score** every organization, public entity, and tender for collusion and
-   favoritism, based on the extracted motifs.
-
-4. **Publish** the scores to the Kafka broker.
+Nothing runs between requests: each request is scored on the graph as it is at
+that moment.
 
 <table align="center">
   <tr>
     <td align="center" style="padding-right: 50px;">
-      <img src="images/motif_1.png" alt="Motif 1" width="400"><br>
-      <span style="font-size: 24px; font-weight: bold;">Collusion</span>
+      <img src="images/motif_1.png" alt="Collusion motif" width="400"><br>
+      <b>Collusion</b>
     </td>
     <td align="center" style="padding-left: 50px;">
-      <img src="images/motif_5.png" alt="Motif 5" width="400"><br>
-      <span style="font-size: 24px; font-weight: bold;">Favoritism</span>
+      <img src="images/motif_5.png" alt="Favoritism motif" width="400"><br>
+      <b>Favoritism</b>
     </td>
   </tr>
-</table
-
-
-A **listener** continuously watches the Neo4j graph for structural changes and
-recomputes the scores whenever new procurement activity is added, so the risk
-assessment always reflects the current state of the graph.
-
-> **Note.** For testing, the module generates a **synthetic** procurement dataset
-> that mixes normal activity with planted abnormal scenarios (collusion rings and
-> graded favoritism cases), allowing the scoring to be validated end-to-end before
-> it is pointed at real pilot data.
-
-
-
-
+</table>
 
 ### What drives each score
 
@@ -75,84 +58,290 @@ assessment always reflects the current state of the graph.
 | Public entity | Favoritism | a group repeatedly winning the entity's tenders, high success rate, the group targeting this entity, the same person awards to the same group, restricted competition |
 | Tender | Inherited | collusion risk of its winning organization and favoritism risk of its issuing entity (for open tenders, the estimated likelihood a suspicious group wins) |
 
+---
 
+# Configuration
+
+Everything is configured in one `.env` file at the root of the project.
+[`.env.example`](.env.example) is a complete template with the production values:
+
+```bash
+cp .env.example .env      # then fill in the empty fields
+```
+
+## 1. Pilots and their graphs
+
+`PILOTS` lists the pilots this module serves. Each pilot's graph is read through
+its HTTP gateway, which needs an API key.
+
+| Variable | Meaning |
+|---|---|
+| `PILOTS` | pilots to serve, comma or space separated |
+| `GRAPH_ENDPOINT` | gateway URL; `{pilot}` is replaced by the pilot's name |
+| `GRAPH_API_KEY` | the gateway's API key (sent as `X-API-Key`) |
+| `GRAPH_ENDPOINT_<PILOT>`, `GRAPH_API_KEY_<PILOT>` | optional, for one pilot only; they take precedence |
+
+```dotenv
+PILOTS=it,sl
+GRAPH_ENDPOINT=https://kg-{pilot}.cedar-heu-project.eu/neo4j/query
+GRAPH_API_KEY=<the gateway key>
+
+# a pilot with its own key or gateway:
+GRAPH_API_KEY_SL=<the SL key>
+GRAPH_ENDPOINT_SL=https://kg-sl.cedar-heu-project.eu/neo4j/query
+```
+
+A pilot with no API key is skipped at start-up, with a warning in the log.
+`python main.py --pilots it` serves only the pilots given on the command line,
+whatever `PILOTS` says.
+
+## 2. Kafka connection
+
+The CEDAR cluster uses **SASL_SSL**: TLS with a client certificate signed by the
+cluster CA, plus a SASL `PLAIN` username and password. The variables are the ones
+of the coordinators' template ([`secure-kafka/README.md`](secure-kafka/README.md));
+the credentials come from your partner archive (`secure-kafka/users/upm.7z`),
+which extracts to a `upm/` folder holding the three files and `cred.txt`.
+
+| Variable | Meaning |
+|---|---|
+| `KAFKA_BOOTSTRAP_SERVERS` | the broker, `host:port` |
+| `KAFKA_CREDENTIALS_DIR` | the extracted `upm/` folder (`kafka-cedar-ca-1.crt`, `upm.certificate.pem`, `upm.key`) |
+| `KAFKA_KEY_PASSWORD` | line 1 of `cred.txt`: the private key passphrase |
+| `KAFKA_SASL_USERNAME` | line 2 of `cred.txt` |
+| `KAFKA_SASL_PASSWORD` | line 3 of `cred.txt` |
+
+```dotenv
+KAFKA_BOOTSTRAP_SERVERS=kafka.cedar-heu-project.eu:8004
+KAFKA_CREDENTIALS_DIR=/secure/place/upm          # outside the repository
+KAFKA_KEY_PASSWORD=<cred.txt line 1>
+KAFKA_SASL_USERNAME=upm
+KAFKA_SASL_PASSWORD=<cred.txt line 3>
+```
+
+`KAFKA_BOOTSTRAP_SERVERS` alone decides which broker is used, for `python main.py`
+and for the Docker containers alike: `kafka.cedar-heu-project.eu:8004` in
+production, `localhost:8004` for the [local broker](#testing-on-the-local-kafka-broker).
+A relative `KAFKA_CREDENTIALS_DIR` is relative to the `.env` file.
+
+The three files are found in `KAFKA_CREDENTIALS_DIR` under their archive names.
+Only if one was renamed or kept elsewhere, point to it directly; each variable
+replaces just that one file. Docker ignores them (the container only sees the
+mounted folder), so with Docker keep the files in the folder under their names:
+
+| Variable | Default (leave empty to use it) |
+|---|---|
+| `KAFKA_CA_FILE` | `<KAFKA_CREDENTIALS_DIR>/kafka-cedar-ca-1.crt` |
+| `KAFKA_CERT_FILE` | `<KAFKA_CREDENTIALS_DIR>/<KAFKA_SASL_USERNAME>.certificate.pem` |
+| `KAFKA_KEY_FILE` | `<KAFKA_CREDENTIALS_DIR>/<KAFKA_SASL_USERNAME>.key` |
+
+## 3. Request and results topics
+
+Each pilot has a **request topic**, where the UI publishes the requests, and a
+**results topic**, where the module publishes its responses.
+
+| Variable | Meaning |
+|---|---|
+| `KAFKA_REQUEST_TOPICS` | the request topics; each one is matched to its pilot by its `<pilot>_` prefix |
+| `KAFKA_RESULTS_TOPICS` | the results topics, matched the same way |
+| `KAFKA_REQUEST_TOPIC_<PILOT>`, `KAFKA_RESULTS_TOPIC_<PILOT>` | optional, for a topic whose name does not start with `<pilot>_` |
+
+```dotenv
+KAFKA_REQUEST_TOPICS=it_analyse,sl_analyse
+KAFKA_RESULTS_TOPICS=it_results_available,sl_results_available
+
+# a topic with another naming:
+KAFKA_REQUEST_TOPIC_IT=cedar.it.requests
+```
+
+Without any of them, the contract's names are used: `<pilot>_analyse` and
+`<pilot>_results_available`. The topics actually used are logged at start-up:
+
+```text
+[pilots]  it: it_analyse -> it_results_available
+[pilots]  sl: sl_analyse -> sl_results_available
+```
+
+**A request** is answered only if its `indicators` list contains
+`UPM_RAPHTORY_UC5_AI8`. `entityId` may be `"all"` (every entity of that type), and
+`{"entityType": "all", "entityId": "all"}` asks for the whole graph:
+
+```json
+{
+  "issuer": "ui",
+  "requestID": "5f1c2e0a-7b8e-4a43-9a51-0b6d3c2f9e11",
+  "indicators": ["UPM_RAPHTORY_UC5_AI8"],
+  "entities": [{"entityType": "tender", "entityId": "EN_N_101_2025"},
+               {"entityType": "organization", "entityId": "all"}],
+  "kg": {"versionId": "latest"},
+  "accounting": {}, "status": {}
+}
+```
+
+**The response** carries one indicator per requested entity, with its
+`risk_level` and the details behind it:
+
+```json
+{
+  "requestID": "5f1c2e0a-7b8e-4a43-9a51-0b6d3c2f9e11",
+  "responseID": "bcec5730-f420-4fad-adf1-fcb939fef871",
+  "toolName": "UPM_RAPHTORY_MOTIFS",
+  "analysis": {
+    "startTime": 1760536800000, "endTime": 1760536801400,
+    "indicators": [{
+      "id": "0fba0570-…",
+      "indicator_id": "UPM_RAPHTORY_UC5_AI8",
+      "entityID": "EN_N_101_2025",
+      "risk_level": 0.012,
+      "additional_info": [
+        {"id": "7ba9a46e-…", "title": "Collusion risk", "type": "numeric", "value": 0.008,
+         "risk_level": 0.008, "range": {"from": 0.0, "to": 1.0},
+         "description": "Awarded: risk of the winning organization. …"},
+        {"id": "d1c485ff-…", "title": "Bidding stage", "type": "text", "value": "awarded"}
+      ]
+    }]
+  },
+  "source": {"kg": {"versionId": "latest",
+                    "entities": [{"entityType": "tender", "entityId": "EN_N_101_2025"}]}}
+}
+```
+
+A requested entity that is not in the graph is still answered, with
+`"Analysis Failed"` and the reason.
+
+## 4. Consumer group
+
+The module reads the request topics as the Kafka consumer group `KAFKA_GROUP_ID`.
+Kafka remembers, per group, which requests were already handled: after a restart
+the module answers the requests that arrived while it was down, and never answers
+one twice. Keep one fixed name:
+
+```dotenv
+KAFKA_GROUP_ID=upm-raphtory
+```
+
+## 5. Logger
+
+The log goes to the console and to a file that rotates at midnight:
+
+| Variable | Meaning | Default |
+|---|---|---|
+| `LOG_LEVEL` | `DEBUG`, `INFO`, `WARNING` or `ERROR` | `INFO` |
+| `LOG_FILE` | the log file; `none` = console only | `logs/cedar.log` |
+| `LOG_BACKUPS` | days of old log files to keep | unset: every day is kept |
+
+```dotenv
+LOG_LEVEL=INFO
+LOG_FILE=logs/cedar.log      # rotated into logs/cedar.log.2026-10-15, ...
+LOG_BACKUPS=30
+```
+
+Every step is logged, and each error with its message and traceback:
+
+```text
+2026-10-15 11:40:01 [INFO] upm_raphtory.main: [request] sl 4daba915-… from 'ui': 1 Tender
+2026-10-15 11:40:03 [INFO] upm_raphtory.main: [scores]  57 organizations, 1 entities, 36 tenders
+2026-10-15 11:40:03 [INFO] upm_raphtory.main: [kafka]   response ae1c6766-… (1 indicators) -> sl_results_available
+```
+
+## 6. Saving the responses on disk (optional)
+
+`OUTPUT_DIR` is the folder where each response is saved as JSON, **before** it is
+published, so it is kept even if Kafka is unreachable or refuses it. When
+`OUTPUT_DIR` is not set (or empty), responses are **not saved**: they are only
+published to the Kafka broker.
+
+| Variable | Meaning | Default |
+|---|---|---|
+| `OUTPUT_DIR` | folder for the saved responses; start the path with `./` or `/` | unset: not saved |
+
+```dotenv
+OUTPUT_DIR=./outputs
+```
+
+```text
+outputs/sl_latest.json                              the last response of the pilot
+outputs/sl/20261015T094003Z_4daba915-….json          one file per response
+```
 ---
 
 # Running the module
 
-## 1. Launch (Neo4j, HTTP endpoint, Kafka)
-
-In the CEDAR project the partners store each pilot's procurement data in a Neo4j
-graph, and — following the VICOM integration — the risk score of each entity is
-computed and published to a Kafka topic. To reproduce that setup locally, the
-`docker-compose.yml` starts:
-
-- **Neo4j** — holds the (generated) procurement graph the module reads from;
-- an **HTTP endpoint** — exposes the Neo4j graph to the module over HTTP;
-- a **Kafka broker** — receives the scores the module publishes.
+**From the source:**
 
 ```bash
-docker compose up -d
+pip install -e .                 # or: pip install -r requirements.txt
+python main.py                   # every pilot in PILOTS
+python main.py --pilots it       # only the Italian pilot
 ```
 
-## 2. Configure the environment
+**With Docker** (`docker-compose.yml`): the container reads the same `.env`, uses
+the host's network (so `KAFKA_BOOTSTRAP_SERVERS` means the same as above), mounts
+`KAFKA_CREDENTIALS_DIR` read-only, and keeps `OUTPUT_DIR` (if set) and `logs/` on the host.
 
-Create an `.env` file with the connection settings. For a real deployment, replace
-these with the actual graph endpoint and API key and the deployed Kafka endpoint
-and credentials — the module then runs against real procurement data unchanged.
+```bash
+docker compose --profile source  up -d --build     # python main.py from the source
+docker compose --profile package up -d --build     # the built wheel (pyproject.toml)
+docker compose --profile source logs -f            # follow the log
+```
+
+---
+
+# Optionally: Testing the module on a local Kafka broker
+
+`kafka/` holds a local broker that replicates the CEDAR cluster: same port (8004),
+same security (SASL_SSL with a required client certificate), same credential
+files, and the four pilot topics. Its credentials come from a **local** CA and are
+never valid on the real cluster.
+
+**1. Create the local credentials** (once). `kafka/secrets/local/upm/` gets the
+same files as the production archive:
+
+```bash
+./kafka/make-local-credentials.sh
+```
+
+**2. Point `.env` at the local broker** and its credentials (the three secrets are
+in `kafka/secrets/local/upm/cred.txt`, lines 1 – 3):
 
 ```dotenv
-# Neo4j HTTP gateway
-GRAPH_ENDPOINT=http://localhost:8000/neo4j/query
-GRAPH_API_KEY=cedar_local_0bc4c44d8c89412fbc4f6271eb28c3f4952f0e89f06c487bb6fb61d6e4fd95af
-
-# Kafka -- same variables as the CEDAR production template (secure-kafka/README.md)
-KAFKA_BOOTSTRAP_SERVERS=localhost:8004       # or echo:8004, kafka.cedar-heu-project.eu:8004
+KAFKA_BOOTSTRAP_SERVERS=localhost:8004
 KAFKA_CREDENTIALS_DIR=./kafka/secrets/local/upm
-KAFKA_KEY_PASSWORD=<line 1 of cred.txt>
-KAFKA_SASL_USERNAME=<line 2 of cred.txt>
-KAFKA_SASL_PASSWORD=<line 3 of cred.txt>
+KAFKA_KEY_PASSWORD=<cred.txt line 1>
+KAFKA_SASL_USERNAME=upm
+KAFKA_SASL_PASSWORD=<cred.txt line 3>
 ```
 
-The local Kafka broker replicates the production cluster: `SASL_SSL`, i.e. TLS
-with a required client certificate signed by the cluster CA, plus SASL `PLAIN`.
-Create its local credentials once (a local CA, never valid in production), then
-start it:
+**3. Start the broker.** It creates the topics and advertises the host of
+`KAFKA_BOOTSTRAP_SERVERS`:
 
 ```bash
-./kafka/make-local-credentials.sh            # -> kafka/secrets/local/{ca,broker,upm}/
-docker compose --profile local-kafka up -d   # broker on localhost:8004 + topic creation
+docker compose -f kafka/docker-compose.yml up -d
+docker logs kafka-init          # ... Available topics: it_analyse it_results_available ...
 ```
 
-`kafka/secrets/local/upm/` has the same files as the production archive
-`secure-kafka/users/upm.7z`. To move to production, copy `.env.example` to `.env`:
-point `KAFKA_CREDENTIALS_DIR` to the extracted `upm/` folder, copy the three
-lines of its `cred.txt`.
-
-## 3. Build and run the risk-assessment module
-
-Build the image:
+**4. Start the module**, in a first terminal:
 
 ```bash
-docker build -t cedar-analysis .
+python main.py --pilots sl      # ... [kafka]   waiting for requests on sl_analyse
 ```
 
-Run the module:
+**5. Send a request**, in a second terminal. `send_request.py` publishes a request
+as the UI would, then waits for the module's response:
 
 ```bash
-docker run --name raphtory-risk-module \
-       --rm --env-file .env \
-       --network host cedar-analysis
+python kafka/send_request.py --pilots sl --tender EN_N_101_2025
+python kafka/send_request.py --pilots it --organization all     # every organization
+python kafka/send_request.py --pilots sl --everything --print   # the whole graph, full JSON
+python kafka/send_request.py --pilots sl --indicators OTHER_TOOL_ID --wait 10   # not for us: no response
 ```
 
-On startup the module generates and loads the synthetic graph into Neo4j, computes
-the organization / public-entity / tender scores, publishes them to Kafka, and then
-keeps running to re-score the graph whenever it changes. 
+```text
+[sent]    sl: request 4daba915-… -> sl_analyse  (1 entities)
+[result]  sl: response ae1c6766-… after 1.4s, 1 indicators (1 UPM_RAPHTORY_UC5_AI8)
+```
 
-## 4. Inspect the published scores
-
-In a separate terminal, consume the `VICOM_CORRELAX` topic to see the messages the
-module published:
+**6. Read the results topic** directly, if needed:
 
 ```bash
 docker exec -it kafka-local /opt/kafka/bin/kafka-console-consumer.sh \
@@ -161,6 +350,21 @@ docker exec -it kafka-local /opt/kafka/bin/kafka-console-consumer.sh \
   --topic sl_results_available --from-beginning
 ```
 
-`admin-client.properties` (written by `make-local-credentials.sh`) holds the
-broker admin's `SASL_SSL` settings: its SASL credentials, the CA and its client
-certificate.
+**7. Stop the broker:**
+
+```bash
+docker compose -f kafka/docker-compose.yml down
+```
+
+---
+
+# Contact
+
+For any issue with this module, contact:
+
+| Name | Email |
+|---|---|
+| Félix Cuadrado | [felix.cuadrado@upm.es](mailto:felix.cuadrado@upm.es) |
+| José Miguel Blanco | [josemiguel.blanco@upm.es](mailto:josemiguel.blanco@upm.es) |
+| Wassim Sliti | [wassim.sliti@upm.es](mailto:wassim.sliti@upm.es) |
+

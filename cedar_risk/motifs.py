@@ -1,13 +1,9 @@
-"""Motif detection and maximum-clique expansion (collusion Step 1-2), and
-the entity<->group quadruplet motifs of the favoritism pipeline.
+"""Motif detection and maximum-clique expansion."""
 
-The original scenarios use triplets (GROUP_SIZE = 3). `size` lets the fallback
-scoring reuse the same code for pairs (2) and single organizations (1)."""
 from collections import defaultdict
 from itertools import combinations
 
-from .utils.config import THRESHOLDS
-from .utils.score_utils import GROUP_SIZE
+from .utils.score_utils import GROUP_SIZE, REPEAT
 
 
 
@@ -20,7 +16,7 @@ def org_motifs(T, size=GROUP_SIZE):
     return trip
 
 def suspicious_groups(trip):
-    return {tr: c for tr, c in trip.items() if c >= THRESHOLDS["REPEAT"]}
+    return {tr: c for tr, c in trip.items() if c >= REPEAT}
 
 
 def max_cliques(groups):

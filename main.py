@@ -8,7 +8,7 @@
       -> the requested entities and indicators are picked out
       -> ONE response, saved as JSON, then published on <pilot>_results_available
 
-Request extension (see kafka_client.py): entityId "all" = every entity of
+Request extension (see messages.py): entityId "all" = every entity of
 that entityType; {"entityType": "all", "entityId": "all"} = the whole graph.
 
 Which pilots to serve, in order of precedence:
@@ -29,15 +29,16 @@ Which pilots to serve, in order of precedence:
     GRAPH_ENDPOINT=https://kg-{pilot}.cedar-heu-project.eu/neo4j/query
 
 Run:  python main.py                       -> serve requests for every pilot in PILOTS
-      DRY_RUN=1 python main.py             -> answer and save, do not publish
-      python main.py --out outputs         -> where the JSON copies go (default: outputs/)
+      DRY_RUN=1 python main.py             -> answer (and save), do not publish
+      python main.py --out outputs         -> save the responses there (overrides OUTPUT_DIR)
       python send_request.py               -> (other terminal) ask for everything
 
-Each response is saved BEFORE it is published (on disk even if Kafka is down):
+Saving the responses on disk is optional: with OUTPUT_DIR in .env (or --out),
+each response is saved BEFORE it is published (so it is kept even if Kafka is
+down or refuses it); without, it is only published.
     <out>/<pilot>_latest.json                    last response of that pilot
     <out>/<pilot>/<timestamp>_<requestID>.json   one file per response
 """
-
 
 import argparse
 import json
@@ -48,15 +49,17 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from dotenv import load_dotenv
+from kafka.errors import MessageSizeTooLargeError
 
 
 from cedar_risk.utils import neo4j_store
 from cedar_risk import temporal_graph, motifs
 from cedar_risk.scoring import organization_scores, entity_scores, tender_scores
 from cedar_risk.utils.kafka_client import (
+    make_producer, make_consumer, publish, kafka_settings, pilot_topic)
+from cedar_risk.utils.messages import (
     InvalidRequest, parse_request, request_plan, describe_plan, answer,
-    build_message, make_producer, make_consumer, publish, kafka_settings,
-    pilot_topic, now_ms)
+    build_message, now_ms)
 
 from cedar_risk.utils.config import DELAY
 from cedar_risk.utils.logger import get_logger, setup_logging, describe_error
@@ -204,14 +207,23 @@ def handle_request(ctx, record, producer):
                         start_ms=start_ms, request_id=rid)
     for i in indicators:
         log.debug("  %-32s %-14s risk=%s", i["indicator_id"], i["entityID"], i["risk_level"])
-    save_message(ctx.pilot, msg, ctx.out_dir)
+    if ctx.out_dir:
+        save_message(ctx.pilot, msg, ctx.out_dir)
 
     if producer is None:
-        log.info("[dry-run] response %s saved, not published to %s",
-                 msg["responseID"], ctx.results_topic)
+        log.info("[dry-run] response %s %s, not published to %s", msg["responseID"],
+                 "saved" if ctx.out_dir else "not saved", ctx.results_topic)
         return msg
     try:
         publish(producer, ctx.results_topic, msg)
+    except MessageSizeTooLargeError as e:
+        # over Kafka's message size limit (the producer's, or the broker's)
+        size = len(json.dumps(msg, ensure_ascii=False, default=str).encode("utf-8"))
+        log.exception("[kafka]   %s: response %s (%d indicators, %.2f MB before gzip) "
+                      "is TOO LARGE for Kafka -- not delivered to %s; %s: %s",
+                      rid, msg["responseID"], len(indicators), size / 1e6,
+                      ctx.results_topic, _saved_copy(ctx.out_dir), describe_error(e))
+        return None
     except Exception as e:
         log.exception("[kafka]   %s: publishing response %s to %s failed: %s",
                       rid, msg["responseID"], ctx.results_topic, describe_error(e))
@@ -219,6 +231,12 @@ def handle_request(ctx, record, producer):
     log.info("[kafka]   response %s (%d indicators) -> %s",
              msg["responseID"], len(indicators), ctx.results_topic)
     return msg
+
+
+def _saved_copy(out_dir):
+    """Where a response that could not be delivered can still be found."""
+    return (f"the saved copy (if any) is in {out_dir}/" if out_dir
+            else "not saved on disk either (OUTPUT_DIR is not set)")
 
 
 def _stop(signum, frame):
@@ -237,10 +255,11 @@ def main():
     ap.add_argument("--pilots", nargs="+", metavar="PILOT",
                      help="pilots to serve, e.g. --pilots it sl (default: PILOTS in "
                           ".env, else every pilot)")
-    ap.add_argument("--out", default="outputs",
+    ap.add_argument("--out",
                      help="folder to save each response (as JSON) before it is "
-                          "published to Kafka (default: outputs/)")
+                          "published (default: OUTPUT_DIR in .env, else not saved)")
     args = ap.parse_args()
+    out_dir = args.out or os.getenv("OUTPUT_DIR") or None
 
     requested = resolve_pilots(args.pilots)
     contexts = []
@@ -249,7 +268,7 @@ def main():
             log.warning("[pilot]   %s: skipped, no GRAPH_API_KEY_%s (or GRAPH_API_KEY) in .env",
                         pilot, pilot.upper())
             continue
-        contexts.append(PilotContext(pilot, out_dir=args.out))
+        contexts.append(PilotContext(pilot, out_dir=out_dir))
     assert contexts, (
         f"No pilot had an API key set. Requested: {requested}. "
         f"Set GRAPH_API_KEY_<PILOT> (or GRAPH_API_KEY) in your .env.")
@@ -257,10 +276,16 @@ def main():
     by_topic = {c.request_topic: c for c in contexts}
     for c in contexts:
         log.info("[pilots]  %s: %s -> %s", c.pilot, c.request_topic, c.results_topic)
-    log.info("[pilots]  saving to: %s/", args.out)
+    if out_dir:
+        log.info("[pilots]  responses saved to: %s/", out_dir)
+    else:
+        log.info("[pilots]  responses not saved on disk (OUTPUT_DIR not set): only published")
 
     settings = kafka_settings()
     dry_run = os.getenv("DRY_RUN", "").lower() in {"1", "true", "yes"}
+    if dry_run and not out_dir:
+        log.warning("[pilots]  DRY_RUN without OUTPUT_DIR: responses are neither "
+                    "published nor saved")
     try:
         producer = None if dry_run else make_producer(**settings)
         consumer = make_consumer(
@@ -284,9 +309,8 @@ def main():
                     try:
                         handle_request(ctx, record, producer)
                     except Exception as e:
-                        log.exception("[request] %s@%s: failed (%s), the saved copy "
-                                      "(if any) is in %s/", tp.topic, record.offset,
-                                      describe_error(e), args.out)
+                        log.exception("[request] %s@%s: failed (%s), %s", tp.topic,
+                                      record.offset, describe_error(e), _saved_copy(out_dir))
                     consumer.commit()       # answered (or skipped): don't redo it on restart
             # no request -> nothing to do: the graph is only read when a request arrives
     except KeyboardInterrupt:

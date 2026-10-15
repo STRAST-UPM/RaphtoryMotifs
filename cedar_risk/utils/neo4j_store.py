@@ -2,7 +2,10 @@
 Read the CEDAR pilot graphs through the HTTP Neo4j gateway.
 
 The application only talks to an HTTP endpoint using an API key; the gateway
-connects to Neo4j over Bolt. This module is read-only.
+connects to Neo4j over Bolt. 
+
+NOTE: This module is read-only.
+
 """
 
 import requests
@@ -12,9 +15,8 @@ from .cypher_queries import READ_NODES, READ_RELS
 
 
 def run_cypher(query, endpoint, api_key, parameters=None):
-    """Execute a Cypher query through the HTTP gateway and return the rows.
-
-    The gateway answers {"result": [...]}; a bare list is also accepted.
+    """
+    Execute a Cypher query through the HTTP gateway and return the rows.
     """
     response = requests.post(
         endpoint,
