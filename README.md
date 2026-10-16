@@ -206,8 +206,6 @@ Without any of them, the contract's names are used: `<pilot>_analyse` and
 }
 ```
 
-A requested entity that is not in the graph is still answered, with
-`"Analysis Failed"` and the reason.
 
 ## 4. Consumer group
 
@@ -281,7 +279,7 @@ the host's network (so `KAFKA_BOOTSTRAP_SERVERS` means the same as above), mount
 
 ```bash
 docker compose --profile source  up -d --build     # python main.py from the source
-docker compose --profile package up -d --build     # the built wheel (pyproject.toml)
+docker compose --profile package up -d --build     # (optional) the built wheel (pyproject.toml)
 docker compose --profile source logs -f            # follow the log
 ```
 
