@@ -9,10 +9,6 @@
 COMPOSE   ?= docker compose
 CONTAINER := cedar-risk
 
-# the container runs as you, so the files it writes in outputs/ and logs/ are yours
-export CEDAR_UID := $(shell id -u)
-export CEDAR_GID := $(shell id -g)
-
 .PHONY: run stop restart
 
 run:

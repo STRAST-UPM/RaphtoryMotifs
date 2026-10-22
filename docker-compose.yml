@@ -1,18 +1,8 @@
 name: cedar
 
-# The CEDAR risk module only. The local test infrastructure has its own files:
-#   kafka/docker-compose.yml                 local Kafka broker (replica of production)
-#   synthetic_anomalies/docker-compose.yml   local Neo4j + synthetic anomaly graph
 
 x-cedar-risk: &cedar-risk
-  # the host's network: localhost and host names mean the same as for
   # `python main.py`, so KAFKA_BOOTSTRAP_SERVERS in .env alone picks the broker
-  # (localhost:8004 = the local one, echo:8004 = echo, production, ...)
-  network_mode: host
-  # run as the host user, so the files it writes in outputs/ and logs/ are yours
-  # (as root they could not be opened by `python main.py` any more); `make` passes
-  # your ids, else 1000 = the first user of the machine
-  user: "${CEDAR_UID:-1000}:${CEDAR_GID:-1000}"
   env_file: .env              # same settings as a local run (PILOTS, GRAPH_*, KAFKA_*, LOG_*)
   environment:
     # the credentials folder of .env, mounted read-only below
@@ -29,19 +19,14 @@ x-cedar-risk: &cedar-risk
   restart: unless-stopped
 
 services:
-  # ---- The module: the built (pip-installed) package -- the default --------
-  #   make run    (= remove any cedar-risk container, then docker compose up -d --build)
-  # Both services use the container name cedar-risk, so only one runs at a time:
-  # remove the existing one before starting the other.
-  cedar-risk-package:
+  cedar-risk:
     <<: *cedar-risk
     build: { context: ., target: package }
     image: cedar-risk:package
     container_name: cedar-risk
 
   # ---- Optional: `python main.py` from the source (development) ------------
-  #   docker rm -f cedar-risk; docker compose up -d --build cedar-risk
-  cedar-risk:
+  cedar-risk-source:
     <<: *cedar-risk
     profiles: ["source"]
     build: { context: ., target: source }
