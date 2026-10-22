@@ -35,6 +35,8 @@ kafka/scripts.sh
 audits/
 export.py
 /data_generation.py
+synthetic_anomalies/
+neo4j-api/
 audit_data_model.py
 audit_graph.py
 Makefile_local
