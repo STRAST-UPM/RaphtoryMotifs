@@ -13,9 +13,8 @@ graphs/
 pilots/
 scores*/
 cypher
-neo4j-api/
-create_neo4j_graph.py
-data_generation.py
+/create_neo4j_graph.py
+/data_generation.py
 score_pilots.py
 trim_graphs.py
 load_pilots.py
@@ -30,13 +29,12 @@ older_files/
 data_model/
 outputs/
 logs/
-synthetic_anomalies/
 output.json
 kafka/init
 kafka/scripts.sh
 audits/
 export.py
-data_generation.py
+/data_generation.py
 audit_data_model.py
 audit_graph.py
 
@@ -250,3 +248,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# personal shortcuts, not shared
+Makefile_local
