@@ -86,9 +86,6 @@ PILOTS=it,sl
 GRAPH_ENDPOINT=https://kg-{pilot}.cedar-heu-project.eu/neo4j/query
 GRAPH_API_KEY=<the gateway key>
 
-# a pilot with its own key or gateway:
-GRAPH_API_KEY_SL=<the SL key>
-GRAPH_ENDPOINT_SL=https://kg-sl.cedar-heu-project.eu/neo4j/query
 ```
 
 A pilot with no API key is skipped at start-up, with a warning in the log.
@@ -119,11 +116,6 @@ KAFKA_SASL_USERNAME=upm
 KAFKA_SASL_PASSWORD=<cred.txt line 3>
 ```
 
-`KAFKA_BOOTSTRAP_SERVERS` alone decides which broker is used, for `python main.py`
-and for the Docker containers alike: `kafka.cedar-heu-project.eu:8004` in
-production, `localhost:8004` for the [local broker](#testing-on-the-local-kafka-broker).
-A relative `KAFKA_CREDENTIALS_DIR` is relative to the `.env` file.
-
 The three files are found in `KAFKA_CREDENTIALS_DIR` under their archive names.
 Only if one was renamed or kept elsewhere, point to it directly; each variable
 replaces just that one file. Docker ignores them (the container only sees the
@@ -144,13 +136,13 @@ Each pilot has a **request topic**, where the UI publishes the requests, and a
 |---|---|
 | `KAFKA_REQUEST_TOPICS` | the request topics; each one is matched to its pilot by its `<pilot>_` prefix |
 | `KAFKA_RESULTS_TOPICS` | the results topics, matched the same way |
-| `KAFKA_REQUEST_TOPIC_<PILOT>`, `KAFKA_RESULTS_TOPIC_<PILOT>` | optional, for a topic whose name does not start with `<pilot>_` |
+| `KAFKA_REQUEST_TOPIC_<PILOT>`, `KAFKA_RESULTS_TOPIC_<PILOT>` | **Optional**, for a topic whose name does not start with `<pilot>_` |
 
 ```dotenv
 KAFKA_REQUEST_TOPICS=it_analyse,sl_analyse
 KAFKA_RESULTS_TOPICS=it_results_available,sl_results_available
 
-# a topic with another naming:
+# (Optional) a topic with another naming:
 KAFKA_REQUEST_TOPIC_IT=cedar.it.requests
 ```
 
@@ -162,9 +154,10 @@ Without any of them, the contract's names are used: `<pilot>_analyse` and
 [pilots]  sl: sl_analyse -> sl_results_available
 ```
 
-**A request** is answered only if its `indicators` list contains
-`UPM_RAPHTORY_UC5_AI8`. `entityId` may be `"all"` (every entity of that type), and
-`{"entityType": "all", "entityId": "all"}` asks for the whole graph:
+> [!IMPORTANT]
+> **A request** is answered only if its `indicators` list contains
+> `UPM_RAPHTORY_UC5_AI8`. `entityId` may be `"all"` (every entity of that type), and
+> `{"entityType": "all", "entityId": "all"}` asks for the whole graph:
 
 ```json
 {
