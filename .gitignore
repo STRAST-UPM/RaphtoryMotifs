@@ -37,6 +37,7 @@ export.py
 /data_generation.py
 audit_data_model.py
 audit_graph.py
+Makefile_local
 
 # Distribution / packaging
 .Python
