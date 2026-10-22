@@ -260,165 +260,21 @@ outputs/sl/20261015T094003Z_4daba915-….json          one file per response
 
 # Running the module
 
-Once `.env` is configured, one command builds and starts the module (the
-installed package, from `pyproject.toml`):
+Once `.env` is configured for the CEDAR cluster, one command builds and starts
+the module:
 
 ```bash
 make run         # build and start the module
 make stop        # stop it
 make restart     # after a change in the code or in .env
-make logs        # follow the log (also in logs/cedar.log)
-make status      # is it running?
-make help        # every command of this branch
 ```
 
-The container reads the same `.env`, uses the host's network (so
-`KAFKA_BOOTSTRAP_SERVERS` means the same as above), mounts `KAFKA_CREDENTIALS_DIR`
-read-only, and keeps `OUTPUT_DIR` (if set) and `logs/` on the host. It restarts
-by itself after a crash or a reboot.
+`make run` prints the broker it uses (`KAFKA_BOOTSTRAP_SERVERS`). The log:
+`docker logs -f cedar-risk`, or `logs/cedar.log`.
 
-**From the source** (for development), instead of the package. Both use the
-container name `cedar-risk`, so only one runs at a time: `make run` and
-`make source-run` first remove the existing one, and `make stop` stops either.
-
-```bash
-make source-run                  # the source, in Docker
-make python                      # python main.py: every pilot in PILOTS
-make python ARGS="--pilots it"   # only the Italian pilot
-```
-
----
-
-# Test scenarios
-
-This branch (`test`) holds everything needed to test the module without the
-CEDAR cluster or the pilot graphs. `main` holds the same code, documented for
-production only.
-
-| # | Scenario | What it shows | Needs |
-|---|---|---|---|
-| 1 | [Request → response on a local broker](#1-request--response-on-a-local-kafka-broker) | the full Kafka flow, as in production | local broker, pilot graphs |
-| 2 | [Which requests are answered](#2-which-requests-are-answered) | one entity, all of a type, the whole graph, another tool's request | scenario 1 |
-| 3 | [Saving on disk or only publishing](#3-saving-on-disk-or-only-publishing) | `OUTPUT_DIR` set / not set, `DRY_RUN` | scenario 1 |
-| 4 | [The broker on another machine](#4-the-broker-on-another-machine) | the same setup on a server (e.g. `echo`) | a second machine |
-| 5 | [Synthetic anomaly scenarios](#5-synthetic-anomaly-scenarios) | the scoring on planted collusion and favoritism cases | local Neo4j only |
-
-## 1. Request → response on a local Kafka broker
-
-`kafka/` holds a local broker that replicates the CEDAR cluster: same port (8004),
-same security (SASL_SSL with a required client certificate), same credential
-files, and the four pilot topics. Its credentials come from a **local** CA and are
-never valid on the real cluster.
-
-**Create the local credentials** (once). `kafka/secrets/local/upm/` gets the same
-files as the production archive:
-
-```bash
-make kafka-credentials
-```
-
-**Point `.env` at the local broker** (the three secrets are in
-`kafka/secrets/local/upm/cred.txt`, lines 1 – 3):
-
-```dotenv
-KAFKA_BOOTSTRAP_SERVERS=localhost:8004
-KAFKA_CREDENTIALS_DIR=./kafka/secrets/local/upm
-KAFKA_KEY_PASSWORD=<cred.txt line 1>
-KAFKA_SASL_USERNAME=upm
-KAFKA_SASL_PASSWORD=<cred.txt line 3>
-```
-
-**Start the broker, then the module:**
-
-```bash
-make kafka-up            # broker on localhost:8004 + the topics
-make run                 # the module (or: make python ARGS="--pilots sl")
-make logs                # ... [kafka]   waiting for requests on it_analyse, sl_analyse
-```
-
-**Send a request** as the UI would; `send_request.py` waits for the answer:
-
-```bash
-make request ARGS="--pilots sl --tender EN_N_101_2025"
-```
-
-```text
-[sent]    sl: request 4daba915-… -> sl_analyse  (1 entities)
-[result]  sl: response ae1c6766-… after 1.4s, 1 indicators (1 UPM_RAPHTORY_UC5_AI8)
-```
-
-**Read the results topic** directly, and **stop** everything:
-
-```bash
-make results ARGS=sl_results_available
-make stop
-make kafka-down
-```
-
-After `make kafka-down` the local broker forgets everything (topics, offsets).
-Restart a module that kept running through it (`make restart`): its connection
-belongs to the old broker.
-
-## 2. Which requests are answered
-
-With scenario 1 running:
-
-```bash
-make request ARGS="--pilots sl --tender EN_N_101_2025"          # one tender
-make request ARGS="--pilots it --organization all"              # every organization
-make request ARGS="--pilots sl --public-entity all"             # every public entity
-make request ARGS="--pilots sl --everything --print"            # the whole graph, full JSON
-make request ARGS="--pilots sl --tender UNKNOWN_ID"             # answered "Analysis Failed"
-make request ARGS="--pilots sl --indicators OTHER_TOOL_ID --wait 10"   # not ours: no response
-```
-
-## 3. Saving on disk or only publishing
-
-| `.env` | Result |
-|---|---|
-| `OUTPUT_DIR=./outputs` | each response saved in `outputs/<pilot>/`, then published |
-| no `OUTPUT_DIR` | only published; the log says `responses not saved on disk` |
-| `DRY_RUN=1` (+ `OUTPUT_DIR`) | answered and saved, **not** published |
-
-Change `.env`, `make restart`, then send a request (scenario 2).
-
-## 4. The broker on another machine
-
-The same files run the broker on a server, e.g. `echo`. On that machine, set
-`KAFKA_BOOTSTRAP_SERVERS=echo:8004` in its `.env`, then:
-
-```bash
-make kafka-credentials   # adds "echo" to the broker certificate
-make kafka-up            # the broker advertises echo:8004
-```
-
-On the machines that use it, set `KAFKA_BOOTSTRAP_SERVERS=echo:8004` too, with the
-same `kafka/secrets/local/upm/` credentials (copied from the server).
-
-## 5. Synthetic anomaly scenarios
-
-`synthetic_anomalies/` builds a local Neo4j graph with a synthetic market and
-**planted** anomalies, and scores it **without Kafka**:
-
-- **collusion:** a full ring (same responsible persons), a partial ring, a
-  near-cartel, coincidental repetitions, and groups at different distances from
-  the scenario (seen once, always losing, half-way);
-- **favoritism:** an entity favouring a group through the same official, and a
-  ladder of public entities captured to different degrees;
-- **edge cases:** new and small organizations, new and small public entities.
-
-It needs only `SYNTHETIC_GRAPH_API_KEY` in `.env` (the key of the local Neo4j
-gateway, any value you choose; `SYNTHETIC_GRAPH_ENDPOINT` defaults to
-`http://localhost:8000/neo4j/query`).
-
-```bash
-make synthetic-up        # Neo4j + gateway, then loads the synthetic graph
-make synthetic-test      # scores it
-make synthetic-down
-```
-
-`outputs/synthetic/` then holds the response (same template as for the pilots)
-and `ground_truth.json`, the planted scenarios to compare it with.
+The container reads `.env`, uses the host's network, mounts
+`KAFKA_CREDENTIALS_DIR` read-only, and keeps `OUTPUT_DIR` (if set) and `logs/` on
+the host. It restarts by itself after a crash or a reboot.
 
 ---
 
