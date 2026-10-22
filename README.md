@@ -112,9 +112,16 @@ which extracts to a `upm/` folder holding the three files and `cred.txt`.
 KAFKA_BOOTSTRAP_SERVERS=kafka.cedar-heu-project.eu:8004
 KAFKA_CREDENTIALS_DIR=/secure/place/upm          # outside the repository
 KAFKA_KEY_PASSWORD=<cred.txt line 1>
-KAFKA_SASL_USERNAME=upm
+KAFKA_SASL_USERNAME=<cred.txt line 2>
 KAFKA_SASL_PASSWORD=<cred.txt line 3>
 ```
+
+> [!NOTE]
+> So with `KAFKA_CREDENTIALS_DIR=/secure/place/upm` and `KAFKA_SASL_USERNAME=upm`, it looks for:
+>
+> - `/secure/place/upm/kafka-cedar-ca-1.crt`
+> - `/secure/place/upm/upm.certificate.pem`
+> - `/secure/place/upm/upm.key`
 
 The three files are found in `KAFKA_CREDENTIALS_DIR` under their archive names.
 Only if one was renamed or kept elsewhere, point to it directly; each variable
