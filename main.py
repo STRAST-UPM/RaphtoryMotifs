@@ -59,7 +59,7 @@ from cedar_risk.utils.kafka_client import (
     make_producer, make_consumer, publish, kafka_settings, pilot_topic)
 from cedar_risk.utils.messages import (
     InvalidRequest, parse_request, request_plan, describe_plan, answer,
-    build_message, now_ms)
+    build_message, now_ms, indicator_id)
 
 from cedar_risk.utils.config import DELAY
 from cedar_risk.utils.logger import get_logger, setup_logging, describe_error
@@ -276,6 +276,7 @@ def main():
     by_topic = {c.request_topic: c for c in contexts}
     for c in contexts:
         log.info("[pilots]  %s: %s -> %s", c.pilot, c.request_topic, c.results_topic)
+    log.info("[pilots]  answering requests for indicator %s", indicator_id())
     if out_dir:
         log.info("[pilots]  responses saved to: %s/", out_dir)
     else:

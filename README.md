@@ -144,10 +144,12 @@ Each pilot has a **request topic**, where the UI publishes the requests, and a
 | `KAFKA_REQUEST_TOPICS` | the request topics; each one is matched to its pilot by its `<pilot>_` prefix |
 | `KAFKA_RESULTS_TOPICS` | the results topics, matched the same way |
 | `KAFKA_REQUEST_TOPIC_<PILOT>`, `KAFKA_RESULTS_TOPIC_<PILOT>` | **Optional**, for a topic whose name does not start with `<pilot>_` |
+| `INDICATOR_ID` | this module's indicator: a request is answered only if it lists it (default `UPM_RAPHTORY_UC5_AI8`) |
 
 ```dotenv
 KAFKA_REQUEST_TOPICS=it_analyse,sl_analyse
 KAFKA_RESULTS_TOPICS=it_results_available,sl_results_available
+INDICATOR_ID=UPM_RAPHTORY_UC5_AI8
 
 # (Optional) a topic with another naming:
 KAFKA_REQUEST_TOPIC_IT=cedar.it.requests
@@ -162,8 +164,8 @@ Without any of them, the contract's names are used: `<pilot>_analyse` and
 ```
 
 > [!IMPORTANT]
-> **A request** is answered only if its `indicators` list contains
-> `UPM_RAPHTORY_UC5_AI8`. It scores tenders, organizations and public entities
+> **A request** is answered only if its `indicators` list contains the module's
+> indicator, `INDICATOR_ID` (default `UPM_RAPHTORY_UC5_AI8`). It scores tenders, organizations and public entities
 > (`entityType`: `tender`, `organization`, `publicEntity`).
 > `entityId` may be `"all"` (every entity of that type), and
 > `{"entityType": "all", "entityId": "all"}` asks for the whole graph:

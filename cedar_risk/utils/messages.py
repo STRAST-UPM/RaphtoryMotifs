@@ -13,14 +13,23 @@ Flow
 """
 
 import json
+import os
 import time
 import uuid
 
 TOOL_NAME = "UPM_RAPHTORY_MOTIFS"
 ALL = "all"
 
-# A request is answered only if it lists this id.
-INDICATOR_ID = "UPM_RAPHTORY_UC5_AI8"
+# A request is answered only if it lists this tool's indicator id:
+# INDICATOR_ID in .env, else this default.
+DEFAULT_INDICATOR_ID = "UPM_RAPHTORY_UC5_AI8"
+
+
+def indicator_id():
+    """This tool's indicator id. Read when used (not at import), so the value
+    of .env counts even though it is loaded after this module is imported."""
+    return os.getenv("INDICATOR_ID") or DEFAULT_INDICATOR_ID
+
 NODE_TYPES = ("Organization", "PublicEntity", "Tender")
 
 # entityType used in requests and in source.kg.entities[]. 
@@ -160,11 +169,11 @@ def parse_request(value):
 def request_plan(request):
     """What a valid request asks THIS tool for: {node_type: [ids] or ALL}.
 
-    None when the request does not list INDICATOR_ID (it is for another tool;
+    None when the request does not list indicator_id() (it is for another tool;
     the request topics are shared). Entities of a type this tool does not
     score ("bid") are left out.
     """
-    if INDICATOR_ID not in (request.get("indicators") or []):
+    if indicator_id() not in (request.get("indicators") or []):
         return None
 
     plan = {}
@@ -311,7 +320,7 @@ _INFO = {"Organization": _org_info, "PublicEntity": _entity_info, "Tender": _ten
 def _indicator(node_type, node_id, score):
     return {
         "id": _uid(),
-        "indicator_id": INDICATOR_ID,
+        "indicator_id": indicator_id(),
         "entityID": str(node_id),
         "risk_level": float(score["overall"]),
         "additional_info": _INFO[node_type](score),
@@ -323,7 +332,7 @@ def failed_indicator(entity_id, reason):
     "Analysis Failed", risk_level 0.0 and the reason in description."""
     return {
         "id": _uid(),
-        "indicator_id": INDICATOR_ID,
+        "indicator_id": indicator_id(),
         "entityID": str(entity_id),
         "risk_level": 0.0,
         "additional_info": [info_item("Analysis status", "Analysis Failed", "text",
