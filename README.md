@@ -20,8 +20,9 @@ Kafka message contract.
 </p>
 
 1. **Consume the request.** The UI publishes a request on the pilot's request
-   topic (e.g. `it_analyse`). The module keeps only the requests that ask for its
-   indicator, `UPM_RAPHTORY_UC5_AI8`; the topics are shared with other tools.
+   topic (e.g. `it_analyse`). The module keeps only the requests that ask for one
+   of its two indicators, `UPM_RAPHTORY_UC5_AI9` (collusion) and
+   `UPM_RAPHTORY_UC2_AI6` (favoritism); the topics are shared with other tools.
 2. **Read the pilot graph.** Every node and relationship of the pilot's
    knowledge graph is read from Neo4j, through the pilot's HTTP gateway.
 3. **Build a Raphtory temporal graph.** The values the pilots store differently
@@ -144,12 +145,14 @@ Each pilot has a **request topic**, where the UI publishes the requests, and a
 | `KAFKA_REQUEST_TOPICS` | the request topics; each one is matched to its pilot by its `<pilot>_` prefix |
 | `KAFKA_RESULTS_TOPICS` | the results topics, matched the same way |
 | `KAFKA_REQUEST_TOPIC_<PILOT>`, `KAFKA_RESULTS_TOPIC_<PILOT>` | **Optional**, for a topic whose name does not start with `<pilot>_` |
-| `INDICATOR_ID` | this module's indicator: a request is answered only if it lists it (default `UPM_RAPHTORY_UC5_AI8`) |
+| `INDICATOR_ID_COLLUSION` | the collusion indicator (organizations, and tenders' collusion risk); default `UPM_RAPHTORY_UC5_AI9` |
+| `INDICATOR_ID_FAVORITISM` | the favoritism indicator (public entities, and tenders' favoritism risk); default `UPM_RAPHTORY_UC2_AI6` |
 
 ```dotenv
 KAFKA_REQUEST_TOPICS=it_analyse,sl_analyse
 KAFKA_RESULTS_TOPICS=it_results_available,sl_results_available
-INDICATOR_ID=UPM_RAPHTORY_UC5_AI8
+INDICATOR_ID_COLLUSION=UPM_RAPHTORY_UC5_AI9
+INDICATOR_ID_FAVORITISM=UPM_RAPHTORY_UC2_AI6
 
 # (Optional) a topic with another naming:
 KAFKA_REQUEST_TOPIC_IT=cedar.it.requests
@@ -164,9 +167,16 @@ Without any of them, the contract's names are used: `<pilot>_analyse` and
 ```
 
 > [!IMPORTANT]
-> **A request** is answered only if its `indicators` list contains the module's
-> indicator, `INDICATOR_ID` (default `UPM_RAPHTORY_UC5_AI8`). It scores tenders, organizations and public entities
-> (`entityType`: `tender`, `organization`, `publicEntity`).
+> **A request** is answered only if its `indicators` list contains at least one of
+> the module's two indicators (two use cases, one tool):
+>
+> | Indicator | Use case | Scores |
+> |---|---|---|
+> | `UPM_RAPHTORY_UC5_AI9` | collusion | organizations, and tenders (their collusion risk) |
+> | `UPM_RAPHTORY_UC2_AI6` | favoritism | public entities, and tenders (their favoritism risk) |
+>
+> A tender asked for both gets **one item per indicator**, each with its own `risk_level`.
+> `entityType` is `tender`, `organization` or `publicEntity`.
 > `entityId` may be `"all"` (every entity of that type), and
 > `{"entityType": "all", "entityId": "all"}` asks for the whole graph:
 
@@ -174,7 +184,7 @@ Without any of them, the contract's names are used: `<pilot>_analyse` and
 {
   "issuer": "ui",
   "requestID": "5f1c2e0a-7b8e-4a43-9a51-0b6d3c2f9e11",
-  "indicators": ["UPM_RAPHTORY_UC5_AI8"],
+  "indicators": ["UPM_RAPHTORY_UC5_AI9", "UPM_RAPHTORY_UC2_AI6"],
   "entities": [{"entityType": "tender", "entityId": "EN_N_101_2025"},
                {"entityType": "organization", "entityId": "all"}],
   "kg": {"versionId": "latest"},
@@ -182,8 +192,8 @@ Without any of them, the contract's names are used: `<pilot>_analyse` and
 }
 ```
 
-**The response** carries one indicator per requested entity, with its
-`risk_level` and the details behind it:
+**The response** carries one item per requested indicator per entity, with its
+`risk_level` and the details behind it. Here the tender, asked for both:
 
 ```json
 {
@@ -194,14 +204,25 @@ Without any of them, the contract's names are used: `<pilot>_analyse` and
     "startTime": 1760536800000, "endTime": 1760536801400,
     "indicators": [{
       "id": "0fba0570-…",
-      "indicator_id": "UPM_RAPHTORY_UC5_AI8",
+      "indicator_id": "UPM_RAPHTORY_UC5_AI9",
       "entityID": "EN_N_101_2025",
-      "risk_level": 0.012,
+      "risk_level": 0.333,
       "additional_info": [
-        {"id": "7ba9a46e-…", "title": "Collusion risk", "type": "numeric", "value": 0.008,
-         "risk_level": 0.008, "range": {"from": 0.0, "to": 1.0},
+        {"id": "7ba9a46e-…", "title": "Collusion risk", "type": "numeric", "value": 0.333,
+         "risk_level": 0.333, "range": {"from": 0.0, "to": 1.0},
          "description": "Awarded: risk of the winning organization. …"},
         {"id": "d1c485ff-…", "title": "Bidding stage", "type": "text", "value": "awarded"}
+      ]
+    }, {
+      "id": "51c9e0b2-…",
+      "indicator_id": "UPM_RAPHTORY_UC2_AI6",
+      "entityID": "EN_N_101_2025",
+      "risk_level": 0.198,
+      "additional_info": [
+        {"id": "a3e1c7d4-…", "title": "Favoritism risk", "type": "numeric", "value": 0.198,
+         "risk_level": 0.198, "range": {"from": 0.0, "to": 1.0},
+         "description": "Risk of the issuing public entity."},
+        {"id": "e8c709f2-…", "title": "Public entity", "type": "text", "value": "190b8e9d-…"}
       ]
     }]
   },

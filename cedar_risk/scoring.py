@@ -333,6 +333,13 @@ def tender_scores(T, org_anom, entity_anom):
                 entity,
                 open_stage,
             ),
+            # one finding per use case (each is a separate indicator in the response)
+            "descriptions": {
+                "collusion": tender_description(collusion, collusion, 0.0, coll_group,
+                                                None, entity, open_stage),
+                "favoritism": tender_description(favoritism, 0.0, favoritism, None,
+                                                 fav_group, entity, open_stage),
+            },
             "components": {
                 "collusion": round(collusion, 3),
                 "favoritism": round(favoritism, 3),
@@ -342,6 +349,8 @@ def tender_scores(T, org_anom, entity_anom):
                 "winning_organization": winner,
                 "public_entity": entity,
                 "bidding_stage": open_stage,
+                "collusion_group": coll_group,
+                "favoritism_group": fav_group,
             },
         }
 

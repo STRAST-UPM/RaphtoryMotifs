@@ -5,6 +5,11 @@ building the response. Sending them is kafka_client.py's job.
 Flow
   1. The UI  publishes a request on the pilot's request topic (it_analyse, sl_analyse).
   2. main.py runs the requested indicators on the requested entities.
+     This tool has two indicators (two use cases, one tool):
+       collusion   UPM_RAPHTORY_UC5_AI9  organizations, and tenders (collusion risk)
+       favoritism  UPM_RAPHTORY_UC2_AI6  public entities, and tenders (favoritism risk)
+     One response item per requested indicator per entity: a tender asked for
+     both gets two items, each with its own risk_level.
   3. main.py publishes ONE response on the pilot's results topic
      (it_results_available, sl_results_available).
   4. The UI matches the response to its request using requestID.
@@ -20,15 +25,23 @@ import uuid
 TOOL_NAME = "UPM_RAPHTORY_MOTIFS"
 ALL = "all"
 
-# A request is answered only if it lists this tool's indicator id:
-# INDICATOR_ID in .env, else this default.
-DEFAULT_INDICATOR_ID = "UPM_RAPHTORY_UC5_AI8"
+# This tool's two indicators, one per use case. A request is answered only if
+# it lists at least one of them. Each can be renamed in .env.
+DEFAULT_INDICATORS = {"collusion": "UPM_RAPHTORY_UC5_AI9",
+                      "favoritism": "UPM_RAPHTORY_UC2_AI6"}
+_INDICATOR_ENV = {"collusion": "INDICATOR_ID_COLLUSION",
+                  "favoritism": "INDICATOR_ID_FAVORITISM"}
+
+# the node types each use case scores
+USE_CASE_TYPES = {"collusion": ("Organization", "Tender"),
+                  "favoritism": ("PublicEntity", "Tender")}
 
 
-def indicator_id():
-    """This tool's indicator id. Read when used (not at import), so the value
-    of .env counts even though it is loaded after this module is imported."""
-    return os.getenv("INDICATOR_ID") or DEFAULT_INDICATOR_ID
+def indicator_ids():
+    """{use case: indicator_id}. Read when used (not at import), so the values
+    of .env count even though it is loaded after this module is imported."""
+    return {uc: os.getenv(env) or DEFAULT_INDICATORS[uc]
+            for uc, env in _INDICATOR_ENV.items()}
 
 NODE_TYPES = ("Organization", "PublicEntity", "Tender")
 
@@ -167,36 +180,47 @@ def parse_request(value):
 
 
 def request_plan(request):
-    """What a valid request asks THIS tool for: {node_type: [ids] or ALL}.
+    """What a valid request asks THIS tool for:
+    {use case: {node_type: [ids] or ALL}}, e.g.
+    {"collusion": {"Tender": ["T3"]}, "favoritism": {"Tender": ["T3"]}}.
 
-    None when the request does not list indicator_id() (it is for another tool;
-    the request topics are shared). Entities of a type this tool does not
-    score ("bid") are left out.
+    None when the request lists none of this tool's indicators (it is for
+    another tool; the request topics are shared). A use case only takes the
+    entity types it scores (collusion: organizations and tenders; favoritism:
+    public entities and tenders); "bid" is never scored.
     """
-    if indicator_id() not in (request.get("indicators") or []):
+    requested = set(request.get("indicators") or [])
+    use_cases = [uc for uc, iid in indicator_ids().items() if iid in requested]
+    if not use_cases:
         return None
 
     plan = {}
-    for e in request["entities"]:
-        etype = e["entityType"].strip().lower()
-        eid = e["entityId"].strip()
-        types = NODE_TYPES if etype == ALL else (_REQUEST_TYPES.get(etype),)
-        for node_type in types:
-            if node_type is None:
-                continue
-            if eid.lower() == ALL:
-                plan[node_type] = ALL
-            elif plan.get(node_type) != ALL:
-                ids = plan.setdefault(node_type, [])
-                if eid not in ids:
-                    ids.append(eid)
+    for uc in use_cases:
+        wanted = {}
+        for e in request["entities"]:
+            etype = e["entityType"].strip().lower()
+            eid = e["entityId"].strip()
+            types = NODE_TYPES if etype == ALL else (_REQUEST_TYPES.get(etype),)
+            for node_type in types:
+                if node_type not in USE_CASE_TYPES[uc]:
+                    continue
+                if eid.lower() == ALL:
+                    wanted[node_type] = ALL
+                elif wanted.get(node_type) != ALL:
+                    ids = wanted.setdefault(node_type, [])
+                    if eid not in ids:
+                        ids.append(eid)
+        if wanted:
+            plan[uc] = wanted
     return plan
 
 
 def describe_plan(plan):
-    """'all Tender, 2 Organization' -- for the logs."""
-    return ", ".join(f"{'all' if ids == ALL else len(ids)} {node_type}"
-                     for node_type, ids in plan.items()) or "nothing for this tool"
+    """'collusion: all Tender, 2 Organization; favoritism: all Tender' -- for the logs."""
+    return "; ".join(
+        f"{uc}: " + ", ".join(f"{'all' if ids == ALL else len(ids)} {node_type}"
+                              for node_type, ids in wanted.items())
+        for uc, wanted in plan.items()) or "nothing for this tool"
 
 
 
@@ -251,9 +275,13 @@ def _group_items(components, spec):
     return items
 
 
-def _finding(score):
-    """The text from descriptions.py, only when the node is above the threshold."""
-    text = score.get("description")
+def _finding(score, use_case=None):
+    """The text from descriptions.py, only when the node is above the threshold.
+    For a tender, the text of the one use case (collusion or favoritism)."""
+    if use_case is not None:
+        text = (score.get("descriptions") or {}).get(use_case)
+    else:
+        text = score.get("description")
     return [info_item("Finding", text, "long_text")] if text else []
 
 
@@ -295,9 +323,14 @@ def _entity_info(score):
     return items
 
 
-def _tender_info(score):
-    items = _finding(score)
-    items += _score_items(score.get("components") or {}, TENDER_COMPONENTS)
+def _tender_info(score, use_case):
+    """A tender's details for ONE use case: its collusion risk (with the
+    suspicious group) or its favoritism risk (with the public entity and the
+    favored group), plus the bidding stage, participants and winner."""
+    items = _finding(score, use_case)
+    components = score.get("components") or {}
+    items += _score_items({use_case: components[use_case]} if use_case in components else {},
+                          TENDER_COMPONENTS)
 
     ex = score.get("explanation") or {}
     if ex.get("bidding_stage") is not None:
@@ -307,32 +340,50 @@ def _tender_info(score):
         items.append(info_item("Participants", _names(ex["participants"]), "text"))
     if ex.get("winning_organization"):
         items.append(info_item("Winning organization", str(ex["winning_organization"]), "text"))
-    if ex.get("public_entity"):
-        items.append(info_item("Public entity", str(ex["public_entity"]), "text"))
+    if use_case == "collusion" and ex.get("collusion_group"):
+        items.append(info_item("Suspicious organization group",
+                               _names(ex["collusion_group"]), "text"))
+    if use_case == "favoritism":
+        if ex.get("public_entity"):
+            items.append(info_item("Public entity", str(ex["public_entity"]), "text"))
+        if ex.get("favoritism_group"):
+            items.append(info_item("Favored organization group",
+                                   _names(ex["favoritism_group"]), "text"))
     return items
 
 
-_INFO = {"Organization": _org_info, "PublicEntity": _entity_info, "Tender": _tender_info}
+def _info(node_type, use_case, score):
+    if node_type == "Tender":
+        return _tender_info(score, use_case)
+    return _org_info(score) if node_type == "Organization" else _entity_info(score)
+
+
+def _risk(node_type, use_case, score):
+    """A tender's risk for that use case; an organization's or a public
+    entity's overall risk (they belong to one use case only)."""
+    if node_type == "Tender":
+        return float((score.get("components") or {}).get(use_case, 0.0))
+    return float(score["overall"])
 
 
 # Response (tool -> UI)
 
-def _indicator(node_type, node_id, score):
+def _indicator(use_case, node_type, node_id, score):
     return {
         "id": _uid(),
-        "indicator_id": indicator_id(),
+        "indicator_id": indicator_ids()[use_case],
         "entityID": str(node_id),
-        "risk_level": float(score["overall"]),
-        "additional_info": _INFO[node_type](score),
+        "risk_level": _risk(node_type, use_case, score),
+        "additional_info": _info(node_type, use_case, score),
     }
 
 
-def failed_indicator(entity_id, reason):
+def failed_indicator(use_case, entity_id, reason):
     """Contract: a failed analysis is still published, with value
     "Analysis Failed", risk_level 0.0 and the reason in description."""
     return {
         "id": _uid(),
-        "indicator_id": indicator_id(),
+        "indicator_id": indicator_ids()[use_case],
         "entityID": str(entity_id),
         "risk_level": 0.0,
         "additional_info": [info_item("Analysis status", "Analysis Failed", "text",
@@ -354,10 +405,13 @@ def _related(node_type, score):
 def answer(plan, scores=None, failure=None):
     """(analysis.indicators[], source.kg.entities[]) for one request.
 
-    plan    : from request_plan()
+    plan    : from request_plan() -- {use case: {node_type: [ids] or ALL}}
     scores  : {node_type: {node_id: score}} from scoring.py
     failure : reason text when the analysis could not run -> every requested
               entity is answered with "Analysis Failed"
+
+    One item per use case per entity: a tender asked for both use cases gets a
+    collusion item and a favoritism item.
     """
     indicators, used = [], {}
 
@@ -365,24 +419,26 @@ def answer(plan, scores=None, failure=None):
         key = (ENTITY_TYPES[node_type], str(node_id))
         used.setdefault(key, {"entityType": key[0], "entityId": key[1]})
 
-    for node_type, ids in plan.items():
-        if failure is not None:
-            for eid in ([ALL] if ids == ALL else ids):
-                indicators.append(failed_indicator(eid, failure))
-                use(node_type, eid)
-            continue
-
-        by_id = {str(k): v for k, v in ((scores or {}).get(node_type) or {}).items()}
-        for eid in (list(by_id) if ids == ALL else ids):
-            use(node_type, eid)
-            score = by_id.get(eid)
-            if score is None:
-                indicators.append(failed_indicator(
-                    eid, f"{ENTITY_TYPES[node_type]} {eid} was not found in the knowledge graph."))
+    for use_case, wanted in plan.items():
+        for node_type, ids in wanted.items():
+            if failure is not None:
+                for eid in ([ALL] if ids == ALL else ids):
+                    indicators.append(failed_indicator(use_case, eid, failure))
+                    use(node_type, eid)
                 continue
-            indicators.append(_indicator(node_type, eid, score))
-            for rel_type, rel_id in _related(node_type, score):
-                use(rel_type, rel_id)
+
+            by_id = {str(k): v for k, v in ((scores or {}).get(node_type) or {}).items()}
+            for eid in (list(by_id) if ids == ALL else ids):
+                use(node_type, eid)
+                score = by_id.get(eid)
+                if score is None:
+                    indicators.append(failed_indicator(
+                        use_case, eid,
+                        f"{ENTITY_TYPES[node_type]} {eid} was not found in the knowledge graph."))
+                    continue
+                indicators.append(_indicator(use_case, node_type, eid, score))
+                for rel_type, rel_id in _related(node_type, score):
+                    use(rel_type, rel_id)
 
     return indicators, list(used.values())
 
