@@ -2,9 +2,10 @@
 
     request on <pilot>_analyse  (from the UI, or from send_request.py)
       -> scores of that pilot's graph: Neo4j -> Raphtory -> motifs ->
-         organization / public entity / tender anomaly scores
-         (run on every request, on the graph as it is at that moment --
-          nothing runs without a request)
+         organization / public entity / tender anomaly scores, kept in memory
+         (the graph cache: loaded at start-up, reloaded every
+          GRAPH_REFRESH_HOURS; a reload replaces the previous graph, nothing
+          is written to disk)
       -> the requested entities and indicators are picked out
       -> ONE response, saved as JSON, then published on <pilot>_results_available
 
@@ -27,6 +28,8 @@ Which pilots to serve, in order of precedence:
                                          template (see .env.example, kafka_client.py)
     GRAPH_API_KEY_IT / GRAPH_API_KEY_SL  (or plain GRAPH_API_KEY)
     GRAPH_ENDPOINT=https://kg-{pilot}.cedar-heu-project.eu/neo4j/query
+    GRAPH_REFRESH_HOURS=4                hours between graph reloads (default 4);
+                                         0 = no cache, read the graph on every request
 
 Run:  python main.py                       -> serve requests for every pilot in PILOTS
       DRY_RUN=1 python main.py             -> answer (and save), do not publish
@@ -46,7 +49,8 @@ import os
 import re
 import signal
 import sys
-from datetime import datetime, timezone
+import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from dotenv import load_dotenv
 from kafka.errors import MessageSizeTooLargeError
@@ -139,10 +143,19 @@ def save_message(pilot, message, out_dir):
     return history
 
 
-class PilotContext:
-    """Endpoint, API key, topics, output folder and the last scores of one pilot."""
+RETRY_MINUTES = 10           # after a failed graph reload, try again after this
 
-    def __init__(self, pilot, out_dir):
+
+class PilotContext:
+    """Endpoint, API key, topics, output folder and the graph cache of one pilot.
+
+    The cache is the pilot's analysed graph: read from the KG, built as a
+    Raphtory temporal graph and scored once; every request is answered from
+    it. It is reloaded every `refresh_hours` (0 = no cache: a fresh analysis
+    for every request). A reload REPLACES the previous graph in memory -- the
+    old one is freed, and nothing is written to disk."""
+
+    def __init__(self, pilot, out_dir, refresh_hours=4.0):
         self.pilot = pilot
         self.out_dir = out_dir
         self.endpoint = pilot_endpoint(pilot)
@@ -152,15 +165,50 @@ class PilotContext:
                 "(or GRAPH_ENDPOINT / GRAPH_API_KEY) in your .env.")
         self.request_topic = pilot_topic(pilot, "request")
         self.results_topic = pilot_topic(pilot, "results")
-        self.scores = None      # {node_type: {node_id: score}} of the last successful run
+        self.refresh_hours = refresh_hours
+        self.scores = None        # {node_type: {node_id: score}} of the cached graph
+        self.loaded_at = None     # when the cached graph was read (UTC)
+        self.next_refresh = 0.0   # time.monotonic() of the next reload (0 = due now)
 
-    def analyse(self):
-        """Scores of the graph as it is now: the analysis runs on every request.
-        The result is kept only as a fallback for a later failed run."""
-        log.info("[analysis] %s: starting analysis -> %s", self.pilot, self.endpoint)
+    def refresh(self):
+        """Read the graph, build and score it, and REPLACE the cache with it."""
+        start = time.monotonic()
+        log.info("[cache]   %s: loading the graph -> %s", self.pilot, self.endpoint)
         org, ent, ten = run(self.endpoint, self.api_key)
         self.scores = {"Organization": org, "PublicEntity": ent, "Tender": ten}
-        log.info("[analysis] %s: analysis finished", self.pilot)
+        self.loaded_at = datetime.now(timezone.utc)
+        if self.refresh_hours > 0:
+            self.next_refresh = time.monotonic() + self.refresh_hours * 3600
+            next_at = self.loaded_at + timedelta(hours=self.refresh_hours)
+            nxt = f"next reload at {next_at:%Y-%m-%d %H:%M} UTC"
+        else:
+            nxt = "no cache: read again for the next request"
+        log.info("[cache]   %s: graph ready in %.1fs (%d tenders, %d organizations, "
+                 "%d public entities); %s", self.pilot, time.monotonic() - start,
+                 len(ten), len(org), len(ent), nxt)
+        return self.scores
+
+    def refresh_if_due(self):
+        """Between requests: reload the graph when it is due. If the reload
+        fails, keep answering from the cached graph and try again later."""
+        if self.refresh_hours <= 0 or time.monotonic() < self.next_refresh:
+            return
+        try:
+            self.refresh()
+        except Exception as e:
+            self.next_refresh = time.monotonic() + min(RETRY_MINUTES / 60,
+                                                       self.refresh_hours) * 3600
+            kept = (f"answering from the graph of {self.loaded_at:%Y-%m-%d %H:%M} UTC"
+                    if self.scores is not None else "no graph cached yet")
+            log.exception("[cache]   %s: graph reload failed (%s); %s, retry in %d min",
+                          self.pilot, describe_error(e), kept,
+                          min(RETRY_MINUTES, int(self.refresh_hours * 60)))
+
+    def current_scores(self):
+        """The scores a request is answered from: the cached graph's; read now
+        if no graph is cached yet, or if the cache is off (refresh_hours 0)."""
+        if self.refresh_hours <= 0 or self.scores is None:
+            return self.refresh()
         return self.scores
 
 
@@ -186,7 +234,9 @@ def handle_request(ctx, record, producer):
 
     failure = None
     try:
-        scores = ctx.analyse()
+        scores = ctx.current_scores()
+        log.info("[request] %s: answered from the %s graph of %s UTC", rid, ctx.pilot,
+                 f"{ctx.loaded_at:%Y-%m-%d %H:%M}")
     except Exception as e:
         scores = ctx.scores
         if scores is not None:
@@ -260,6 +310,14 @@ def main():
                           "published (default: OUTPUT_DIR in .env, else not saved)")
     args = ap.parse_args()
     out_dir = args.out or os.getenv("OUTPUT_DIR") or None
+    try:
+        refresh_hours = float(os.getenv("GRAPH_REFRESH_HOURS") or 4)
+        if refresh_hours < 0:
+            raise ValueError
+    except ValueError:
+        log.error("[pilots]  GRAPH_REFRESH_HOURS must be a number of hours >= 0, got %r",
+                  os.getenv("GRAPH_REFRESH_HOURS"))
+        sys.exit(1)
 
     requested = resolve_pilots(args.pilots)
     contexts = []
@@ -268,7 +326,7 @@ def main():
             log.warning("[pilot]   %s: skipped, no GRAPH_API_KEY_%s (or GRAPH_API_KEY) in .env",
                         pilot, pilot.upper())
             continue
-        contexts.append(PilotContext(pilot, out_dir=out_dir))
+        contexts.append(PilotContext(pilot, out_dir=out_dir, refresh_hours=refresh_hours))
     assert contexts, (
         f"No pilot had an API key set. Requested: {requested}. "
         f"Set GRAPH_API_KEY_<PILOT> (or GRAPH_API_KEY) in your .env.")
@@ -278,6 +336,10 @@ def main():
         log.info("[pilots]  %s: %s -> %s", c.pilot, c.request_topic, c.results_topic)
     log.info("[pilots]  answering requests for indicators %s",
              ", ".join(f"{iid} ({uc})" for uc, iid in indicator_ids().items()))
+    if refresh_hours > 0:
+        log.info("[pilots]  graph cache: loaded at start-up, reloaded every %g h", refresh_hours)
+    else:
+        log.info("[pilots]  graph cache off (GRAPH_REFRESH_HOURS=0): graph read for every request")
     if out_dir:
         log.info("[pilots]  responses saved to: %s/", out_dir)
     else:
@@ -300,6 +362,9 @@ def main():
         log.exception("[kafka]   could not connect to Kafka (KAFKA_BOOTSTRAP_SERVERS=%s): %s",
                       settings["bootstrap"], describe_error(e))
         sys.exit(1)                 # already logged with its traceback
+    # load every pilot's graph once, before answering
+    for ctx in contexts:
+        ctx.refresh_if_due()
     log.info("[kafka]   waiting for requests on %s", ", ".join(by_topic))
 
     try:
@@ -314,7 +379,9 @@ def main():
                         log.exception("[request] %s@%s: failed (%s), %s", tp.topic,
                                       record.offset, describe_error(e), _saved_copy(out_dir))
                     consumer.commit()       # answered (or skipped): don't redo it on restart
-            # no request -> nothing to do: the graph is only read when a request arrives
+            # between requests: reload a pilot's graph when it is due
+            for ctx in contexts:
+                ctx.refresh_if_due()
     except KeyboardInterrupt:
         log.info("[kafka]   stopping")
     except Exception as e:

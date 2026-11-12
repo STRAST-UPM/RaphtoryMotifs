@@ -19,16 +19,21 @@ x-cedar-risk: &cedar-risk
   restart: unless-stopped
 
 services:
+  # ---- The module from the source (`python main.py`) -- the default --------
+  #   docker compose up -d --build cedar-risk           (make run)
   cedar-risk:
     <<: *cedar-risk
-    build: { context: ., target: package }
-    image: cedar-risk:package
-    container_name: cedar-risk
-
-  # ---- Optional: `python main.py` from the source (development) ------------
-  cedar-risk-source:
-    <<: *cedar-risk
-    profiles: ["source"]
     build: { context: ., target: source }
     image: cedar-risk:source
+    container_name: cedar-risk
+
+  # ---- The installed package -- profile "package" ---------------------------
+  #   docker compose up -d --build cedar-risk-package   (make run PROFILE=package)
+  # Naming the service starts ONLY it. Both use the container name cedar-risk,
+  # so only one runs at a time: remove the other first (make run does it).
+  cedar-risk-package:
+    <<: *cedar-risk
+    profiles: ["package"]
+    build: { context: ., target: package }
+    image: cedar-risk:package
     container_name: cedar-risk

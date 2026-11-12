@@ -35,8 +35,10 @@ Kafka message contract.
    if `OUTPUT_DIR` is set, then **publish** it on the pilot's results topic
    (e.g. `it_results_available`).
 
-Nothing runs between requests: each request is scored on the graph as it is at
-that moment.
+Steps 2 – 5 don't run for every request: each pilot's analysed graph is kept in
+memory (the **graph cache**), loaded when the module starts and reloaded every
+`GRAPH_REFRESH_HOURS` (4 by default), so a request is answered in milliseconds
+(see [7. Graph cache](#7-graph-cache)).
 
 <table align="center">
   <tr>
@@ -286,6 +288,33 @@ OUTPUT_DIR=./outputs
 outputs/sl_latest.json                              the last response of the pilot
 outputs/sl/20261015T094003Z_4daba915-….json          one file per response
 ```
+## 7. Graph cache
+
+Each pilot's graph is read from the KG, built as a Raphtory temporal graph and
+scored **once**, when the module starts; every request is then answered from that
+analysed graph in memory, without reading the KG again. Every
+`GRAPH_REFRESH_HOURS` it is reloaded, between requests (a request arriving during
+a reload waits a few seconds in Kafka).
+
+| Variable | Meaning | Default |
+|---|---|---|
+| `GRAPH_REFRESH_HOURS` | hours between two reloads of each pilot's graph; `0` = no cache: the graph is read and scored for every request | `4` |
+
+```dotenv
+GRAPH_REFRESH_HOURS=4
+```
+
+- A reload **replaces** the previous graph in memory; old graphs are not kept,
+  and nothing is written to disk.
+- If a reload fails (e.g. the KG gateway is down), the module keeps answering from
+  the last graph and tries again 10 minutes later.
+- If a pilot's first load failed, its graph is loaded by its first request.
+
+```text
+[cache]   sl: graph ready in 33.5s (116 tenders, 109 organizations, 1 public entities); next reload at 2026-11-12 17:30 UTC
+[request] … : answered from the sl graph of 2026-11-12 13:30 UTC
+```
+
 ---
 
 # Running the module
@@ -294,17 +323,28 @@ Once `.env` is configured for the CEDAR cluster, one command builds and starts
 the module:
 
 ```bash
-make run         # build and start the module
-make stop        # stop it
-make restart     # after a change in the code or in .env
+make run                      # build and start the module (from the source)
+make run PROFILE=package      # or: the installed package (pyproject.toml)
+make stop                     # stop it, whichever runs
+make restart                  # after a change in the code or in .env (same PROFILE as run)
 ```
 
-`make run` prints the broker it uses (`KAFKA_BOOTSTRAP_SERVERS`). The log:
-`docker logs -f cedar-risk`, or `logs/cedar.log`.
+| | Docker Compose service | Without make |
+|---|---|---|
+| from the source (default) | `cedar-risk` | `docker compose up -d --build cedar-risk` |
+| installed package (profile `package`) | `cedar-risk-package` | `docker compose up -d --build cedar-risk-package` |
 
-The container reads `.env`, uses the host's network, mounts
-`KAFKA_CREDENTIALS_DIR` read-only, and keeps `OUTPUT_DIR` (if set) and `logs/` on
-the host. It restarts by itself after a crash or a reboot.
+Only one runs at a time: both use the container name `cedar-risk`, and `make run`
+removes the running one first (without make: `docker rm -f cedar-risk` first).
+Start the package by **naming its service**: `--profile package` alone would
+activate both services, which Compose refuses.
+
+`make run` prints the broker it uses (`KAFKA_BOOTSTRAP_SERVERS`) and the service.
+The log: `docker logs -f cedar-risk`, or `logs/cedar.log`.
+
+The container reads `.env`, mounts `KAFKA_CREDENTIALS_DIR` read-only, and keeps
+`OUTPUT_DIR` (if set) and `logs/` on the host. It restarts by itself after a crash
+or a reboot.
 
 ---
 
